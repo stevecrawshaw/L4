@@ -1,0 +1,99 @@
+DUTY
+
+KSBS
+
+Duty 1 Identify data sources to meet the organisation's requirement, using evidence-based decision making to establish a rationale for inclusion and exclusion of various data sets and models
+
+K1 K2 K3 K4 K5 K6 K8 K9 K10 K12 K15
+
+S1 S2 S7 S8 S9 S15
+
+B2 B3 B4 B5 B7
+
+Duty 2 Liaise with the client and colleagues from other areas of the organisation to establish reporting needs and deliver insightful and accurate information
+
+K1 K2 K3 K4 K5 K6 K9 K10 K11 K12 K15
+
+S1 S2 S4 S5 S7 S12
+
+B1 B3 B4 B5 B6 B7
+
+Duty 3 Collect, compile and, if needed, cleanse data, such as sales figures, Digital Twins etc. solving any problems that arise, to or from a range of internal and external systems
+
+K1 K2 K3 K4 K5 K6 K8 K10 K11 K12 K13 K15
+
+S1 S2 S3 S4 S6 S7 S8 S9 S10 S13
+
+B1 B2 B3 B4 B5 B6 B7
+
+Duty 4 Produce performance dashboards and reports in the Visualisation and Model Building Phase
+
+K1 K2 K3 K4 K5 K6 K7 K8 K9 K10 K11 K12 K13 K15
+
+S1 S2 S3 S4 S5 S7 S8 S9 S10 S11 S12 S13 S14 S15
+
+B2 B3 B4
+
+Duty 5 Support the organisation by maintaining and developing reports for analysis to aid with decisions, and adhering to organisational policy/legislation
+
+K1 K2 K3 K7 K8 K10 K11 K12
+
+S1 S2 S3 S5 S8 S9 S14
+
+B1 B2 B3
+
+Duty 6 Produce a range of standard and non standard statistical and data analysis reports in the Model Building phase
+
+K2 K3 K4 K5 K6 K7 K8 K9 K10 K11 K12 K13 K14
+
+S1 S2 S3 S4 S5 S8 S9 S10 S11 S13 S14
+
+B2 B3 B6 B7
+
+Duty 7 Identify, analyse, and interpret trends or patterns in data sets
+
+K1 K2 K3 K4 K5 K8 K10 K11 K12 K13 K14 K15
+
+S1 S2 S3 S4 S5 S6 S10 S11 S13 S14
+
+B2 B3 B4 B5 B7
+
+Duty 8 Draw conclusions and recommend an appropriate response, offer guidance or interpretation to aid understanding of the data
+
+K1 K2 K7 K8 K11 K14
+
+S1 S2 S3 S4 S5 S7 S10 S11 S12 S13 S14
+
+B2 B3 B4 B5 B7
+
+Duty 9 Summarise and present the results of data analysis to a range of stakeholders, making recommendations
+
+K2 K3 K4 K5 K7 K9 K10 K12 K13 K15
+
+S1 S2 S4 S5 S7 S9 S12 S14 S15
+
+B1 B3 B4 B7
+
+Duty 10 Provide regular reports and analysis to different management or leadership teams, ensuring data is used and represented ethically in line with relevant legislation (e.g. GDPR which incorporates Privacy by Design).
+
+K1 K2 K3 K4 K5 K6 K7 K9 K10 K11 K12 K15
+
+S1 S2 S4 S5 S7 S10 S12 S14 S15
+
+B3 B4 B5
+
+Duty 11 Ensure data is appropriately stored and archived, in line with relevant legislation e.g. GDPR
+
+K1 K2 K3 K6 K8 K11 K12
+
+S1 S2 S3 S9
+
+B1 B3 B4
+
+Duty 12 Practice continuous self learning to keep up to date with technological developments to enhance relevant skills and take responsibility for own professional development
+
+K7 K8 K10 K11 K13 K14 K15
+
+S1 S3 S4 S6 S7 S12
+
+B1 B2 B3 B4 B5 B6 B7
