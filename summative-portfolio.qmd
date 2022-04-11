@@ -1,0 +1,99 @@
+---
+title: "Summative Portfolio: L4"
+author: "Steve crawshaw"
+format: html
+date: "2022-04-11"
+toc: true
+toc-title: "Table of Contents"
+toc-location: left
+number-sections: true
+number-depth: 3
+execute: 
+  echo: false
+  warning: false
+---
+
+```{r 'libraries'}
+library(xfun)
+packages <- c("wikipediapreview")
+pkg_attach2(packages)
+wikipediapreview::wp_init()
+```
+
+
+# Introduction
+
+My name is Steve Crawshaw. I am a project manager for Bristol City Council and I have undertaken the L4 Apprenticeship (Data Analyst) to improve my knowledge and skill in data analytics with a view to undertaking the L7 apprenticeship and achieving a role as a data scientist.
+
+I have worked for Bristol City Council (BCC) since 1998 in essentially the same role, although I was seconded to another organisation between 2013 and 2016. My main role now is managing a network of air quality monitors and the data that they generate. This will be the subject on which I will focus for the summative portfolio.
+
+# Employer: Bristol City Council
+
+[Bristol City Council](https://en.wikipedia.org/wiki/Bristol_City_Council) is a large unitary local authority in the South West of England.
+
+## Goals, Vision and Values
+
+Bristol City Council's [Corporate Strategy](https://www.bristol.gov.uk/policies-plans-strategies/corporate-strategy) outlines a vision of driving an inclusive, sustainable and healthy city of hope and aspiration where everyone can share the city’s success. It also describes the activities required by law.
+
+The Corporate Strategy’s main priorities are informed by 5 key principles.
+
+* Development and delivery
+* Environmental sustainability
+* Equality and inclusion
+* Resilience
+* World-class employment
+
+It's also arranged around 7 main themes:
+
+* **Children and young people:** A city where every child belongs and every child gets the best start in life, whatever circumstances they were born into.
+ 
+* **Economy and skills:** Economic growth that builds inclusive and resilient communities, decarbonises the city and offers equity of opportunity.
+ 
+* **Environment and sustainability:** Decarbonise the city, support the * recovery of nature and lead a just transition to a low-carbon future.
+ 
+* **Health, care and wellbeing:** Tackle health inequalities to help people stay healthier and happier throughout their lives.
+ 
+* **Homes and communities:** Healthy, resilient, and inclusive neighbourhoods with fair access to decent, affordable homes.
+ 
+* **Transport and connectivity:** A more efficient, sustainable, and inclusive connection of people to people, people to jobs and people to opportunity.
+ 
+* **Effective development organisation:** From city government to city governance: creating a focussed council that empowers individuals, communities, and partners to flourish and lead.
+
+Bristol City Council is currently a mayoral - led authority. The current Mayor, [Marvin Rees](https://en.wikipedia.org/wiki/Marvin_Rees) has set out values for the organisation as shown below.
+
+![Bristol City Council's values](images/values.png)
+
+## How BCC Uses Data
+
+BCC is a large and complex organisation dealing with a wide range of functions, from managing highways and planning applications to looking after vulnerable people. It follows that multiple systems and approaches exist for managing data across the organisation, many of which have evolved over time and have not been centrally planned or managed.
+
+ **need some content from data strategy ICT etc here**
+
+## Data Architecture
+
+## Security Standards and Policies
+
+# My Role: Air Quality Project Manager
+
+## Key Deliverables
+
+## Key Skills and Knowledge
+
+## Strengths and Weaknesses
+
+## Areas for Improvement
+
+
+
+```{r}
+1 + 1
+```
+
+You can add options to executable code like this
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
