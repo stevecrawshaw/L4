@@ -1,26 +1,12 @@
 ---
 title: "Summative Portfolio: L4"
-author: "Steve crawshaw"
-format:
-  docx:
-    toc: true
-    number-sections: true
+author: "Steve Crawshaw"
+date: '2022-04-14'
+output: word_document
 ---
 
-<!-- title: "Summative Portfolio: L4" -->
-<!-- author: "Steve crawshaw" -->
-<!-- format: html -->
-<!-- date: "2022-04-11" -->
-<!-- toc: true -->
-<!-- toc-title: "Table of Contents" -->
-<!-- toc-location: left -->
-<!-- number-sections: true -->
-<!-- number-depth: 3 -->
-<!-- execute:  -->
-<!--   echo: false -->
-<!--   warning: false -->
 
-```{r 'libraries'}
+```{r 'libraries', echo = FALSE, include=FALSE}
 library(xfun)
 packages <- c("wikipediapreview")
 pkg_attach2(packages)
