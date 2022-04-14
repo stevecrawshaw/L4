@@ -20,7 +20,7 @@ format:
 <!--   echo: false -->
 <!--   warning: false -->
 
-```{r 'libraries'}
+```{r 'libraries', echo = FALSE, include = FALSE}
 library(xfun)
 packages <- c("wikipediapreview")
 pkg_attach2(packages)
