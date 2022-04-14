@@ -67,7 +67,11 @@ Bristol City Council is currently a mayoral - led authority. The current Mayor, 
 
 BCC is a large and complex organisation dealing with a wide range of functions, from managing highways and planning applications to looking after vulnerable people. It follows that multiple systems and approaches exist for managing data across the organisation, many of which have evolved over time and have not been centrally planned or managed.
 
- **need some content from data strategy ICT etc here**
+A recently published ["Data, Insight and Information Strategy"](https://democracy.bristol.gov.uk/documents/s64321/DII%20Strategy%20Final.pdf) sets out the strategic direction and objectives for the council in this area:
+
+![Data, Insights and Information Strategy Objectives](images/DII_strategy_1.png)
+The strategy aims to deliver these objectives by developing a single analytics team to deliver insights across the organisation and by consolidating the disparate and distributed datasets across the council into a corporate data lake with analysis being done on one data analytics platform. Several projects are under way to deliver this change.
+
 
 ## Data Architecture
 
