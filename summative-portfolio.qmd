@@ -117,7 +117,7 @@ The key skills and knowledge for my role are as follows:
 * R - packages `openair`, `openaq`, `sf`, `timetk`, `fastverse`, `deweather` and `tidyverse` are relevant to the air quality domain
 * [FME](https://www.safe.com/) and FME Server for automating web services and data integration
 * Time series analysis
-* Network telemetry: IP, analogue, wireless 
+* Network telemetry: IP, analogue, wireless, Teltonika RMS 
 * Technical report writing and comprehension of technical reports relating to the domain
 * Communication skills - ability to report technical information to non - specialists
 * Project management for small and medium sized projects
