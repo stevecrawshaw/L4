@@ -79,25 +79,72 @@ The strategy aims to deliver these objectives by developing a single analytics t
 
 # My Role: Air Quality Project Manager
 
+My official job title is "Project Manager". This is currently under review, partly because the extent of actual project management activity is quite limited. The majority of my time is spent managing a network of air quality monitors and the data that arises from the network.
+
 ## Key Deliverables
+
+The deliverables for which I am responsible are summarised as follows:
+
+1. Data capture rates exceeding 85% for continuous monitoring, 75% for passive.
+2. Monthly data cleaning (ratification) of continuous data.
+3. Annual reporting of air quality data.
+4. Calculation of Key Performance Indicators (KPIs) for air quality.
+5. Developing or revising KPIs as necessary.
+6. Ad hoc analysis and summaries of air quality data to support other programmes.
+7. Ensuring all relevant air quality data are published on the Open Data Portal.
+8. Ensuring all relevant technical guidance is followed in relation to air quality management.
+9. Responding to relevant requests from stakeholders for air quality data and analysis.
+10. Delivery of specific projects such as "Slow the Smoke"
 
 ## Key Skills and Knowledge
 
+The key skills and knowledge for my role are as follows:
+
+### Knowledge
+
+* A good understanding of the legal framework for air quality management in the UK.
+* Familiarity with the relevant technical guidance on assessing air quality.
+* Knowledge of air quality policy and interactions with other domains like transport.
+* An understanding of the development management (land use planning) process in the UK including Environmental Impact Assessment (EIA).
+* An understanding of the principles of open data and legal framework for public access to data.
+
+### Skills
+
+* Processing and analysing medium sized (up to 10 million observations) data sets
+* SQL (SQL server, ODSSQL and MS Access)
+* Excel
+* HTML, Javascript and CSS for web development of open data
+* R - packages `openair`, `openaq`, `sf`, `timetk`, `fastverse`, `deweather` and `tidyverse` are relevant to the air quality domain
+* [FME](https://www.safe.com/) and FME Server for automating web services and data integration
+* Time series analysis
+* Network telemetry: IP, analogue, wireless 
+* Technical report writing and comprehension of technical reports relating to the domain
+* Communication skills - ability to report technical information to non - specialists
+* Project management for small and medium sized projects
+* Technical skills related to installation, maintenance and quality control of air monitoring instruments
+* Negotiation skills for contract management and securing outcomes in the planning process
+
 ## Strengths and Weaknesses
+
+### Strengths
+
+* Long experience in the domain and a good level of skills and knowledge
+* Strong work ethic
+* Motivation to deliver and improve services and air quality
+* Wide range of contacts internally and externally
+* Collaborative approach to working
+
+### Weaknesses
+
+* Wide, rather than deep data skill set
+* Limited understanding of statistical theory and advanced analysis
+* No exposure to team environment of other data analysts so lacking peer support
+* Isolated from corporate data analytics functions
+* Limited employer incentive to improve skills
 
 ## Areas for Improvement
 
-
-
-```{r}
-1 + 1
-```
-
-You can add options to executable code like this
-
-```{r}
-#| echo: false
-2 * 2
-```
-
-The `echo: false` option disables the printing of code (only output is displayed).
+* Improved understanding of statistical theory and learning
+* Power BI (corporate data analytics tool)
+* Azure (corporate data platform)
+* Python and PANDAS for comprehensive tooling of data science
