@@ -1,0 +1,302 @@
+---
+title: The R version of: "data_structures.ipynb"
+output: html_document
+---
+
+# Exercises: ~~Python~~ R Data Structures
+
+
+The following variables are assigned values below:
+
+`letters` (a randomly-ordered list of the 26 single lower-case alphabetical characters)   
+`storm_names`(a string of alphabetically-ordered names separated by `, ` each name with a unique upper-case first letter)  
+`wind_speeds` (a list of integers representing the maximum speed in mph of storms which have already happened)  
+
+
+You should write your code on the assumption that these variables could be assigned different values of the same type (as shown in the parentheses above) and still work to find the answers appropriate for those given values.
+
+
+You will find instructions below about how to define each variable.
+
+Once you're happy with your code, upload your notebook to KATE to check your feedback.
+
+```{r}
+letters <-  c('q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 
+           'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm')
+
+storm_names <-  'Atiyah, Brendan, Clara, Dennis, Ellen, Francis, Gerda, Hugh, Iris, Jan, Kitty, Liam, Maura, Noah, Olivia, Piet, Roisin, Samir, Tara, Vince, Willow'
+
+wind_speeds <-  c(65, 77, 94, 102, 85)
+```
+
+**Q1.** Use the `.split()` method to create a list called `storm_list` from the `storm_names` string. 
+
+Each item in the list should be the name only, without any spaces or commas within each pair of quotation marks:
+
+```{python}
+# Add your code below
+# storm_list = ...
+storm_list = storm_names.split(', ')
+```
+
+```{r}
+library(tidyverse)
+storm_list <- storm_names %>% 
+    strsplit(split = ", ") 
+
+```
+
+
+**Q2.** Use slice notation:
+
+```python
+a_list[start:stop:step]
+```
+to retrieve the storm names from `storm_list` which are in the 1st, 3rd, 5th, 7th, and 9th positions in the list (i.e. those beginning with A, C, E, G and I). Remember that Python uses zero-based indexing, so the first storm name is at position `[0]`. Assign the list to the `storms_slice` variable.
+
+The first answer on [this page](https://stackoverflow.com/questions/509211/understanding-slice-notation) of Stack Overflow (a resource you are likely to find very useful as you learn and work with Python!) has a very good explanation of the `slice` syntax.
+
+```{python}
+# Add your code below
+storms_slice = storm_list[0:9:2]
+```
+
+```{r}
+# create the sequence of indices
+indices <- seq.int(1, 9, 2)
+# subset the vector with those indices
+storms_slice <- storm_list[indices]
+
+```
+
+**Q3.** Use the Python `sorted()` function to create a list called `alphabet` from the `letters` list, where the values are in alphabetical order.
+
+*The reason we suggest using the `sorted()` function here rather than the `.sort()` list method is that `sorted()` automatically creates a copy of `letters`, whereas `.sort()` sorts 'inplace', i.e. the original list would be modified rather than a new list created.*
+
+```{python}
+# Add your code below
+alphabet = sorted(letters)
+alphabet
+```
+
+```{r}
+alphabet <- sort(letters)
+```
+
+
+**Q4.** Find the index of the letter 'd' in the list `alphabet` and assign it to the variable `index_d`:
+
+```{python}
+# Add your code below
+index_d = alphabet.index('d')
+index_d
+```
+
+```{r}
+which(alphabet == "d")
+```
+
+**Q5.** How many names are there in `storm_list`? Assign your answer to `number_of_names`:
+
+```{python}
+# Add your code below
+number_of_names = len(storm_list)
+number_of_names
+```
+
+
+```{r}
+number_of_names <- length(storm_list)
+
+```
+
+**Q6.** What's the 17th storm name in `storm_list`? Assign your answer to `storm_17`:
+
+```{python}
+# Add your code below
+storm_17 = storm_list[16]
+storm_17
+```
+
+```{r}
+# R count from 1
+storm_list[17]
+```
+
+
+**Q7.** Notice that there is no entry in `storm_list` that begins with 'Q'(which is the 17th letter of the alphabet).
+
+Write some code which creates a copy of the `storm_list` variable called `storm_list_extra`. Next write some code which adds the name `Quentin` to the end of this new list.
+
+*Hint: use the `.copy()` method to create `storm_list_extra`.*
+
+```{python}
+# Add your code below
+storm_list_extra = storm_list.copy()
+storm_list_extra.append('Quentin')
+```
+
+
+```{r}
+storm_list_extra = append(storm_list, values = "Quentin")
+```
+
+**Q8.** On reflection, appending a new value to the list was not the best approach as the resulting list is no longer alphabetical. 
+
+We could sort the list, but it would be better to have inserted `Quentin` in the 17th position (since 'Q' is the 17th letter in the alphabet).
+
+Let's fix this mistake. First, create another copy of `storm_list` called `storm_list_redux` (note that is it useful we didn't change the original list!). Next, use the `.insert()` method to insert `Quentin` into the 17th position.
+
+*Hint: recall that lists and other Python objects are typically indexed at `0`*
+
+```{python}
+# Add your code below
+storm_list_redux = storm_list.copy()
+storm_list_redux.insert(16, 'Quentin')
+storm_list_redux
+```
+
+```{r}
+storm_list_redux <- append(storm_list, values = 'Quentin', after = 16)
+
+```
+
+
+**Q9.** What's the average of the values in the `wind_speeds`list? 
+
+Assign your answer to `avg_max_wind`. You may find the `len()` and `sum()` functions useful, although feel free to not to if you have another way:
+
+```{python}
+# Add your code below
+avg_max_wind = sum(wind_speeds) / len(wind_speeds)
+avg_max_wind
+```
+
+**Q10.** The `wind_speeds` list gives us data for all the storms in `storm_list` that have happened so far, starting from the name beginning with `A`. Write some code to assign to `next_storm` what the name of the next storm will be:
+
+```{python}
+# Add your code below
+# next_storm = ...
+next_storm  = storm_list[len(wind_speeds)]
+next_storm
+```
+
+**Q11.** If `wind_speeds` contains values for the storms which have happened so far, write some code that uses list indexing to create a list of the storms in `storm_list` which have not yet happened.
+
+Note that the `next_storm` identified above, should be the first element in the list.
+
+Assign this list to the variable `remaining_storms`:
+
+```{python}
+# Add your code below
+remaining_storms = storm_list[len(wind_speeds):len(storm_list)]
+remaining_storms
+```
+
+**Q12.** Which storm has had the highest wind speed? 
+
+Assign your answer to `windiest_storm`. You may find the Python `max()` function useful, along with the `.index` list method:
+
+```{python}
+# Add your code below
+windiest_storm = storm_list[wind_speeds.index(max(wind_speeds))]
+windiest_storm
+```
+
+**Q13.** It is predicted that the final five names in `storm_list` will not be used this year. Create a list called `unused_names` which contains only these names and then reverse the order of the names (so that the entry beginning with `W` comes first):
+
+```{python}
+# Add your code below
+unused_names = storm_list[-5:]
+
+unused_names.sort(reverse = True)
+unused_names
+```
+
+**Q14.** Create a dictionary called `storm_dict` where the keys are from `storm_list` and the values are the corresponding values from `wind_speeds`. 
+
+It should only contain key:value pairs for the storms which have already occurred, i.e. the number of key:value pairs should be equal to the number of elements in `wind_speeds`.
+
+There are various ways to do this and you're free to choose, but one way could involve using the Python `dict()` and `zip()` functions (see the [documentation](https://docs.python.org/3.3/library/functions.html)); can you work out from the documentation how this could be achieved?
+
+
+```{python}
+# Add your code below
+storm_dict = dict(zip(storm_list, wind_speeds))
+storm_dict
+```
+
+**Q15.** The values associated with a dictionary key can be found by using the `dict['key']` syntax, but this returns an error if the key doesn't exist.
+
+An alternative is to use the dictionary `.get()` method. This provides a way of returning a default value if the given key doesn't exist in the dictionary.
+
+Use the `.get()` method to see if the dictionary `storm_dict` contains the storm `Andrew`. If the dictionary does not contain `Andrew`, specify that `.get()` should return the string `No storm with that name`.
+
+Assign the output of `.get()` to a variable called `andrew_storm`.
+
+```{python}
+# Add your code below
+andrew_storm = storm_dict.get('Andrew', 'No storm with that name')
+andrew_storm
+```
+
+**Q16.** Earlier we identified the next storm name and assigned it to `next_storm`; this storm has now happened and the maximum wind speed was 98 mph.
+
+Create a new dictionary called `new_storm_dict` as a `.copy()` of our `storm_dict`. Then add an additional key:value pair of `next_storm` : `98`
+
+Note that `next_storm` is a variable that we previously defined.
+
+```{python}
+# Add your code below
+new_storm_dict = storm_dict.copy()
+new_storm_dict[next_storm] = 98
+new_storm_dict
+```
+
+**Q17.** We want to find the maximum wind speed across all the storms of `new_storm_dict`.
+
+Use the `.values()` method to extract all the wind speeds in `new_storm_dict` and convert them to a list with the `list()` function.
+
+Next, use the `max()` function to find the maximum speed and assign it to a variable called `max_speed`.
+
+```{python}
+# Add your code below
+max_speed = max(list(new_storm_dict.values()))
+max_speed
+```
+
+**Q18.** Finally, we are told that the original information we were given was wrong and the speed of storm Brendan should have been 72 rather than 77. 
+
+We need to create a new dictionary, `updated_dict`, based on `new_storm_dict` with the correct information.
+
+Create `updated_dict` as a copy of `new_storm_dict`, then update the information for Brendan to be 72.
+
+```{python}
+# Add your code below
+updated_dict = new_storm_dict.copy()
+updated_dict['Brendan'] = 72
+updated_dict
+```
+
+## Further practice
+
+If you have time, have a go at repeating this exercise with some different data and using different techniques. 
+
+Make a copy of this notebook and copy-paste the new data from below in place of the original data in the second cell (it has been commented out below to prevent any accidental overwriting of your variables in this notebook).
+
+First of all, see if your original code runs with the new data without throwing any errors; all of your code cells should produce new values for the requested variables. If you get errors, come back to the original notebook and make changes so that your code is more robust and works with both sets of values.
+
+Then, for any questions where your working has involved more than one line of code, see if you can find an alternative, more succinct approach to the problem.
+
+```{python}
+'''
+storm_names = 'Alberto, Beryl, Chris, Debby, Ernesto, Florence, Gordon, Helene, Isaac, Joyce, \
+Kirk, Leslie, Michael, Nadine, Oscar, Patty, Rafael, Sandy, Tony, Valerie, William'
+
+letters = ['m', 'n', 'b', 'v', 'c', 'x', 'z', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', \
+'p', 'o', 'i', 'u', 'y', 't', 'r', 'e', 'w', 'q']
+
+wind_speeds = [99, 78, 85, 107, 114, 94, 89, 121, 108]
+'''
+```
+

@@ -1,0 +1,46 @@
+---
+title: The R version of "introduction_to_python.ipynb"
+output: html_document
+---
+
+# Introduction to ~~Python~~ R
+
+**Q1.** Write some code which multiplies $12$ and $13$ and assign the result to variable called `result`.
+
+```{r}
+
+result <- 12 * 13
+result
+
+```
+
+**Q2.** Two integers, `a` and `b`, are provided in the following cell - run this cell and do not change the values of `a` and `b`. Next, write some code in the subsequent cell that divides `a` by `b` and assigns the result to a variable called `division`.
+
+```{r}
+a <- 17
+b <- 3
+```
+
+```{r}
+division = a / b
+division
+```
+
+
+**Q3.** Now we want the result as an integer (rounded down). We can do this with an operation known as "floor division".
+
+Write code in the cell below which divides `a` by `b` using "floor division" and assign the result to a variable called `floor`.
+
+```{r}
+floor = a %/% b
+floor
+```
+
+**Q4.** Finally, write code which returns the remainder of dividing `a` by `b` and assign this to a variable called `remainder`.
+
+```{r}
+# Add your code below
+# remainder = ...
+remainder = a %% b
+remainder
+```
