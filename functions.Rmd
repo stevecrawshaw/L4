@@ -1,0 +1,237 @@
+---
+title: An R Markdown document converted from "resources/functions.ipynb"
+output: html_document
+---
+
+# Exercises: Functions
+
+KATE expects your code to define variables with specific names that correspond to certain things we are interested in.
+
+KATE will run your notebook from top to bottom and check the latest value of those variables, so make sure you don't overwrite them.
+
+* Remember to uncomment the line assigning the variable to your answer and don't change the variable or function names.
+* Use copies of the original or previous DataFrames to make sure you do not overwrite them by mistake.
+
+You will find instructions below about how to define each variable.
+
+Once you're happy with your code, upload your notebook to KATE to check your feedback.
+
+In this notebook you will create numerous functions, all of which have a single parameter `data`.
+
+Running the code cell below will assign to `latest` an example of an argument suitable for passing to each function as the `data` parameter. You'll see after each incomplete function a code cell which will call that function using `latest`, so that you can check your function is working as expected. **Don't change the function names**.
+
+The dataset, which relates to Coronavirus cases across the world, was taken from [worldmeters.info](https://www.worldometers.info/coronavirus/#countries) on February 19th 2020.
+
+We have used the `pandas` package for convenience to import and process the dataset from the `corona.csv` file, which you can examine via Jupyter or a spreadsheet application if you want to.
+
+There's no need to understand the `pandas` code cell yet, although feel free to read it and have a think about what it's likely to be doing; you'll learn more about that later. **Complete the subsequent exercises using Python only**.
+
+```{python}
+import pandas as pd
+
+df = pd.read_csv('data/corona.csv').fillna(0).astype(dtype = int, errors='ignore')\
+    .sort_values(by='Total Cases', ascending=False)
+
+latest = df.to_dict('list')
+```
+
+`latest` is a dictionary, where each key is a column heading in the CSV, and each value is a list containing the values in the given column from each row of the CSV:
+
+```{python}
+latest.keys()
+```
+
+We can therefore access the column and cell values as follows:
+
+```{python}
+print(latest['Country'])
+```
+
+... and elements at a given position in all of the lists are from the same row of the CSV:
+
+```{python}
+print(latest['Country'][0])
+print(latest['Total Cases'][0])
+```
+
+**When writing your functions, you can assume that the dataset will be ordered by `Total Cases`**, with the data for the countries highest number of cases coming first in each list. The number of rows in the CSV file may change, but the lengths of each resulting list (i.e. column) will always be the same as one another.
+
+Your goal is to make a set of functions that can be re-used on any CSV file which is in the same format as `corona.csv` and as described above; thus if `corona.csv` were updated, all of your functions could be re-used to gather the same metrics as before.
+
+We encourage you to re-use previous functions within other functions where possible.
+
+Create a function which returns the worldwide number of reported cases, i.e. the sum of `Total Cases`:
+
+```{python}
+def case_count(data):    
+    # Add your code below 
+    raise NotImplementedError
+```
+
+You can test your function using the following cell:
+
+```{python}
+# case_count(latest)
+```
+
+Create a function which returns the number of countries which have reported cases, i.e. the number of countries listed in the table (`Diamond Princess` can be treated as a country for all functions):
+
+```{python}
+def country_count(data):
+    # Add your code below
+    raise NotImplementedError
+```
+
+You can test your function using the following cell:
+
+```{python}
+# country_count(latest)
+```
+
+Create a function which returns the average number of cases over all listed countries:
+
+```{python}
+def average_cases(data):
+    raise NotImplementedError
+```
+
+You can test your function using the following cell:
+
+```{python}
+# average_cases(latest)
+```
+
+Create a function which returns the number of countries where `Total Cases` equals `1`:
+
+```{python}
+def single_case_country_count(data):
+    # Add your code below
+    raise NotImplementedError
+```
+
+You can test your function using the following cell:
+
+```{python}
+# single_case_country_count(latest)
+```
+
+Create a function which returns a list of countries the number of cases is equal to one:
+
+Hint: you can use the `zip()` function in Python to iterate over two lists at the same time.
+
+```{python}
+def single_case_countries(data):
+    # Add your code below
+    raise NotImplementedError
+```
+
+You can test your function using the following cell:
+
+```{python}
+# single_case_countries(latest)
+```
+
+Create a function which returns a list of countries in which there are still active cases, i.e. where `Total Cases` minus `Total Deaths` exceeds `Recovered`. You may find the `enumerate()` Python function helpful.    
+
+```{python}
+def active_countries(data):
+    # Add your code below
+    raise NotImplementedError
+```
+
+You can test your function using the following cell:
+
+```{python}
+# active_countries(latest)
+```
+
+Create a function which returns a list of countries where there are no longer any active cases:
+
+```{python}
+def cleared_countries(data):
+    # Add your code below
+    raise NotImplementedError
+```
+
+You can test your function using the following cell:
+
+```{python}
+# cleared_countries(latest)
+```
+
+The following exercise is a bit more involved. Feel free to write all of your code in the single function `less_than_ship()`, or write some additional 'helper' functions (but ensure that any such functions are implemented before `less_than_ship()` in the notebook cell).
+
+Create a function called `less_than_ship()` which returns a string in the following format:
+
+    'The Diamond Princess has had more cases than <xxx> combined.'
+    
+`<xxx>` should be in the format `CountryOne, CountryTwo, ..., PenultimateCountry and LastCountry` and should involve as many countries as possible.
+
+For example,  
+
+    'The Diamond Princess has had more cases than Egypt, Canada and Sweden combined.'
+    
+Notice that there is no comma after the penultimate country. 
+
+You can assume that there will always be at least three countries whose combined total is less than `Diamond Princess`.
+
+The function `get_diamond_princess_cases` will give you the number of cases for the `Diamond Princess`.
+
+**Be careful not to modify the order of the lists in `latest`**. You may find the accepted (first) answer to [this question](https://stackoverflow.com/questions/529424/traverse-a-list-in-reverse-order-in-python) on Stack Overflow useful.
+
+```{python}
+def get_diamond_princess_cases(data):
+    for country, cases in zip(data["Country"], data["Total Cases"]):
+        if country == "Diamond Princess":
+            return cases
+
+def less_than_ship(data):
+    # Add your code below 
+    raise NotImplementedError
+```
+
+You can test your function using the following cell:
+
+```{python}
+# less_than_ship(latest)
+```
+
+## Further Study & Practice
+
+If you have time, here are some additional resources to look at and exercises to try.
+
+#### a) Python Style Guide
+
+You may have started to consider how your code looks to others, or whether there are any conventions regarding things such as variable naming, line breaks, comments which you should be following.  
+
+After having a look over the [PEP 8 Style Guide](https://www.python.org/dev/peps/pep-0008/), go through your code above and make any changes you think are appropriate. Consider whether it would help others or your future self to add any explanatory comments to aid understanding of what your code is doing.
+
+#### b) More Robust Functions
+
+In order to make the above exercises a little easier, we highlighted some assumptions that could be made about the dataset:
+
+- It is ordered by `Total Cases`, with countries with the most cases coming first
+- There are at least three countries whose combined number of cases is less than that of `Diamond Princess`)
+
+Make a copy of this notebook and update your functions so that they can accomodate a version of `latest` in which these assumptions do not necessarily hold.  
+
+It may be that you decide to do this (in part or in full) by adding some 'helper' functions which are then called by the original functions; this is fine, but ensure that they come before any original functions which depend on them.
+
+To take the exercise further, consider other issues that might arise with the dataset (missing columns, unusual values, etc) and how these could affect your functions. 
+
+Think about what checks you could introduce such that if `latest` is incompatible with or unsuitable for a particular function, the function 'fails gracefully', returning an informative message to the user about why it hasn't worked as expected.
+
+If you would like to test your functions with a version of `latest` where the rows are in a different order, change `Total Cases` in the first code cell to `Country`, i.e.
+
+    .sort_values(by='Country', ascending=False)
+    
+#### c) Using Pandas
+
+**Only if you have already started learning Pandas**, make a copy of this notebook and have a go at writing the functions again, using Pandas.  
+
+To do so, in the top code cell change `df` to `latest` and remove the final line(`latest = df.to_dict('list')`). 
+
+`latest` will now be a DataFrame, rather than a dictionary of lists. 
+
+The subsequent code cells before the functions where the original `latest` is examined will not work, so delete them or replace the code with your own statements for examining the DataFrame.
+

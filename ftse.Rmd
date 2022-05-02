@@ -1,0 +1,174 @@
+---
+title: An R Markdown document converted from "resources/ftse.ipynb"
+output: html_document
+---
+
+# FTSE Market Summary & Portfolio Analysis
+
+KATE expects your code to define variables with specific names that correspond to certain things we are interested in.
+
+KATE will run your notebook from top to bottom and check the latest value of those variables, so make sure you don't overwrite them.
+
+* Remember to uncomment the line assigning the variable to your answer and don't change the variable or function names.
+* Use copies of the original or previous DataFrames to make sure you do not overwrite them by mistake.
+
+You will find instructions below about how to define each variable.
+
+Once you're happy with your code, upload your notebook to KATE to check your feedback.
+
+```{python}
+import pandas as pd
+```
+
+First, take a look at the dataset called `FTSE100.csv` (consider using the `.read_csv`, `.head`, and `.info` methods) in a notebook. This dataset is provided in the zip with this project.
+
+```{python}
+df = pd.read_csv('data/FTSE100.csv')
+df.head()
+```
+
+## 1. Tidy Data
+
+
+The dataset has a column with only `n/a` values, and also 101 rows (you may have been expecting 100!). This is because one of the companies (Royal Dutch Shell) has two entries. We can get rid of the first instance of these (RDSA).
+
+Starting from a copy of `df`, create a new dataFrame called `clean_df` with the following changes:
+- Drop the row with a `Ticker` value of `RDSA`
+- Drop the `Strong Buy` column
+
+```{python}
+# Add your code here
+
+# Make sure you call your new dataframe clean_df
+# clean_df = ...
+```
+
+## 2. Change Column Data Type
+
+Look at the values in the `Mid-price (p)` column. At first glance they may look like floats but in fact they have been interpreted as text. We need to change them to floats for them to be more useful.
+
+Starting from a copy of `clean_df`, create a new DataFrame called  `price_df` with the following change:
+
+- Convert the values in the `Mid-price (p)` column to floats (keeping the column in the same place)
+
+*Hint: converting directly to a float may not work if there are commas in the strings; you may find the [str.replace](https://docs.python.org/3/library/stdtypes.html#str.replace) method useful for fixing this before conversion.*
+
+```{python}
+# Add your code here
+
+# Make sure you call your new dataframe price_df
+# price_df = ...
+```
+
+## 3. Format Change Values
+
+Take a look at the values in the `Change` column. You'll see that they are in an inconsistent format, and stored as strings. The positive values need to be multiplied by 100. The negative values need to have the `%` sign removed.
+
+**Part 1:** Create a function called `format_change` which takes a string such as those in the Change column and does the following:
+1. if the last character is a % sign, remove it 
+2. convert the string to a float
+3. if that float is posiive, multiply it by 100
+4. return the resulting float
+
+```{python}
+# Add your code below
+# def format_change(string):
+#      pass
+```
+
+You can check that your function works as expected below:
+
+```{python}
+# Uncomment the code below to test your function
+# format_change('0.45%')
+```
+
+**Part 2:** Starting from a copy of `price_df`, create a new DataFrame called  `change_df` with a new column called `Change (%)`:
+
+- This should contain the result returned from the function created above when given the original `Change` column value as the argument.
+  
+
+```{python}
+# Make sure you call your new dataframe change_df
+# change_df = ...
+```
+
+## 4. Holding Summary
+
+We are given the details of a share holding in a tuple, containing the company ticker code, number of shares, and price paid, defined below:
+
+```{python}
+holding = ('BP.', 500, 1535.21)
+```
+
+Starting from the `holding` above and `change_df`, build a new dictionary containing the following keys and the appropriate values in the given data formats.
+
+```
+{    
+    holding_cost: float,    
+    # The cost (in £, not pence) of the holding (number of shares * price paid)
+    holding_value: float,    
+    # The value (in £, not pence) of the holding (number of shares * current mid-price) 
+    change_in_value: float,    
+    # The percentage change from the original cost of the holding to the current value  
+    (e.g. if the holding_value is 1.2 * the holding_cost, the change_in_value should equal 20.0)
+    
+}
+```
+
+Call this dictionary `holding_dict`
+
+```{python}
+# Add your code here
+
+# Make sure you call your new dictionary holding_dict
+# holding_dict = ...
+
+```
+
+## 5. Market Comparison
+
+Provided with the DataFrame you processed above, `change_df`, we would like to compare the % change in the mid-price for each company to the average % change for all companies in the market, along with a summary of the broker recommendations.
+
+Create a DataFrame called `comparison_df` with the following columns added to a copy of `change_df`: 
+
+- 'Beat Market'    # This should be a Boolean column with `True` for stocks where `Change (%)` exceeds that of the average market change
+- 'Buy Ratio'    # This should equal the `Buy` column divided by the `Brokers` column.
+
+*Hint: Calculate the average market change % first then compare each value in the Change (%) column to that when creating the new column.*
+
+```{python}
+# Add your code here
+# Make sure you call your new dataframe comparison_df
+# comparison_df = ...
+```
+
+## 6. Investigate
+
+We want to identify any companies which match a given set of rules, so that we can look into them further.   
+
+We want to identify companies in `watchlist` that meet at least one of the following requirements:
+
+i) Any company in `watchlist` whose prices is equal to or lower than the given target price.
+
+ii) Any company in `watchlist` where `Buy Ratio` is 0.5 or greater.
+
+Using the `watchlist` below and `comparison_df` you defined, create a list of companies meeting the requirements, call this list `companies_list`. The list should only have the company names, not the price.
+
+Note: **A company meeting both requirements should only appear once in the list**.
+
+*Hint: create an empty list to add company names to, using a loop to work through the watchlist. If you want to get the first item in a series of values (such as a column of a filtered dataframe), you can use* `.values[0]` *on the column.*
+
+```{python}
+watchlist = [('TUI', 820.0), ('Whitbread', 4300.0), ('AstraZeneca', 7500.0), 
+             ('Standard Chartered', 920.0), ('Barclays', 135.5)]
+```
+
+```{python}
+# Add your code here
+
+# Make sure you call your new list companies_list
+# companies_list = ...
+
+```
+
