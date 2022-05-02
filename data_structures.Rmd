@@ -1,18 +1,10 @@
 ---
-title: An R Markdown document converted from "data_structures.ipynb"
+title: The R version of: "data_structures.ipynb"
 output: html_document
 ---
 
-# Exercises: Python Data Structures
+# Exercises: ~~Python~~ R Data Structures
 
-Work through the notebook, finding the answers to the questions programatically and assigning the values to the given variable names (don't change these names). Some questions will incorporate the answers found in previous questions.
-
-You will find instructions below about how to define each variable.
-
-Once you're happy with your code, submit your notebook to **KATE** to see how you have done!
-
-<br>
-<br>
 
 The following variables are assigned values below:
 
@@ -23,25 +15,25 @@ The following variables are assigned values below:
 
 You should write your code on the assumption that these variables could be assigned different values of the same type (as shown in the parentheses above) and still work to find the answers appropriate for those given values.
 
-KATE expects your code to define variables with specific names that correspond to certain things we are interested in.
-
-KATE will run your notebook from top to bottom and check the latest value of those variables, so make sure you don't overwrite them.
-
-* Remember to uncomment the line assigning the variable to your answer and don't change the variable or function names.
-* Use copies of the original or previous DataFrames to make sure you do not overwrite them by mistake.
 
 You will find instructions below about how to define each variable.
 
 Once you're happy with your code, upload your notebook to KATE to check your feedback.
 
+
 ```{python}
 letters = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', \
            'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm']
-
 storm_names = 'Atiyah, Brendan, Clara, Dennis, Ellen, Francis, Gerda, Hugh, Iris, Jan, \
 Kitty, Liam, Maura, Noah, Olivia, Piet, Roisin, Samir, Tara, Vince, Willow'
-
 wind_speeds = [65, 77, 94, 102, 85]
+```
+
+```{r}
+letters <-  c('q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 
+           'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm')
+storm_names <-  'Atiyah, Brendan, Clara, Dennis, Ellen, Francis, Gerda, Hugh, Iris, Jan, Kitty, Liam, Maura, Noah, Olivia, Piet, Roisin, Samir, Tara, Vince, Willow'
+wind_speeds <-  c(65, 77, 94, 102, 85)
 ```
 
 **Q1.** Use the `.split()` method to create a list called `storm_list` from the `storm_names` string. 
@@ -53,6 +45,13 @@ Each item in the list should be the name only, without any spaces or commas with
 # storm_list = ...
 storm_list = storm_names.split(', ')
 ```
+
+```{r}
+library(tidyverse)
+storm_list <- storm_names %>% 
+    strsplit(split = ", ") 
+```
+
 
 **Q2.** Use slice notation:
 
@@ -68,6 +67,13 @@ The first answer on [this page](https://stackoverflow.com/questions/509211/under
 storms_slice = storm_list[0:9:2]
 ```
 
+```{r}
+# create the sequence of indices
+indices <- seq.int(1, 9, 2)
+# subset the vector with those indices
+storms_slice <- storm_list[indices]
+```
+
 **Q3.** Use the Python `sorted()` function to create a list called `alphabet` from the `letters` list, where the values are in alphabetical order.
 
 *The reason we suggest using the `sorted()` function here rather than the `.sort()` list method is that `sorted()` automatically creates a copy of `letters`, whereas `.sort()` sorts 'inplace', i.e. the original list would be modified rather than a new list created.*
@@ -78,12 +84,21 @@ alphabet = sorted(letters)
 alphabet
 ```
 
+```{r}
+alphabet <- sort(letters)
+```
+
+
 **Q4.** Find the index of the letter 'd' in the list `alphabet` and assign it to the variable `index_d`:
 
 ```{python}
 # Add your code below
 index_d = alphabet.index('d')
 index_d
+```
+
+```{r}
+which(alphabet == "d")
 ```
 
 **Q5.** How many names are there in `storm_list`? Assign your answer to `number_of_names`:
@@ -94,6 +109,11 @@ number_of_names = len(storm_list)
 number_of_names
 ```
 
+
+```{r}
+number_of_names <- length(storm_list)
+```
+
 **Q6.** What's the 17th storm name in `storm_list`? Assign your answer to `storm_17`:
 
 ```{python}
@@ -101,6 +121,12 @@ number_of_names
 storm_17 = storm_list[16]
 storm_17
 ```
+
+```{r}
+# R count from 1
+storm_list[17]
+```
+
 
 **Q7.** Notice that there is no entry in `storm_list` that begins with 'Q'(which is the 17th letter of the alphabet).
 
@@ -112,6 +138,11 @@ Write some code which creates a copy of the `storm_list` variable called `storm_
 # Add your code below
 storm_list_extra = storm_list.copy()
 storm_list_extra.append('Quentin')
+```
+
+
+```{r}
+storm_list_extra = append(storm_list, values = "Quentin")
 ```
 
 **Q8.** On reflection, appending a new value to the list was not the best approach as the resulting list is no longer alphabetical. 
@@ -129,6 +160,11 @@ storm_list_redux.insert(16, 'Quentin')
 storm_list_redux
 ```
 
+```{r}
+storm_list_redux <- append(storm_list, values = 'Quentin', after = 16)
+```
+
+
 **Q9.** What's the average of the values in the `wind_speeds`list? 
 
 Assign your answer to `avg_max_wind`. You may find the `len()` and `sum()` functions useful, although feel free to not to if you have another way:
@@ -139,12 +175,20 @@ avg_max_wind = sum(wind_speeds) / len(wind_speeds)
 avg_max_wind
 ```
 
+```{r}
+avg_max_wind <- mean(wind_speeds, na.rm = TRUE)
+```
+
 **Q10.** The `wind_speeds` list gives us data for all the storms in `storm_list` that have happened so far, starting from the name beginning with `A`. Write some code to assign to `next_storm` what the name of the next storm will be:
 
 ```{python}
 # Add your code below
 # next_storm = ...
 next_storm  = storm_list[len(wind_speeds)]
+next_storm
+```
+```{r}
+next_storm  = storm_list[[1]][length(wind_speeds) + 1]
 next_storm
 ```
 
@@ -158,6 +202,11 @@ Assign this list to the variable `remaining_storms`:
 # Add your code below
 remaining_storms = storm_list[len(wind_speeds):len(storm_list)]
 remaining_storms
+```
+```{r}
+next_storm_index <-  match(next_storm, storm_list[[1]])
+remaining_storms <- storm_list[[1]][next_storm_index:length(storm_list[[1]])]
+
 ```
 
 **Q12.** Which storm has had the highest wind speed? 
@@ -175,7 +224,6 @@ windiest_storm
 ```{python}
 # Add your code below
 unused_names = storm_list[-5:]
-
 unused_names.sort(reverse = True)
 unused_names
 ```
@@ -259,11 +307,8 @@ Then, for any questions where your working has involved more than one line of co
 '''
 storm_names = 'Alberto, Beryl, Chris, Debby, Ernesto, Florence, Gordon, Helene, Isaac, Joyce, \
 Kirk, Leslie, Michael, Nadine, Oscar, Patty, Rafael, Sandy, Tony, Valerie, William'
-
 letters = ['m', 'n', 'b', 'v', 'c', 'x', 'z', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', \
 'p', 'o', 'i', 'u', 'y', 't', 'r', 'e', 'w', 'q']
-
 wind_speeds = [99, 78, 85, 107, 114, 94, 89, 121, 108]
 '''
 ```
-
