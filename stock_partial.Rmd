@@ -79,6 +79,7 @@ head(df)
 ```
 
 
+
 Avoid modifying `df` itself in the subsequent questions.
 
 ## Dataset stats
@@ -89,7 +90,7 @@ Store the answer in a variable called `mean_adj_close`
 
 ```{python}
 # Add your code below
-mean_adj_close = df['Adj Close'].mean()
+# mean_adj_close = ...
 ```
 
 #### 2. What's the minimum value in the `Low` column?
@@ -98,7 +99,7 @@ Store the answer in a variable called `min_low`
 
 ```{python}
 # Add your code below
-min_low = df['Low'].min()
+# min_low = ...
 ```
 
 #### 3. What's the maximum value in the `High` column?
@@ -107,7 +108,7 @@ Store the answer in a variable called `max_high`
 
 ```{python}
 # Add your code below
-max_high = df['High'].max()
+# max_high = ...
 ```
 
 #### 4. What's the difference between `min_low` and `max_high`?  
@@ -116,7 +117,7 @@ Store the answer in a variable called `price_range`
 
 ```{python}
 # Add your code below
-price_range = max_high - min_low
+# price_range = ...
 ```
 
 #### 5. How many rows are there in the DataFrame?
@@ -125,7 +126,7 @@ Store the answer in a variable called `entries`
 
 ```{python}
 # Add your code below
-entries = df.shape[0]
+# entries = ...
 ```
 
 #### 6. On how many days (i.e. number of rows) was `Change %` greater than zero?
@@ -134,8 +135,7 @@ Store the answer in a variable called `positive_days`
 
 ```{python}
 # Add your code below
-positive_days = df[df['Change %'] > 0].shape[0]
-positive_days
+# positive_days = ...
 ```
 
 #### 7. On how many days (i.e. number of rows) has `Adj Close` been greater than the value in the final row?
@@ -146,8 +146,7 @@ Store the answer in a variable called `days_higher`
 
 ```{python}
 # Add your code below
-days_higher = df[df['Adj Close'] > df['Adj Close'].iloc[-1]].shape[0]
-days_higher
+# days_higher = ...
 ```
 
 ## Dataset sorting and filtering
@@ -158,8 +157,7 @@ Use `set_index('Date', inplace=True)` to set the `Date` column as the row index.
 
 ```{python}
 # Add your code below
-df_2020 = df[df['Year'] == 2020]
-df_2020.set_index('Date', inplace=True)
+# df_2020 = ...
 ```
 
 #### 9. Continuing with `df_2020`, calculate the `.mean()` of `Change %` for entries where `Weekday == Monday`.
@@ -168,14 +166,12 @@ Store the value in a variable called `mean_change_mon_2020`.
 
 ```{python}
 # Add your code below
-mean_change_mon_2020 = df_2020[df_2020['Weekday'] == 'Monday']['Change %'].mean()
-mean_change_mon_2020
 ```
 
 When you have calculated `mean_change_mon_2020`, uncomment and run the cell below to view its value:
 
 ```{python}
-mean_change_mon_2020
+# mean_change_mon_2020
 ```
 
 #### 10. Calculate the sum of the `Volume` column in `df_2020` for entries where `Month == 3`.
@@ -184,13 +180,12 @@ Store the value in a variable called `total_volume_march_2020`.
 
 ```{python}
 # Add your code below
-total_volume_march_2020 = df_2020[df_2020['Month'] == 3]['Volume'].sum()
 ```
 
 When you have calculated `total_volume_march_2020`, uncomment and run the cell below to view its value:
 
 ```{python}
-total_volume_march_2020
+# total_volume_march_2020
 ```
 
 #### 11. Using `df_2020`, determine when `Adj Close` was the highest.
@@ -202,14 +197,12 @@ Store the value in a variable called `year_high_timestamp`
 
 ```{python}
 # Add your code below
-year_high_timestamp = df_2020['Adj Close'].idxmax()
-year_high_timestamp
 ```
 
 `year_high_timestamp` should be a pandas `Timestamp` object. Once you have calculated `year_high_timestamp`, uncomment and run the following cell (it should evaluate to `True`):
 
 ```{python}
-type(year_high_timestamp) == pd._libs.tslibs.timestamps.Timestamp
+# type(year_high_timestamp) == pd._libs.tslibs.timestamps.Timestamp
 ```
 
 *For future reference, to extract a string from a Timestamp object in your preferred format, the [.strftime()](https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior) method may be useful.*
@@ -221,7 +214,6 @@ type(year_high_timestamp) == pd._libs.tslibs.timestamps.Timestamp
 
 ```{python}
 # Add your code below
-df_top_10 = df.sort_values('Change %', ascending = False).head(10)
 ```
 
 #### 13. How many entries in `df_top_10` were *not* on a Monday?
@@ -229,13 +221,12 @@ Store the value in a variable called `top_10_not_mon`
 
 ```{python}
 # Add your code below
-top_10_not_mon = sum(df_top_10['Weekday'] != 'Monday')
 ```
 
 When you have calculate `top_10_not_mon`, uncomment and run the cell below to inspect it:
 
 ```{python}
-top_10_not_mon
+# top_10_not_mon
 ```
 
 ## Dataset manipulation
@@ -249,15 +240,12 @@ top_10_not_mon
 
 ```{python}
 # Add your code below
-df_var = df.copy()
-df_var['Variation %'] = ((df_var['High'] -df_var['Low'] ) / df_var['Close']) * 100
 ```
 
 Once you have calculated `df_var`, you can uncomment and run the cell below to inspect it:
 
 ```{python}
-
-df_var.head()
+# df_var.head()
 ```
 
 #### 15. Create a new DataFrame called `df_var_value`, which the same as `df_var` but with an additional column `Traded Value`, equal to:
@@ -267,13 +255,11 @@ df_var.head()
 
 ```{python}
 # Add your code below
-df_var_value = df_var.copy()
-df_var_value['Traded Value'] = df_var_value['Volume'] * df_var_value['Adj Close']
 ```
 
 Now uncomment and run the cell below to view `df_var_value`:
 
 ```{python}
-df_var_value.head()
+# df_var_value.head()
 ```
 
