@@ -11,7 +11,7 @@
 
 
 
-<title>An R Markdown document converted from “data_structures.ipynb”</title>
+<title>The R version of “data_structures.ipynb”</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -361,7 +361,7 @@ pre code {
 
 
 
-<h1 class="title toc-ignore">An R Markdown document converted from
+<h1 class="title toc-ignore">The R version of
 “data_structures.ipynb”</h1>
 
 </div>
@@ -385,13 +385,28 @@ those given values.</p>
 variable.</p>
 <p>Once you’re happy with your code, upload your notebook to KATE to
 check your feedback.</p>
+<pre class="r"><code>#R
+library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──</code></pre>
+<pre><code>## ✔ ggplot2 3.3.5     ✔ purrr   0.3.4
+## ✔ tibble  3.1.6     ✔ dplyr   1.0.9
+## ✔ tidyr   1.2.0     ✔ stringr 1.4.0
+## ✔ readr   2.1.2     ✔ forcats 0.5.1</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::filter() masks stats::filter()
+## ✖ dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(reticulate)
+use_condaenv(&#39;ds01&#39;)</code></pre>
 <pre class="python"><code>letters = [&#39;q&#39;, &#39;w&#39;, &#39;e&#39;, &#39;r&#39;, &#39;t&#39;, &#39;y&#39;, &#39;u&#39;, &#39;i&#39;, &#39;o&#39;, &#39;p&#39;, &#39;a&#39;, &#39;s&#39;, &#39;d&#39;, \
            &#39;f&#39;, &#39;g&#39;, &#39;h&#39;, &#39;j&#39;, &#39;k&#39;, &#39;l&#39;, &#39;z&#39;, &#39;x&#39;, &#39;c&#39;, &#39;v&#39;, &#39;b&#39;, &#39;n&#39;, &#39;m&#39;]
-
 storm_names = &#39;Atiyah, Brendan, Clara, Dennis, Ellen, Francis, Gerda, Hugh, Iris, Jan, \
 Kitty, Liam, Maura, Noah, Olivia, Piet, Roisin, Samir, Tara, Vince, Willow&#39;
-
 wind_speeds = [65, 77, 94, 102, 85]</code></pre>
+<pre class="r"><code>#R
+letters &lt;-  c(&#39;q&#39;, &#39;w&#39;, &#39;e&#39;, &#39;r&#39;, &#39;t&#39;, &#39;y&#39;, &#39;u&#39;, &#39;i&#39;, &#39;o&#39;, &#39;p&#39;, &#39;a&#39;, &#39;s&#39;, &#39;d&#39;, 
+           &#39;f&#39;, &#39;g&#39;, &#39;h&#39;, &#39;j&#39;, &#39;k&#39;, &#39;l&#39;, &#39;z&#39;, &#39;x&#39;, &#39;c&#39;, &#39;v&#39;, &#39;b&#39;, &#39;n&#39;, &#39;m&#39;)
+storm_names &lt;-  &#39;Atiyah, Brendan, Clara, Dennis, Ellen, Francis, Gerda, Hugh, Iris, Jan, Kitty, Liam, Maura, Noah, Olivia, Piet, Roisin, Samir, Tara, Vince, Willow&#39;
+wind_speeds &lt;-  c(65, 77, 94, 102, 85)</code></pre>
 <p><strong>Q1.</strong> Use the <code>.split()</code> method to create a
 list called <code>storm_list</code> from the <code>storm_names</code>
 string.</p>
@@ -400,6 +415,9 @@ commas within each pair of quotation marks:</p>
 <pre class="python"><code># Add your code below
 # storm_list = ...
 storm_list = storm_names.split(&#39;, &#39;)</code></pre>
+<pre class="r"><code>#R
+storm_list &lt;- storm_names %&gt;% 
+    strsplit(split = &quot;, &quot;) </code></pre>
 <p><strong>Q2.</strong> Use slice notation:</p>
 <pre class="python"><code>a_list[start:stop:step]</code></pre>
 <p>to retrieve the storm names from <code>storm_list</code> which are in
@@ -413,6 +431,11 @@ useful as you learn and work with Python!) has a very good explanation
 of the <code>slice</code> syntax.</p>
 <pre class="python"><code># Add your code below
 storms_slice = storm_list[0:9:2]</code></pre>
+<pre class="r"><code>#R
+# create the sequence of indices
+indices &lt;- seq.int(1, 9, 2)
+# subset the vector with those indices
+storms_slice &lt;- storm_list[indices]</code></pre>
 <p><strong>Q3.</strong> Use the Python <code>sorted()</code> function to
 create a list called <code>alphabet</code> from the <code>letters</code>
 list, where the values are in alphabetical order.</p>
@@ -426,6 +449,8 @@ created.</em></p>
 alphabet = sorted(letters)
 alphabet</code></pre>
 <pre><code>## [&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;, &#39;g&#39;, &#39;h&#39;, &#39;i&#39;, &#39;j&#39;, &#39;k&#39;, &#39;l&#39;, &#39;m&#39;, &#39;n&#39;, &#39;o&#39;, &#39;p&#39;, &#39;q&#39;, &#39;r&#39;, &#39;s&#39;, &#39;t&#39;, &#39;u&#39;, &#39;v&#39;, &#39;w&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;]</code></pre>
+<pre class="r"><code>#R
+alphabet &lt;- sort(letters)</code></pre>
 <p><strong>Q4.</strong> Find the index of the letter ‘d’ in the list
 <code>alphabet</code> and assign it to the variable
 <code>index_d</code>:</p>
@@ -433,6 +458,9 @@ alphabet</code></pre>
 index_d = alphabet.index(&#39;d&#39;)
 index_d</code></pre>
 <pre><code>## 3</code></pre>
+<pre class="r"><code>#R
+which(alphabet == &quot;d&quot;)</code></pre>
+<pre><code>## [1] 4</code></pre>
 <p><strong>Q5.</strong> How many names are there in
 <code>storm_list</code>? Assign your answer to
 <code>number_of_names</code>:</p>
@@ -440,6 +468,8 @@ index_d</code></pre>
 number_of_names = len(storm_list)
 number_of_names</code></pre>
 <pre><code>## 21</code></pre>
+<pre class="r"><code>#R
+number_of_names &lt;- length(storm_list)</code></pre>
 <p><strong>Q6.</strong> What’s the 17th storm name in
 <code>storm_list</code>? Assign your answer to
 <code>storm_17</code>:</p>
@@ -447,6 +477,11 @@ number_of_names</code></pre>
 storm_17 = storm_list[16]
 storm_17</code></pre>
 <pre><code>## &#39;Roisin&#39;</code></pre>
+<pre class="r"><code># R
+#count from 1
+storm_list[17]</code></pre>
+<pre><code>## [[1]]
+## NULL</code></pre>
 <p><strong>Q7.</strong> Notice that there is no entry in
 <code>storm_list</code> that begins with ‘Q’(which is the 17th letter of
 the alphabet).</p>
@@ -459,6 +494,8 @@ list.</p>
 <pre class="python"><code># Add your code below
 storm_list_extra = storm_list.copy()
 storm_list_extra.append(&#39;Quentin&#39;)</code></pre>
+<pre class="r"><code>#R
+storm_list_extra = append(storm_list, values = &quot;Quentin&quot;)</code></pre>
 <p><strong>Q8.</strong> On reflection, appending a new value to the list
 was not the best approach as the resulting list is no longer
 alphabetical.</p>
@@ -477,6 +514,8 @@ storm_list_redux = storm_list.copy()
 storm_list_redux.insert(16, &#39;Quentin&#39;)
 storm_list_redux</code></pre>
 <pre><code>## [&#39;Atiyah&#39;, &#39;Brendan&#39;, &#39;Clara&#39;, &#39;Dennis&#39;, &#39;Ellen&#39;, &#39;Francis&#39;, &#39;Gerda&#39;, &#39;Hugh&#39;, &#39;Iris&#39;, &#39;Jan&#39;, &#39;Kitty&#39;, &#39;Liam&#39;, &#39;Maura&#39;, &#39;Noah&#39;, &#39;Olivia&#39;, &#39;Piet&#39;, &#39;Quentin&#39;, &#39;Roisin&#39;, &#39;Samir&#39;, &#39;Tara&#39;, &#39;Vince&#39;, &#39;Willow&#39;]</code></pre>
+<pre class="r"><code>#R
+storm_list_redux &lt;- append(storm_list, values = &#39;Quentin&#39;, after = 16)</code></pre>
 <p><strong>Q9.</strong> What’s the average of the values in the
 <code>wind_speeds</code>list?</p>
 <p>Assign your answer to <code>avg_max_wind</code>. You may find the
@@ -486,6 +525,8 @@ feel free to not to if you have another way:</p>
 avg_max_wind = sum(wind_speeds) / len(wind_speeds)
 avg_max_wind</code></pre>
 <pre><code>## 84.6</code></pre>
+<pre class="r"><code>#R
+avg_max_wind &lt;- mean(wind_speeds, na.rm = TRUE)</code></pre>
 <p><strong>Q10.</strong> The <code>wind_speeds</code> list gives us data
 for all the storms in <code>storm_list</code> that have happened so far,
 starting from the name beginning with <code>A</code>. Write some code to
@@ -496,6 +537,10 @@ be:</p>
 next_storm  = storm_list[len(wind_speeds)]
 next_storm</code></pre>
 <pre><code>## &#39;Francis&#39;</code></pre>
+<pre class="r"><code>#R
+next_storm  = storm_list[[1]][length(wind_speeds) + 1]
+next_storm</code></pre>
+<pre><code>## [1] &quot;Francis&quot;</code></pre>
 <p><strong>Q11.</strong> If <code>wind_speeds</code> contains values for
 the storms which have happened so far, write some code that uses list
 indexing to create a list of the storms in <code>storm_list</code> which
@@ -507,6 +552,9 @@ first element in the list.</p>
 remaining_storms = storm_list[len(wind_speeds):len(storm_list)]
 remaining_storms</code></pre>
 <pre><code>## [&#39;Francis&#39;, &#39;Gerda&#39;, &#39;Hugh&#39;, &#39;Iris&#39;, &#39;Jan&#39;, &#39;Kitty&#39;, &#39;Liam&#39;, &#39;Maura&#39;, &#39;Noah&#39;, &#39;Olivia&#39;, &#39;Piet&#39;, &#39;Roisin&#39;, &#39;Samir&#39;, &#39;Tara&#39;, &#39;Vince&#39;, &#39;Willow&#39;]</code></pre>
+<pre class="r"><code>#R
+next_storm_index &lt;-  match(next_storm, storm_list[[1]])
+remaining_storms &lt;- storm_list[[1]][next_storm_index:length(storm_list[[1]])]</code></pre>
 <p><strong>Q12.</strong> Which storm has had the highest wind speed?</p>
 <p>Assign your answer to <code>windiest_storm</code>. You may find the
 Python <code>max()</code> function useful, along with the
@@ -515,6 +563,8 @@ Python <code>max()</code> function useful, along with the
 windiest_storm = storm_list[wind_speeds.index(max(wind_speeds))]
 windiest_storm</code></pre>
 <pre><code>## &#39;Dennis&#39;</code></pre>
+<pre class="r"><code>#R
+windiest_storm &lt;- storm_list[[1]][which.max(wind_speeds)]</code></pre>
 <p><strong>Q13.</strong> It is predicted that the final five names in
 <code>storm_list</code> will not be used this year. Create a list called
 <code>unused_names</code> which contains only these names and then
@@ -522,10 +572,14 @@ reverse the order of the names (so that the entry beginning with
 <code>W</code> comes first):</p>
 <pre class="python"><code># Add your code below
 unused_names = storm_list[-5:]
-
 unused_names.sort(reverse = True)
 unused_names</code></pre>
 <pre><code>## [&#39;Willow&#39;, &#39;Vince&#39;, &#39;Tara&#39;, &#39;Samir&#39;, &#39;Roisin&#39;]</code></pre>
+<pre class="r"><code>#R
+storm_list[[1]] %&gt;% 
+    tail(5) %&gt;% 
+    rev()</code></pre>
+<pre><code>## [1] &quot;Willow&quot; &quot;Vince&quot;  &quot;Tara&quot;   &quot;Samir&quot;  &quot;Roisin&quot;</code></pre>
 <p><strong>Q14.</strong> Create a dictionary called
 <code>storm_dict</code> where the keys are from <code>storm_list</code>
 and the values are the corresponding values from
@@ -541,6 +595,28 @@ can you work out from the documentation how this could be achieved?</p>
 storm_dict = dict(zip(storm_list, wind_speeds))
 storm_dict</code></pre>
 <pre><code>## {&#39;Atiyah&#39;: 65, &#39;Brendan&#39;: 77, &#39;Clara&#39;: 94, &#39;Dennis&#39;: 102, &#39;Ellen&#39;: 85}</code></pre>
+<pre class="r"><code>#R
+# equivalent of a dict in R is a named list
+
+l &lt;- length(wind_speeds)
+storm_dict &lt;- wind_speeds %&gt;% as.list()
+stormnames &lt;- storm_list[[1]][1:l]
+names(storm_dict) &lt;- stormnames
+storm_dict</code></pre>
+<pre><code>## $Atiyah
+## [1] 65
+## 
+## $Brendan
+## [1] 77
+## 
+## $Clara
+## [1] 94
+## 
+## $Dennis
+## [1] 102
+## 
+## $Ellen
+## [1] 85</code></pre>
 <p><strong>Q15.</strong> The values associated with a dictionary key can
 be found by using the <code>dict[&#39;key&#39;]</code> syntax, but this returns
 an error if the key doesn’t exist.</p>
@@ -558,6 +634,11 @@ dictionary does not contain <code>Andrew</code>, specify that
 andrew_storm = storm_dict.get(&#39;Andrew&#39;, &#39;No storm with that name&#39;)
 andrew_storm</code></pre>
 <pre><code>## &#39;No storm with that name&#39;</code></pre>
+<pre class="r"><code>#R
+# using purrr::pluck with a default
+andrew_storm &lt;- pluck(storm_dict, &quot;Andrew&quot;, .default = &quot;No Storm with that name&quot;)
+andrew_storm</code></pre>
+<pre><code>## [1] &quot;No Storm with that name&quot;</code></pre>
 <p><strong>Q16.</strong> Earlier we identified the next storm name and
 assigned it to <code>next_storm</code>; this storm has now happened and
 the maximum wind speed was 98 mph.</p>
@@ -572,6 +653,10 @@ new_storm_dict = storm_dict.copy()
 new_storm_dict[next_storm] = 98
 new_storm_dict</code></pre>
 <pre><code>## {&#39;Atiyah&#39;: 65, &#39;Brendan&#39;: 77, &#39;Clara&#39;: 94, &#39;Dennis&#39;: 102, &#39;Ellen&#39;: 85, &#39;Francis&#39;: 98}</code></pre>
+<pre class="r"><code>#R 
+
+new_storm_dict &lt;- storm_dict
+new_storm_dict[[next_storm]] &lt;- 98</code></pre>
 <p><strong>Q17.</strong> We want to find the maximum wind speed across
 all the storms of <code>new_storm_dict</code>.</p>
 <p>Use the <code>.values()</code> method to extract all the wind speeds
@@ -583,6 +668,12 @@ and assign it to a variable called <code>max_speed</code>.</p>
 max_speed = max(list(new_storm_dict.values()))
 max_speed</code></pre>
 <pre><code>## 102</code></pre>
+<pre class="r"><code>#R
+# which.max returns index of max value
+max_speed &lt;- new_storm_dict[which.max(new_storm_dict)]
+max_speed</code></pre>
+<pre><code>## $Dennis
+## [1] 102</code></pre>
 <p><strong>Q18.</strong> Finally, we are told that the original
 information we were given was wrong and the speed of storm Brendan
 should have been 72 rather than 77.</p>
@@ -596,6 +687,29 @@ updated_dict = new_storm_dict.copy()
 updated_dict[&#39;Brendan&#39;] = 72
 updated_dict</code></pre>
 <pre><code>## {&#39;Atiyah&#39;: 65, &#39;Brendan&#39;: 72, &#39;Clara&#39;: 94, &#39;Dennis&#39;: 102, &#39;Ellen&#39;: 85, &#39;Francis&#39;: 98}</code></pre>
+<pre class="r"><code>#R
+updated_dict &lt;- new_storm_dict
+
+updated_dict[[&#39;Brendan&#39;]] = 72
+
+updated_dict</code></pre>
+<pre><code>## $Atiyah
+## [1] 65
+## 
+## $Brendan
+## [1] 72
+## 
+## $Clara
+## [1] 94
+## 
+## $Dennis
+## [1] 102
+## 
+## $Ellen
+## [1] 85
+## 
+## $Francis
+## [1] 98</code></pre>
 <div id="further-practice" class="section level2">
 <h2>Further practice</h2>
 <p>If you have time, have a go at repeating this exercise with some
@@ -615,13 +729,11 @@ to the problem.</p>
 <pre class="python"><code>&#39;&#39;&#39;
 storm_names = &#39;Alberto, Beryl, Chris, Debby, Ernesto, Florence, Gordon, Helene, Isaac, Joyce, \
 Kirk, Leslie, Michael, Nadine, Oscar, Patty, Rafael, Sandy, Tony, Valerie, William&#39;
-
 letters = [&#39;m&#39;, &#39;n&#39;, &#39;b&#39;, &#39;v&#39;, &#39;c&#39;, &#39;x&#39;, &#39;z&#39;, &#39;a&#39;, &#39;s&#39;, &#39;d&#39;, &#39;f&#39;, &#39;g&#39;, &#39;h&#39;, &#39;j&#39;, &#39;k&#39;, &#39;l&#39;, \
 &#39;p&#39;, &#39;o&#39;, &#39;i&#39;, &#39;u&#39;, &#39;y&#39;, &#39;t&#39;, &#39;r&#39;, &#39;e&#39;, &#39;w&#39;, &#39;q&#39;]
-
 wind_speeds = [99, 78, 85, 107, 114, 94, 89, 121, 108]
 &#39;&#39;&#39;</code></pre>
-<pre><code>## &quot;\nstorm_names = &#39;Alberto, Beryl, Chris, Debby, Ernesto, Florence, Gordon, Helene, Isaac, Joyce, Kirk, Leslie, Michael, Nadine, Oscar, Patty, Rafael, Sandy, Tony, Valerie, William&#39;\n\nletters = [&#39;m&#39;, &#39;n&#39;, &#39;b&#39;, &#39;v&#39;, &#39;c&#39;, &#39;x&#39;, &#39;z&#39;, &#39;a&#39;, &#39;s&#39;, &#39;d&#39;, &#39;f&#39;, &#39;g&#39;, &#39;h&#39;, &#39;j&#39;, &#39;k&#39;, &#39;l&#39;, &#39;p&#39;, &#39;o&#39;, &#39;i&#39;, &#39;u&#39;, &#39;y&#39;, &#39;t&#39;, &#39;r&#39;, &#39;e&#39;, &#39;w&#39;, &#39;q&#39;]\n\nwind_speeds = [99, 78, 85, 107, 114, 94, 89, 121, 108]\n&quot;</code></pre>
+<pre><code>## &quot;\nstorm_names = &#39;Alberto, Beryl, Chris, Debby, Ernesto, Florence, Gordon, Helene, Isaac, Joyce, Kirk, Leslie, Michael, Nadine, Oscar, Patty, Rafael, Sandy, Tony, Valerie, William&#39;\nletters = [&#39;m&#39;, &#39;n&#39;, &#39;b&#39;, &#39;v&#39;, &#39;c&#39;, &#39;x&#39;, &#39;z&#39;, &#39;a&#39;, &#39;s&#39;, &#39;d&#39;, &#39;f&#39;, &#39;g&#39;, &#39;h&#39;, &#39;j&#39;, &#39;k&#39;, &#39;l&#39;, &#39;p&#39;, &#39;o&#39;, &#39;i&#39;, &#39;u&#39;, &#39;y&#39;, &#39;t&#39;, &#39;r&#39;, &#39;e&#39;, &#39;w&#39;, &#39;q&#39;]\nwind_speeds = [99, 78, 85, 107, 114, 94, 89, 121, 108]\n&quot;</code></pre>
 </div>
 </div>
 

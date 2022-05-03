@@ -1,5 +1,5 @@
 ---
-title: The R version of: "data_structures.ipynb"
+title: The R version of "data_structures.ipynb"
 output: html_document
 ---
 
@@ -20,6 +20,13 @@ You will find instructions below about how to define each variable.
 
 Once you're happy with your code, upload your notebook to KATE to check your feedback.
 
+```{r}
+#R
+library(tidyverse)
+library(reticulate)
+use_condaenv('ds01')
+
+```
 
 ```{python}
 letters = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', \
@@ -30,6 +37,7 @@ wind_speeds = [65, 77, 94, 102, 85]
 ```
 
 ```{r}
+#R
 letters <-  c('q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 
            'f', 'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm')
 storm_names <-  'Atiyah, Brendan, Clara, Dennis, Ellen, Francis, Gerda, Hugh, Iris, Jan, Kitty, Liam, Maura, Noah, Olivia, Piet, Roisin, Samir, Tara, Vince, Willow'
@@ -47,7 +55,7 @@ storm_list = storm_names.split(', ')
 ```
 
 ```{r}
-library(tidyverse)
+#R
 storm_list <- storm_names %>% 
     strsplit(split = ", ") 
 ```
@@ -68,6 +76,7 @@ storms_slice = storm_list[0:9:2]
 ```
 
 ```{r}
+#R
 # create the sequence of indices
 indices <- seq.int(1, 9, 2)
 # subset the vector with those indices
@@ -85,6 +94,7 @@ alphabet
 ```
 
 ```{r}
+#R
 alphabet <- sort(letters)
 ```
 
@@ -98,6 +108,7 @@ index_d
 ```
 
 ```{r}
+#R
 which(alphabet == "d")
 ```
 
@@ -111,6 +122,7 @@ number_of_names
 
 
 ```{r}
+#R
 number_of_names <- length(storm_list)
 ```
 
@@ -123,7 +135,8 @@ storm_17
 ```
 
 ```{r}
-# R count from 1
+# R
+#count from 1
 storm_list[17]
 ```
 
@@ -142,6 +155,7 @@ storm_list_extra.append('Quentin')
 
 
 ```{r}
+#R
 storm_list_extra = append(storm_list, values = "Quentin")
 ```
 
@@ -161,6 +175,7 @@ storm_list_redux
 ```
 
 ```{r}
+#R
 storm_list_redux <- append(storm_list, values = 'Quentin', after = 16)
 ```
 
@@ -176,6 +191,7 @@ avg_max_wind
 ```
 
 ```{r}
+#R
 avg_max_wind <- mean(wind_speeds, na.rm = TRUE)
 ```
 
@@ -188,6 +204,7 @@ next_storm  = storm_list[len(wind_speeds)]
 next_storm
 ```
 ```{r}
+#R
 next_storm  = storm_list[[1]][length(wind_speeds) + 1]
 next_storm
 ```
@@ -204,6 +221,7 @@ remaining_storms = storm_list[len(wind_speeds):len(storm_list)]
 remaining_storms
 ```
 ```{r}
+#R
 next_storm_index <-  match(next_storm, storm_list[[1]])
 remaining_storms <- storm_list[[1]][next_storm_index:length(storm_list[[1]])]
 
@@ -219,6 +237,12 @@ windiest_storm = storm_list[wind_speeds.index(max(wind_speeds))]
 windiest_storm
 ```
 
+```{r}
+#R
+windiest_storm <- storm_list[[1]][which.max(wind_speeds)]
+
+```
+
 **Q13.** It is predicted that the final five names in `storm_list` will not be used this year. Create a list called `unused_names` which contains only these names and then reverse the order of the names (so that the entry beginning with `W` comes first):
 
 ```{python}
@@ -228,17 +252,35 @@ unused_names.sort(reverse = True)
 unused_names
 ```
 
+```{r}
+#R
+storm_list[[1]] %>% 
+    tail(5) %>% 
+    rev()
+```
+
 **Q14.** Create a dictionary called `storm_dict` where the keys are from `storm_list` and the values are the corresponding values from `wind_speeds`. 
 
 It should only contain key:value pairs for the storms which have already occurred, i.e. the number of key:value pairs should be equal to the number of elements in `wind_speeds`.
 
 There are various ways to do this and you're free to choose, but one way could involve using the Python `dict()` and `zip()` functions (see the [documentation](https://docs.python.org/3.3/library/functions.html)); can you work out from the documentation how this could be achieved?
 
-
 ```{python}
 # Add your code below
 storm_dict = dict(zip(storm_list, wind_speeds))
 storm_dict
+```
+
+```{r}
+#R
+# equivalent of a dict in R is a named list
+
+l <- length(wind_speeds)
+storm_dict <- wind_speeds %>% as.list()
+stormnames <- storm_list[[1]][1:l]
+names(storm_dict) <- stormnames
+storm_dict
+
 ```
 
 **Q15.** The values associated with a dictionary key can be found by using the `dict['key']` syntax, but this returns an error if the key doesn't exist.
@@ -255,6 +297,13 @@ andrew_storm = storm_dict.get('Andrew', 'No storm with that name')
 andrew_storm
 ```
 
+```{r}
+#R
+# using purrr::pluck with a default
+andrew_storm <- pluck(storm_dict, "Andrew", .default = "No Storm with that name")
+andrew_storm
+```
+
 **Q16.** Earlier we identified the next storm name and assigned it to `next_storm`; this storm has now happened and the maximum wind speed was 98 mph.
 
 Create a new dictionary called `new_storm_dict` as a `.copy()` of our `storm_dict`. Then add an additional key:value pair of `next_storm` : `98`
@@ -268,6 +317,14 @@ new_storm_dict[next_storm] = 98
 new_storm_dict
 ```
 
+```{r}
+#R 
+
+new_storm_dict <- storm_dict
+new_storm_dict[[next_storm]] <- 98
+
+```
+
 **Q17.** We want to find the maximum wind speed across all the storms of `new_storm_dict`.
 
 Use the `.values()` method to extract all the wind speeds in `new_storm_dict` and convert them to a list with the `list()` function.
@@ -277,6 +334,13 @@ Next, use the `max()` function to find the maximum speed and assign it to a vari
 ```{python}
 # Add your code below
 max_speed = max(list(new_storm_dict.values()))
+max_speed
+```
+
+```{r}
+#R
+# which.max returns index of max value
+max_speed <- new_storm_dict[which.max(new_storm_dict)]
 max_speed
 ```
 
@@ -292,6 +356,17 @@ updated_dict = new_storm_dict.copy()
 updated_dict['Brendan'] = 72
 updated_dict
 ```
+
+```{r}
+#R
+updated_dict <- new_storm_dict
+
+updated_dict[['Brendan']] = 72
+
+updated_dict
+
+```
+
 
 ## Further practice
 
