@@ -33,6 +33,13 @@ df = pd.read_csv('data/cars.csv')
 df.head()
 ```
 
+```{r}
+#R
+df <- read_csv("data/cars.csv")
+head(df)
+```
+
+
 ## Dataset stats
 
 #### 1. What's the mean of the values in the `weight` column?
@@ -42,6 +49,10 @@ Store the answer in a variable called `mean_weight`
 ```{python}
 # Add your code below
 mean_weight = df['weight'].mean()
+```
+```{r}
+#R
+mean_weight <- mean(df$weight, na.rm = TRUE)
 ```
 
 #### 2. What's the maximum value in the `horsepower` column?
@@ -53,6 +64,12 @@ Store the answer in a variable called `max_horsepower`
 max_horsepower = df['horsepower'].max()
 ```
 
+```{r}
+#R
+max_horsepower <- max(df$horsepower, na.rm = TRUE)
+```
+
+
 #### 3. How many cars have a `weight` of equal to or greater than 3500 ?
 
 Store the answer in a variable called `heavy_cars`
@@ -61,6 +78,9 @@ Store the answer in a variable called `heavy_cars`
 # Add your code below
 heavy_cars = df[df['weight'] >= 3500].shape[0]
 heavy_cars
+```
+```{r}
+heavy_cars <- dim(df[df$weight >= 3500,])[1]
 ```
 
 #### 4. Create a new DataFrame with an additional column called `ratio`, which equals `horsepower` divided by `weight`
@@ -72,6 +92,12 @@ Call the new DataFrame `df_ratio`
 df_ratio = df.copy()
 # Add your code below
 df_ratio['ratio'] = df_ratio['horsepower'] / df_ratio['weight']
+```
+```{r}
+#R
+# with dplyr
+df_ratio <- df %>% 
+    mutate(ratio = horsepower / weight)
 ```
 
 ## Dataset sorting and filtering
@@ -86,6 +112,14 @@ df_usa = df.copy()
 df_usa = df_usa[df_usa['origin'] == 'usa']
 ```
 
+```{r}
+#R
+df_usa <- df %>% 
+    filter(origin == "usa")
+
+```
+
+
 #### 6. What's the mean `mpg` of cars of origin `usa`?
 
 Remember that we can use the `df_usa` DataFrame just created, which only contains these cars.
@@ -95,6 +129,12 @@ Store your answer in a variable called `mean_mpg_usa`
 ```{python}
 # Add your code below
 mean_mpg_usa = df_usa['mpg'].mean()
+mean_mpg_usa
+```
+```{r}
+#R
+# using pipe on a single column (vector)
+mean_mpg_usa <- df_usa$mpg %>% mean(na.rm = TRUE)
 mean_mpg_usa
 ```
 
@@ -108,11 +148,26 @@ eight_cyl_usa = sum(df_usa['cylinders'] == 8)
 eight_cyl_usa
 ```
 
+```{r}
+#R
+
+eight_cyl_usa <- df_usa %>% 
+    filter(cylinders == 8) %>% 
+    nrow()
+
+```
+
 ```{python}
 df.info()
 ```
 
 We can see from `df.info()` that we have some missing values in the `horsepower` column.
+
+```{r}
+#R
+summary(df)
+
+```
 
 #### 8. create a new DataFrame (from the original `df`) which does not contain the rows with a missing value
 
@@ -125,6 +180,13 @@ df_horsepower = df.copy()
 df_horsepower = df_horsepower[~df_horsepower['horsepower'].isnull()]
 ```
 
+```{r}
+
+df_horsepower <- df %>% na.omit()
+
+```
+
+
 #### 9. What's the first (or only) mode value for `horsepower` in `df_horsepower`?
 
 Store your answer in a variable called `mode_hp`
@@ -135,6 +197,20 @@ Store your answer in a variable called `mode_hp`
 # Add your code below
 mode_hp = df_horsepower['horsepower'].mode()[0]
 ```
+
+```{r}
+#R
+# the mode function does not do what you think!
+mode_hp <- df_horsepower$horsepower %>% mode()
+# we have to write our own function
+getmode <- function(v) {
+   uniqv <- unique(v)
+   uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+getmode(df_horsepower$horsepower)
+```
+
 
 #### 10. Create a DataFrame containing only cars with a horsepower greater than or equal to `mode_hp` in `df_horsepower`
 
