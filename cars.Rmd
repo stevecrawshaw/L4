@@ -16,6 +16,12 @@ You will find instructions below about how to define each variable.
 
 Once you're happy with your code, upload your notebook to KATE to check your feedback.
 
+```{r}
+source("libs_and_env.R")
+
+```
+
+
 ```{python}
 import pandas as pd
 ```
