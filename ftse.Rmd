@@ -37,10 +37,8 @@ Starting from a copy of `df`, create a new dataFrame called `clean_df` with the 
 - Drop the `Strong Buy` column
 
 ```{python}
-# Add your code here
-
-# Make sure you call your new dataframe clean_df
-# clean_df = ...
+clean_df = df.drop(columns = 'Strong Buy').loc[df['Ticker'] != 'RDSA']
+clean_df
 ```
 
 ## 2. Change Column Data Type
@@ -54,10 +52,14 @@ Starting from a copy of `clean_df`, create a new DataFrame called  `price_df` wi
 *Hint: converting directly to a float may not work if there are commas in the strings; you may find the [str.replace](https://docs.python.org/3/library/stdtypes.html#str.replace) method useful for fixing this before conversion.*
 
 ```{python}
-# Add your code here
+price_df = clean_df.copy()
+price_df['Mid-price (p)'] = price_df['Mid-price (p)']. \
+str.replace(",", ""). \
+astype(dtype='float')
 
-# Make sure you call your new dataframe price_df
-# price_df = ...
+# price_df.head()
+# price_df.info()
+price_df
 ```
 
 ## 3. Format Change Values
@@ -71,16 +73,18 @@ Take a look at the values in the `Change` column. You'll see that they are in an
 4. return the resulting float
 
 ```{python}
-# Add your code below
-# def format_change(string):
-#      pass
+def format_change(string):
+    fl = float(string.replace("%", ""))
+    if fl > 0:
+        fl *= 100
+    return fl
 ```
 
 You can check that your function works as expected below:
 
 ```{python}
 # Uncomment the code below to test your function
-# format_change('0.45%')
+format_change('0.45%')
 ```
 
 **Part 2:** Starting from a copy of `price_df`, create a new DataFrame called  `change_df` with a new column called `Change (%)`:
@@ -90,7 +94,10 @@ You can check that your function works as expected below:
 
 ```{python}
 # Make sure you call your new dataframe change_df
-# change_df = ...
+change_df = price_df.copy()
+change_df['Change (%)'] = change_df.Change.apply(format_change)
+change_df.head()
+change_df
 ```
 
 ## 4. Holding Summary
@@ -119,11 +126,19 @@ Starting from the `holding` above and `change_df`, build a new dictionary contai
 Call this dictionary `holding_dict`
 
 ```{python}
-# Add your code here
+midp = change_df[clean_df['Ticker'] == 'BP.']['Mid-price (p)'].values[0]
+# use .values to extract the number, otherwise the returned object includes the index
 
-# Make sure you call your new dictionary holding_dict
-# holding_dict = ...
+holding_cost = (holding[1] * holding[2]) / 100
+holding_value = (holding[1] * midp) / 100
+change_in_value = ((holding_value - holding_cost) / holding_cost) * 100
+change_in_value
 
+holding_dict = {'holding_cost': holding_cost,
+                'holding_value': holding_value,
+               'change_in_value':change_in_value}
+
+holding_dict
 ```
 
 ## 5. Market Comparison
@@ -138,9 +153,11 @@ Create a DataFrame called `comparison_df` with the following columns added to a 
 *Hint: Calculate the average market change % first then compare each value in the Change (%) column to that when creating the new column.*
 
 ```{python}
-# Add your code here
-# Make sure you call your new dataframe comparison_df
-# comparison_df = ...
+comparison_df = change_df.copy()
+comparison_df['Beat Market'] = comparison_df['Change (%)'] > comparison_df['Change (%)'].mean()
+comparison_df['Buy Ratio'] = comparison_df['Buy'] / comparison_df['Brokers']
+comparison_df.head()
+comparison_df
 ```
 
 ## 6. Investigate
@@ -165,10 +182,21 @@ watchlist = [('TUI', 820.0), ('Whitbread', 4300.0), ('AstraZeneca', 7500.0),
 ```
 
 ```{python}
-# Add your code here
+comparison_df[comparison_df['Company'] == 'TUI']
 
-# Make sure you call your new list companies_list
-# companies_list = ...
+companies_list = []
 
+for company in watchlist:
+    mask = comparison_df['Company'] == company[0]
+    newdf = comparison_df[mask]
+    midp = newdf['Mid-price (p)'].values[0]
+    buyr = newdf['Buy Ratio'].values[0]
+
+    if midp < company[1] or buyr > 0.5:
+        companies_list.append(company[0])
+    
+companies_list = list(set(companies_list))
+
+companies_list
 ```
 

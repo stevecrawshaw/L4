@@ -33,3 +33,13 @@ unzip_convert <- function(relpath){
 
 unzip_convert("resources")
 
+convert <- function(relpath){
+    respath = glue("{relpath}/")
+    notebook_files <- glue('{respath}{list.files(path = respath, pattern = "ipynb")}')
+    
+    walk(notebook_files, ~convert_ipynb(.x))
+    
+}
+
+
+

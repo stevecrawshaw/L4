@@ -35,7 +35,7 @@ Store the answer in a variable called `mean_weight`
 
 ```{python}
 # Add your code below
-# mean_weight = ...
+mean_weight = df['weight'].mean()
 ```
 
 #### 2. What's the maximum value in the `horsepower` column?
@@ -44,7 +44,7 @@ Store the answer in a variable called `max_horsepower`
 
 ```{python}
 # Add your code below
-# max_horsepower = ...
+max_horsepower = df['horsepower'].max()
 ```
 
 #### 3. How many cars have a `weight` of equal to or greater than 3500 ?
@@ -53,7 +53,8 @@ Store the answer in a variable called `heavy_cars`
 
 ```{python}
 # Add your code below
-# heavy_cars = ...
+heavy_cars = df[df['weight'] >= 3500].shape[0]
+heavy_cars
 ```
 
 #### 4. Create a new DataFrame with an additional column called `ratio`, which equals `horsepower` divided by `weight`
@@ -64,7 +65,7 @@ Call the new DataFrame `df_ratio`
 # We made a copy of df to start with, so you don't risk modifying the original df
 df_ratio = df.copy()
 # Add your code below
-# df_ratio = ...
+df_ratio['ratio'] = df_ratio['horsepower'] / df_ratio['weight']
 ```
 
 ## Dataset sorting and filtering
@@ -76,7 +77,7 @@ We'll start with a copy of the original DataFrame to avoid modifying the origina
 ```{python}
 df_usa = df.copy()
 # Add your code below
-# df_usa = ...
+df_usa = df_usa[df_usa['origin'] == 'usa']
 ```
 
 #### 6. What's the mean `mpg` of cars of origin `usa`?
@@ -87,7 +88,8 @@ Store your answer in a variable called `mean_mpg_usa`
 
 ```{python}
 # Add your code below
-# mean_mpg_usa = ...
+mean_mpg_usa = df_usa['mpg'].mean()
+mean_mpg_usa
 ```
 
 #### 7. How many cars of origin `usa` have 8 `cylinders` ?
@@ -96,7 +98,8 @@ Store your answer in a variable called `eight_cyl_usa`
 
 ```{python}
 # Add your code below
-# eight_cyl_usa = ...
+eight_cyl_usa = sum(df_usa['cylinders'] == 8)
+eight_cyl_usa
 ```
 
 ```{python}
@@ -113,7 +116,7 @@ Call the new DataFrame `df_horsepower`
 df_horsepower = df.copy()
 
 # Add your code below
-# df_horsepower = ...
+df_horsepower = df_horsepower[~df_horsepower['horsepower'].isnull()]
 ```
 
 #### 9. What's the first (or only) mode value for `horsepower` in `df_horsepower`?
@@ -124,7 +127,7 @@ Store your answer in a variable called `mode_hp`
 
 ```{python}
 # Add your code below
-# mode_hp = ...
+mode_hp = df_horsepower['horsepower'].mode()[0]
 ```
 
 #### 10. Create a DataFrame containing only cars with a horsepower greater than or equal to `mode_hp` in `df_horsepower`
@@ -135,7 +138,8 @@ Call the new DataFrame `df_high_hp`
 df_high_hp = df_horsepower.copy()
 
 # Add your code below
-# df_high_hp = ...
+df_high_hp = df_high_hp[df_high_hp['horsepower'] >= mode_hp]
+df_high_hp
 ```
 
 #### 11. What percentage of the cars in `df_high_hp` have 8 `cylinders`?
@@ -146,7 +150,8 @@ Your answer should be a float, and should be for example 56.0 rather than 0.56 f
 
 ```{python}
 # Add your code below
-# percentage_eight_cyl = ...
+percentage_eight_cyl = (sum(df_high_hp['cylinders'] == 8) / df_high_hp.shape[0]) * 100
+percentage_eight_cyl
 ```
 
 ## Dataset manipulation
@@ -171,13 +176,13 @@ Call the new DataFrame `df_name`
 df_name = df.copy()
 
 # Add your code below
-#df_name = ...
+df_name['name_year'] = df_name['name'] + ' - 19' + df_name['model_year'].astype(dtype = 'str')
 ```
 
 Looking at value_counts() on the `name_year` column, we should now see that there are no duplicated entries:
 
 ```{python}
-# df_name['name_year'].value_counts()
+df_name['name_year'].value_counts()
 ```
 
 #### 13. On a copy of the `df_name` DataFrame, set the index of the DataFrame as the `name_year` column
@@ -190,21 +195,25 @@ Call you new DataFrame `df_car_index`
 df_car_index = df_name.copy()
 
 # Add your code below
-# df_car_index = ...
+df_car_index.set_index('name_year', inplace = True, drop = False)
+df_car_index
 ```
 
 #### 14. Create a function which takes  `name_year` as the only parameter, and returns the `acceleration` for any car in `df_car_index`
 
-
 ```{python}
 # Add your code below
-# def acceleration(name_year):
-#      pass
+def acceleration(name_year):
+        '''
+        returns the acceleration of a vehicle
+        when a name_year string is the argument
+        '''
+        return df_car_index[df_car_index['name_year'] == name_year]['acceleration'][0]
 ```
 
 You can test your function using the following cell:
 
 ```{python}
-# acceleration('ford torino - 1970')
+acceleration('ford torino - 1970')
 ```
 

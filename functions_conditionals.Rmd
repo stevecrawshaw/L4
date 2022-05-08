@@ -27,13 +27,15 @@ We discover that 1 mile is equivalent to `1.61` kilometres.
 Create a function called `km` with a single parameter called `miles`, (which you can assume will always be a valid number) and returns the equivalent number of kilometres, using the `1.61` value to make the conversion.
 
 ```{python}
-#def km
+def km(miles):
+    return miles * 1.61
+
 ```
 
 Uncomment the following cells to see if your function works as expected:
 
 ```{python}
-# km(85)
+km(85)
 ```
 
 Use your `km` function as part of your working to calculate the total kilometres covered in the journeys in the list `journeys_miles` defined above. Assign the result to a variable called `journeys_km`:
@@ -41,13 +43,13 @@ Use your `km` function as part of your working to calculate the total kilometres
 ```{python}
 journeys_miles = [1.2, 5.3, 2.7, 8.2]
 
-#journeys_km = ...
+journeys_km = sum(list(map(km, journeys_miles)))
 ```
 
 Once you have implememented the preceding code, uncomment the following cell to show the value of `journeys_km`:
 
 ```{python}
-# journeys_km
+journeys_km
 ```
 
 Create a function called `over_kmph_limit` which takes two parameters:
@@ -57,17 +59,22 @@ Create a function called `over_kmph_limit` which takes two parameters:
 The function should return `True` if the car is exceeding the speed limit, and `False` otherwise. You can assume that the input values will always be single positive numerical values.
 
 ```{python}
-#def over_kmph_limit
+def over_kmph_limit(mph_speed, kmph_limit):
+    if km(mph_speed) > kmph_limit:
+        out = True
+    else:
+        out = False
+    return out
 ```
 
 Once you have implemented the function, uncomment the following cells and see if the statements evaluate as you expect:
 
 ```{python}
-# over_kmph_limit(30, 40)
+over_kmph_limit(30, 40)
 ```
 
 ```{python}
-# over_kmph_limit(30, 50)
+over_kmph_limit(30, 50)
 ```
 
 There are of course 1000 metres in a kilometre, and 3600 seconds in an hour.
@@ -77,13 +84,18 @@ Create a function called `ms` which takes a single parameter called `kmph`, and 
 You can assume that any argument for `kmph` will be numerical, but if it is negative (i.e. `< 0`), you should instead return the string `'Please enter a positive value.'` Be sure that this string is formatted exactly as given here, i.e. including a full stop at the end.
 
 ```{python}
-#def ms
+def ms(kmph):
+    if kmph < 0:
+        out = "Please enter a positive value."
+    else:
+        out = kmph / 3.6
+    return out
 ```
 
 Once you have implemented your `ms` function, you can uncomment the following cell and run it:
 
 ```{python}
-# ms(156)
+ms(156)
 ```
 
 ### Finding entries based on criteria
@@ -96,13 +108,18 @@ people = [('John', 36, 'M'), ('Rachel', 24, 'F'), ('Deardrie', 78, 'F'),
 Create a function called `adults` with a single parameter called `members`, which takes a list of tuples in the format given above (`name`, `age`, `gender`), and returns a list of names (the names only) of those who are aged 18 or over.
 
 ```{python}
-#def adults
+def adults(members):
+    names = []
+    for name, age, sex in members:
+        if age >= 18:
+            names.append(name)
+    return names
 ```
 
 Uncomment the following cell to see if the code below evaluates as you would expect:
 
 ```{python}
-# adults(people)
+adults(people)
 ```
 
 Create a function called `average_age` which takes two parameters:
@@ -117,17 +134,29 @@ If no matches are found, return the string `'No matches found.'`
 As before, ensure this string is formatted exactly as given here.
 
 ```{python}
-#def average_age
+def average_age(members, gender):
+    ages = []
+    for name, age, g in members:
+        if g == gender:
+            ages.append(age)
+    if len(ages) == 0:
+        out = 'No matches found.'
+    else:
+        out = sum(ages) / len(ages)
+    return out
+        
+        
 ```
 
 Uncomment the following cells to seee if your function works as expected:
 
 ```{python}
-# average_age(people, 'M')
+average_age(people, 'M')
 ```
 
 ```{python}
-# average_age(people, 'Z')
+
+average_age(people, 'Z')
 ```
 
 Create a function called `member_details`, with two parameters:
@@ -140,13 +169,21 @@ You can choose any name for the parameters, but avoid using variables defined el
 The function should return a dictionary with two keys, `age` and `gender`, with the values being those from the tuple which contains the name passed as the second argument to the function. If the name isn't found in the list of tuples, return [`None`](https://www.w3schools.com/python/ref_keyword_none.asp).
 
 ```{python}
-#def member_details
+def member_details(persons, nem):
+    out = {}
+    for name, age, gender in persons:
+        if name == nem:
+            out = {'age': age, 'gender': gender}
+    if len(out) == 0:
+        out = None
+        
+    return out
 ```
 
 Call your `member_details` function using `people` and `'Ahmed'` as the arguments, and assign the result to `ahmed_details`.
 
 ```{python}
-# ahmed_details = member_details(people, 'Ahmed')
+ahmed_details = member_details(persons = people, nem = 'Ahmed')
 ```
 
 Create a function called `is_member` which takes two arguments:
@@ -157,7 +194,11 @@ Create a function called `is_member` which takes two arguments:
 The function should itself call the `member_details` function you defined earlier to determine whether there is a match; `is_member` should return `True` if there is, and `False` otherwise.
 
 ```{python}
-#def is_member
+def is_member(people, nem):
+    if (member_details(people, nem)) is None:
+        return False
+    else:
+        return True
 ```
 
 Create a function called `check_group` which has two arguments:
@@ -170,7 +211,14 @@ The function should return a string in the format `'Member present: {person}.'` 
 If no member is found, return `'No members.`'
 
 ```{python}
-#def check_group
+def check_group(member_list, visitor_list):
+    out = 'No members.'
+    for member in member_list:
+        for visitor in visitor_list:
+            if member == visitor:
+                out = 'Member present: ' + member +'.'
+            
+    return out
 ```
 
 ```{python}
@@ -181,7 +229,7 @@ visitors = ['Scott', 'Helen', 'Raj', 'Danny']
 See if your function works as expected by running the cell below:
 
 ```{python}
-# check_group(members, visitors)
+check_group(members, visitors)
 ```
 
 Create a function called `guests` which has three parameters:
@@ -192,13 +240,20 @@ Create a function called `guests` which has three parameters:
 The function should return a list of visitors who are neither existing nor new members. If there are none, return [`None`](https://www.w3schools.com/python/ref_keyword_none.asp).
 
 ```{python}
-#def guests
+def guests(existing_members, signups, visitors):
+    mem = existing_members.copy()
+    mem.extend(signups)
+    vislist = list(set(visitors).difference(mem))
+    if len(vislist) == 0:
+        return None
+    else:
+        return vislist
 ```
 
 Uncomment and run the cell below and see whether your function works as expected:
 
 ```{python}
-# signups = ['Helen', 'Scott']
-# guests(members, signups, visitors)
+signups = ['Helen', 'Scott']
+guests(members, signups, visitors)
 ```
 

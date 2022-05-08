@@ -41,13 +41,14 @@ df.head()
 Assign this new DataFrame to the variable `countries`; do not modify `df`.
 
 ```{python}
-#countries
+countries = df.copy()
+countries = countries[countries['location'] != "World"]
 ```
 
 **Q2. Check the shape of your DataFrame to confirm that `countries` has one row fewer than `df`:**
 
 ```{python}
-#print(df.shape, countries.shape)
+print(df.shape, countries.shape)
 ```
 
 ```{python}
@@ -59,13 +60,14 @@ cols = ['continent', 'location', 'total_deaths_per_million']
 Order this DataFrame by `total_deaths_per_million`, with the highest numbers at the top.
 
 ```{python}
-#countries_dr
+countries_dr = countries[cols].sort_values(by = 'total_deaths_per_million', ascending = False)
+countries_dr
 ```
 
 **Q4. Using the `countries` DataFrame we created earlier, find the sum of `total_tests` for countries in `Africa`, assigning the result, *as an integer*, to `africa_tests`.**
 
 ```{python}
-#africa_tests
+africa_tests = countries[countries['continent'] == "Africa"].total_tests.sum()
 ```
 
 **Q5. How many countries in Africa have no value recorded for the number of `total_tests`? Assign the result to `africa_missing_test_data`.**
@@ -73,7 +75,7 @@ Order this DataFrame by `total_deaths_per_million`, with the highest numbers at 
 *You may find the pandas `.isna()` method useful.*
 
 ```{python}
-#africa_missing_test_data
+africa_missing_test_data = countries[countries['continent'] == "Africa"].total_tests.isna().sum()
 ```
 
 **Q6. How many countries have a higher value for `total_tests` than the `United Kingdom`? Assign your answer to a variable called `countries_more_tests`.**
@@ -81,7 +83,9 @@ Order this DataFrame by `total_deaths_per_million`, with the highest numbers at 
 Remember to work from the `countries` DataFrame rather than `df`. You should avoid modifying any existing DataFrames. 
 
 ```{python}
-#countries_more_tests
+uk_tests = countries[countries['location'] == "United Kingdom"].total_tests.values[0]
+
+countries_more_tests = len(countries[countries.total_tests > uk_tests])
 ```
 
 **Q7. Create a DataFrame called `beds_dr` which is based on the `countries` DataFrame, but contains only the columns `hospital_beds_per_thousand` and `total_deaths_per_million`.**
@@ -89,7 +93,7 @@ Remember to work from the `countries` DataFrame rather than `df`. You should avo
 Your answer should only  include rows where there are values present in both of these columns. *You may find the `.dropna()` method useful.*
 
 ```{python}
-#beds_dr
+beds_dr = countries[['hospital_beds_per_thousand', 'total_deaths_per_million']].dropna()
 ```
 
 **Q8. What is the average `total_deaths_per_million` for entries in `beds_dr` where `hospital_beds_per_thousand` is greater than the mean?**
@@ -97,6 +101,7 @@ Your answer should only  include rows where there are values present in both of 
 Assign the answer to `dr_high_bed_ratio`.
 
 ```{python}
+dr_high_bed_ratio = beds_dr[beds_dr['hospital_beds_per_thousand'] > beds_dr['hospital_beds_per_thousand'].mean()].total_deaths_per_million.mean()
 # dr_high_bed_ratio
 ```
 
@@ -105,19 +110,21 @@ Assign the answer to `dr_high_bed_ratio`.
 Assign the answer to `dr_low_bed_ratio`.
 
 ```{python}
-# dr_low_bed_ratio
+dr_low_bed_ratio = beds_dr[beds_dr['hospital_beds_per_thousand'] < beds_dr['hospital_beds_per_thousand'].mean()].total_deaths_per_million.mean()
 ```
 
 **Q10. Create a DataFrame called `no_new_cases` which contains only rows from `countries` with zero `new_cases`.**
 
 ```{python}
-#no_new_cases
+no_new_cases  = countries[countries['new_cases'] == 0]
 ```
 
 **Q11. Which country in `no_new_cases` has had the highest number of `total_cases`? Assign your answer to `highest_no_new`.**
 
 ```{python}
-#highest_no_new
+max_mask = no_new_cases['total_cases'] == no_new_cases['total_cases'].max()
+highest_no_new = no_new_cases['location'][max_mask].values[0]
+highest_no_new
 ```
 
 **Q12. What is the sum of the `population` of all countries which have had zero `total_deaths`?**
@@ -125,7 +132,8 @@ Assign the answer to `dr_low_bed_ratio`.
 Assign your answer to `sum_populations_no_deaths`. Your answer should be in millions, rounded to the nearest whole number, and converted to an integer.
 
 ```{python}
-#sum_populations_no_deaths
+sum_populations_no_deaths = int(round((countries[countries['total_deaths'] == 0]['population'].sum()) / 1000000))
+sum_populations_no_deaths
 ```
 
 **Q13. Create a function called `country_metric` which accepts the following three parameters:**
@@ -137,13 +145,14 @@ Assign your answer to `sum_populations_no_deaths`. Your answer should be in mill
 The function should return only the value from the first row for a given `location` and  `metric`. *You may find  `.iloc[]`  useful.*
 
 ```{python}
-#def country_metric
+def country_metric(df, location, metric):
+    return df[df['location'] == location][metric].iloc[0]
 ```
 
 **Q.14 Use your function to collect the value for `Vietnam` for the metric `aged_70_older`, assigning the result to `vietnam_older_70`.**
 
 ```{python}
-#vietnam_older_70
+vietnam_older_70 = country_metric(countries, 'Vietnam', 'aged_70_older')
 ```
 
 **Q.15 Create another function called `countries_average`, which accepts the following three parameters:**
@@ -155,7 +164,8 @@ The function should return only the value from the first row for a given `locati
 The function should return the average value for the given metric for the given list of countries.
 
 ```{python}
-#def countries_average()
+def countries_average(df, countries, metric):
+    return df[df['location'].isin(countries)][metric].mean()
 ```
 
 ```{python}
@@ -165,7 +175,8 @@ g7 = ['United States', 'Italy', 'Canada', 'Japan', 'United Kingdom', 'Germany', 
 **Q16. Use your `countries_average` function to find out the average `life_expectancy` of countries in the `g7` list defined above. Assign the result to the variable `g7_avg_life_expectancy`.**
 
 ```{python}
-#g7_avg_life_expectancy
+g7_avg_life_expectancy = countries_average(countries, g7, 'life_expectancy')
+g7_avg_life_expectancy
 ```
 
 **Q.17 Find the country with lowest value for `life_expectancy` in the `countries` DataFrame, and create a string which is formatted as follows:**
@@ -179,6 +190,14 @@ Assign your string to the variable `headline` and ensure it is formatted exactly
 - Please note that {diff} should be a positive value
 
 ```{python}
-#headline
+minlife_diff = round((g7_avg_life_expectancy - countries['life_expectancy'].min()), 1)
+
+min_life_e_mask = countries.life_expectancy == countries['life_expectancy'].min()
+
+country_min_life_e = countries[min_life_e_mask].location.values[0]
+
+headline = f'{country_min_life_e} has a life expectancy of {minlife_diff} years lower than the G7 average.'
+
+headline
 ```
 

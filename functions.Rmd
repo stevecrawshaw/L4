@@ -33,6 +33,7 @@ df = pd.read_csv('data/corona.csv').fillna(0).astype(dtype = int, errors='ignore
     .sort_values(by='Total Cases', ascending=False)
 
 latest = df.to_dict('list')
+df.head()
 ```
 
 `latest` is a dictionary, where each key is a column heading in the CSV, and each value is a list containing the values in the given column from each row of the CSV:
@@ -64,55 +65,61 @@ Create a function which returns the worldwide number of reported cases, i.e. the
 
 ```{python}
 def case_count(data):    
-    # Add your code below 
+    return sum(data['Total Cases'])
     raise NotImplementedError
 ```
 
 You can test your function using the following cell:
 
 ```{python}
-# case_count(latest)
+case_count(latest)
 ```
 
 Create a function which returns the number of countries which have reported cases, i.e. the number of countries listed in the table (`Diamond Princess` can be treated as a country for all functions):
 
 ```{python}
 def country_count(data):
-    # Add your code below
+    return len(data['Country'])
     raise NotImplementedError
 ```
 
 You can test your function using the following cell:
 
 ```{python}
-# country_count(latest)
+country_count(latest)
 ```
 
 Create a function which returns the average number of cases over all listed countries:
 
 ```{python}
 def average_cases(data):
+    return sum(data['Total Cases']) / len(data['Total Cases'])
     raise NotImplementedError
 ```
 
 You can test your function using the following cell:
 
 ```{python}
-# average_cases(latest)
+average_cases(latest)
 ```
 
 Create a function which returns the number of countries where `Total Cases` equals `1`:
 
 ```{python}
 def single_case_country_count(data):
-    # Add your code below
+    cases = data['Total Cases']
+    count = 0
+    for case in cases:
+        if case == 1:
+            count += 1
+    return count
     raise NotImplementedError
 ```
 
 You can test your function using the following cell:
 
 ```{python}
-# single_case_country_count(latest)
+single_case_country_count(latest)
 ```
 
 Create a function which returns a list of countries the number of cases is equal to one:
@@ -121,42 +128,64 @@ Hint: you can use the `zip()` function in Python to iterate over two lists at th
 
 ```{python}
 def single_case_countries(data):
-    # Add your code below
+    total_cases = data['Total Cases']
+    countries = data['Country']
+    z = zip(total_cases, countries)
+    countries_1 = []
+    for case, country in z:
+        if case == 1:
+            countries_1.append(country)
+    return(countries_1)
+
     raise NotImplementedError
 ```
 
 You can test your function using the following cell:
 
 ```{python}
-# single_case_countries(latest)
+single_case_countries(latest)
 ```
 
 Create a function which returns a list of countries in which there are still active cases, i.e. where `Total Cases` minus `Total Deaths` exceeds `Recovered`. You may find the `enumerate()` Python function helpful.    
 
 ```{python}
 def active_countries(data):
-    # Add your code below
+    active_z = zip(data['Total Cases'], data['Total Deaths'], data['Recovered'], data['Country'])
+    country_active = []
+    for case, death, recovered, country in active_z:
+        if (case - death) > recovered:
+            country_active.append(country)
+        
+    return country_active
+
     raise NotImplementedError
 ```
 
 You can test your function using the following cell:
 
 ```{python}
-# active_countries(latest)
+active_countries(latest)
 ```
 
 Create a function which returns a list of countries where there are no longer any active cases:
 
 ```{python}
 def cleared_countries(data):
-    # Add your code below
+    #return list(set(data['Country']).difference(active_countries(data)))
+    active_z = zip(data['Total Cases'], data['Total Deaths'], data['Recovered'], data['Country'])
+    country_cleared = []
+    for case, death, recovered, country in active_z:
+        if (case - death) <= recovered:
+            country_cleared.append(country)
+        
+    return country_cleared
     raise NotImplementedError
 ```
 
 You can test your function using the following cell:
 
 ```{python}
-# cleared_countries(latest)
+cleared_countries(latest)
 ```
 
 The following exercise is a bit more involved. Feel free to write all of your code in the single function `less_than_ship()`, or write some additional 'helper' functions (but ensure that any such functions are implemented before `less_than_ship()` in the notebook cell).
@@ -185,15 +214,36 @@ def get_diamond_princess_cases(data):
         if country == "Diamond Princess":
             return cases
 
+
+def countrylist_gt_princess(data):
+    p_cases = get_diamond_princess_cases(data)        
+
+    country_list = []
+    cum_count = 0
+    for country, cases in reversed(list(zip(latest["Country"], latest["Total Cases"]))):
+        cum_count = cum_count + cases
+        if cum_count < p_cases:
+            country_list.append(country)
+    return(country_list)
+
+
 def less_than_ship(data):
-    # Add your code below 
+    country_list = countrylist_gt_princess(data)
+    sentence = ''
+    for country in country_list[0:-2]:
+        sentence += country + ', '
+
+    last_two = country_list[-2:]
+    last_phrase = last_two[0] + ' and ' + last_two[1] + ' combined.'
+    intro = 'The Diamond Princess has had more cases than '
+    return intro + sentence + last_phrase
     raise NotImplementedError
 ```
 
 You can test your function using the following cell:
 
 ```{python}
-# less_than_ship(latest)
+less_than_ship(latest)
 ```
 
 ## Further Study & Practice
