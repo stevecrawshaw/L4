@@ -34,6 +34,7 @@ unzip_convert <- function(relpath){
 unzip_convert("resources")
 
 convert <- function(relpath){
+    # for converting ipynb files with in a folder = resources
     respath = glue("{relpath}/")
     notebook_files <- glue('{respath}{list.files(path = respath, pattern = "ipynb")}')
     
@@ -41,5 +42,6 @@ convert <- function(relpath){
     
 }
 
+convert("resources")
 
 
