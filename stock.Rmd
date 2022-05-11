@@ -16,18 +16,18 @@ You will find instructions below about how to define each variable.
 
 Once you're happy with your code, upload your notebook to KATE to check your feedback.
 
+```{r}
+library(tidyverse) #mainly for dplyr
+library(fastverse) #mainly for data.table
+library(lubridate) # date manipulation
+library(reticulate) # python in Rstudio
+use_condaenv("ds01") # data science conda environment
+
+```
+
 ```{python}
 import pandas as pd
 ```
-
-```{r}
-library(tidyverse)
-library(lubridate)
-library(reticulate)
-use_condaenv("ds01")
-
-```
-
 
 First, we will load the dataset from `data/AAPL.csv` into a DataFrame.
 
@@ -39,7 +39,6 @@ df.head()
 
 ```{r}
 #R
-
 df <- readr::read_csv("data/AAPL.csv")
 head(df)
 ```
@@ -66,10 +65,11 @@ df.head()
 #R
 # using dplyr, and lubridate for time transformations
 df <- df %>% 
-    mutate(Year = lubridate::year(Date),
-           Month = month(Date),
-           Day = day(Date),
-           Weekday = wday(Date, label = TRUE, abbr = FALSE),
+    mutate(Date = lubridate::as_datetime(Date),
+        Year = lubridate::year(Date),
+           Month = lubridate::month(Date),
+           Day = lubridate::day(Date),
+           Weekday = lubridate::wday(Date, label = TRUE, abbr = FALSE),
            `Change %` = ((`Adj Close` - lag(`Adj Close`)) / lag(`Adj Close`)) * 100)
 ```
 
@@ -92,6 +92,12 @@ Store the answer in a variable called `mean_adj_close`
 mean_adj_close = df['Adj Close'].mean()
 ```
 
+```{r}
+#R
+mean_adj_close <- mean(df$`Adj Close`, na.rm = TRUE)
+```
+
+
 #### 2. What's the minimum value in the `Low` column?
 
 Store the answer in a variable called `min_low`
@@ -101,6 +107,13 @@ Store the answer in a variable called `min_low`
 min_low = df['Low'].min()
 ```
 
+```{r}
+#R
+# using pipe
+min_low <- df$Low %>% min()
+```
+
+
 #### 3. What's the maximum value in the `High` column?
 
 Store the answer in a variable called `max_high`
@@ -108,6 +121,12 @@ Store the answer in a variable called `max_high`
 ```{python}
 # Add your code below
 max_high = df['High'].max()
+```
+
+```{r}
+#R
+# square brackets notation
+max_high <- max(df["High"])
 ```
 
 #### 4. What's the difference between `min_low` and `max_high`?  
@@ -119,6 +138,12 @@ Store the answer in a variable called `price_range`
 price_range = max_high - min_low
 ```
 
+```{r}
+#R
+price_range <-  max_high - min_low
+```
+
+
 #### 5. How many rows are there in the DataFrame?
 
 Store the answer in a variable called `entries`
@@ -126,6 +151,11 @@ Store the answer in a variable called `entries`
 ```{python}
 # Add your code below
 entries = df.shape[0]
+```
+
+```{r}
+#R
+entries <- nrow(df)
 ```
 
 #### 6. On how many days (i.e. number of rows) was `Change %` greater than zero?
@@ -137,6 +167,13 @@ Store the answer in a variable called `positive_days`
 positive_days = df[df['Change %'] > 0].shape[0]
 positive_days
 ```
+
+```{r}
+#R
+positive_days <- nrow(df[df$`Change %` > 0,])
+positive_days
+```
+
 
 #### 7. On how many days (i.e. number of rows) has `Adj Close` been greater than the value in the final row?
 
@@ -150,6 +187,16 @@ days_higher = df[df['Adj Close'] > df['Adj Close'].iloc[-1]].shape[0]
 days_higher
 ```
 
+```{r}
+#R
+# with dplyr
+days_higher <- df %>% 
+    filter(`Adj Close` > df$`Adj Close`[nrow(df)]) %>% 
+    nrow()
+days_higher
+```
+
+
 ## Dataset sorting and filtering
 
 #### 8. Create a new DataFrame called `df_2020` which is the same as `df` but contains only the rows where `Year == 2020`. 
@@ -162,6 +209,17 @@ df_2020 = df[df['Year'] == 2020]
 df_2020.set_index('Date', inplace=True)
 ```
 
+
+```{r}
+#R
+#data.table
+# set as data.table first by copying
+# then the square brackets can be used with unquoted column names
+# and omitting the comma
+df_2020 <- copy(df)[Year == 2020]
+df_2020 # is now a data.frame and a data.table
+```
+
 #### 9. Continuing with `df_2020`, calculate the `.mean()` of `Change %` for entries where `Weekday == Monday`.
 
 Store the value in a variable called `mean_change_mon_2020`.
@@ -172,11 +230,24 @@ mean_change_mon_2020 = df_2020[df_2020['Weekday'] == 'Monday']['Change %'].mean(
 mean_change_mon_2020
 ```
 
+```{r}
+#R
+# data.table again
+mean_change_mon_2020 <- df_2020[Weekday == "Monday", mean(`Change %`, na.rm = TRUE)]
+
+```
+
 When you have calculated `mean_change_mon_2020`, uncomment and run the cell below to view its value:
 
 ```{python}
 mean_change_mon_2020
 ```
+
+```{r}
+#R
+mean_change_mon_2020
+```
+
 
 #### 10. Calculate the sum of the `Volume` column in `df_2020` for entries where `Month == 3`.
 
@@ -187,9 +258,21 @@ Store the value in a variable called `total_volume_march_2020`.
 total_volume_march_2020 = df_2020[df_2020['Month'] == 3]['Volume'].sum()
 ```
 
+```{r}
+#R
+#data.table
+total_volume_march_2020 <- df_2020[Month == 3, sum(Volume, na.rm = TRUE)]
+```
+
+
 When you have calculated `total_volume_march_2020`, uncomment and run the cell below to view its value:
 
 ```{python}
+total_volume_march_2020
+```
+
+```{r}
+#R
 total_volume_march_2020
 ```
 
@@ -206,11 +289,26 @@ year_high_timestamp = df_2020['Adj Close'].idxmax()
 year_high_timestamp
 ```
 
+```{r}
+#R
+#data.table
+year_high_timestamp <- df_2020[`Adj Close` == max(`Adj Close`), Date]
+year_high_timestamp
+```
+
 `year_high_timestamp` should be a pandas `Timestamp` object. Once you have calculated `year_high_timestamp`, uncomment and run the following cell (it should evaluate to `True`):
 
 ```{python}
 type(year_high_timestamp) == pd._libs.tslibs.timestamps.Timestamp
 ```
+
+```{r}
+#R
+# checking that year_high_timestamp is of POSIXct type
+# POSIXct is a built in class in R
+is.POSIXct(year_high_timestamp)
+```
+
 
 *For future reference, to extract a string from a Timestamp object in your preferred format, the [.strftime()](https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior) method may be useful.*
 
@@ -224,6 +322,14 @@ type(year_high_timestamp) == pd._libs.tslibs.timestamps.Timestamp
 df_top_10 = df.sort_values('Change %', ascending = False).head(10)
 ```
 
+```{r}
+#R
+#dplyr
+df_top_10 <- df %>% 
+    arrange(desc(`Change %`)) %>% 
+    head(10)
+```
+
 #### 13. How many entries in `df_top_10` were *not* on a Monday?
 Store the value in a variable called `top_10_not_mon`
 
@@ -232,9 +338,23 @@ Store the value in a variable called `top_10_not_mon`
 top_10_not_mon = sum(df_top_10['Weekday'] != 'Monday')
 ```
 
+```{r}
+#R
+#data.table
+top_10_not_mon <- df_top_10[Weekday != "Monday", .N]
+top_10_not_mon
+```
+
+
 When you have calculate `top_10_not_mon`, uncomment and run the cell below to inspect it:
 
 ```{python}
+top_10_not_mon
+```
+
+
+```{r}
+#R
 top_10_not_mon
 ```
 
@@ -253,11 +373,25 @@ df_var = df.copy()
 df_var['Variation %'] = ((df_var['High'] -df_var['Low'] ) / df_var['Close']) * 100
 ```
 
+```{r}
+#R
+#data.table
+df_var <- copy(df)
+df_var[, `Variation %` := ((High - Low) / Close) * 100]
+
+```
+
 Once you have calculated `df_var`, you can uncomment and run the cell below to inspect it:
 
 ```{python}
 
 df_var.head()
+```
+
+```{r}
+#R
+df_var %>% 
+    head()
 ```
 
 #### 15. Create a new DataFrame called `df_var_value`, which the same as `df_var` but with an additional column `Traded Value`, equal to:
@@ -271,9 +405,22 @@ df_var_value = df_var.copy()
 df_var_value['Traded Value'] = df_var_value['Volume'] * df_var_value['Adj Close']
 ```
 
+```{r}
+#R
+#dplyr
+df_var_value <- df_var %>% 
+    mutate(`Traded Value` = Volume * `Adj Close`)
+```
+
+
 Now uncomment and run the cell below to view `df_var_value`:
 
 ```{python}
 df_var_value.head()
+```
+
+```{r}
+#R
+df_var_value
 ```
 
