@@ -16,6 +16,15 @@ You will find instructions below about how to define each variable.
 
 Once you're happy with your code, upload your notebook to KATE to check your feedback.
 
+```{r}
+library(tidyverse) #mainly for dplyr
+library(fastverse) #mainly for data.table
+library(lubridate) # date manipulation
+library(reticulate) # python in Rstudio
+use_condaenv("ds01") # data science conda environment
+# This scripts R code will attempt to use the data.table library where possible
+```
+
 ```{python}
 import pandas as pd
 ```
@@ -25,6 +34,13 @@ First, take a look at the dataset called `FTSE100.csv` (consider using the `.rea
 ```{python}
 df = pd.read_csv('data/FTSE100.csv')
 df.head()
+```
+
+```{r}
+#R
+#data.table
+df <- fread("data/FTSE100.csv")
+head(df)
 ```
 
 ## 1. Tidy Data
@@ -39,6 +55,12 @@ Starting from a copy of `df`, create a new dataFrame called `clean_df` with the 
 ```{python}
 clean_df = df.drop(columns = 'Strong Buy').loc[df['Ticker'] != 'RDSA']
 clean_df
+```
+
+```{r}
+#R
+clean_df <- df[,`Strong Buy` := NULL][Ticker != "RDSA"]
+clean_df 
 ```
 
 ## 2. Change Column Data Type
@@ -62,6 +84,16 @@ astype(dtype='float')
 price_df
 ```
 
+
+```{r}
+#R
+price_df <- copy(clean_df)
+price_df[,`Mid-price (p)` := as.numeric(str_replace(`Mid-price (p)`, ",", ""))]
+price_df$`Mid-price (p)` %>% class()
+
+```
+
+
 ## 3. Format Change Values
 
 Take a look at the values in the `Change` column. You'll see that they are in an inconsistent format, and stored as strings. The positive values need to be multiplied by 100. The negative values need to have the `%` sign removed.
@@ -80,12 +112,30 @@ def format_change(string):
     return fl
 ```
 
+```{r}
+#R
+format_change <- function(string){
+    fl = as.numeric(str_replace(string, "%", ""))
+    if(fl > 0){
+        fl = fl * 100
+    }
+    return(fl)
+}
+```
+
+
 You can check that your function works as expected below:
 
 ```{python}
 # Uncomment the code below to test your function
 format_change('0.45%')
 ```
+
+```{r}
+#R
+format_change("0.45%")
+```
+
 
 **Part 2:** Starting from a copy of `price_df`, create a new DataFrame called  `change_df` with a new column called `Change (%)`:
 
@@ -96,9 +146,14 @@ format_change('0.45%')
 # Make sure you call your new dataframe change_df
 change_df = price_df.copy()
 change_df['Change (%)'] = change_df.Change.apply(format_change)
-change_df.head()
-change_df
 ```
+
+```{r}
+#R
+change_df <- copy(price_df)
+change_df[, `Change %` := lapply(Change, format_change)]
+```
+
 
 ## 4. Holding Summary
 
@@ -106,6 +161,11 @@ We are given the details of a share holding in a tuple, containing the company t
 
 ```{python}
 holding = ('BP.', 500, 1535.21)
+```
+
+```{r}
+#R
+holding <- list("BP.", 500, 1535.21)
 ```
 
 Starting from the `holding` above and `change_df`, build a new dictionary containing the following keys and the appropriate values in the given data formats.
@@ -122,11 +182,10 @@ Starting from the `holding` above and `change_df`, build a new dictionary contai
     
 }
 ```
-
 Call this dictionary `holding_dict`
 
 ```{python}
-midp = change_df[clean_df['Ticker'] == 'BP.']['Mid-price (p)'].values[0]
+midp = change_df[clean_df['Ticker'] == holding[0]]['Mid-price (p)'].values[0]
 # use .values to extract the number, otherwise the returned object includes the index
 
 holding_cost = (holding[1] * holding[2]) / 100
@@ -140,6 +199,17 @@ holding_dict = {'holding_cost': holding_cost,
 
 holding_dict
 ```
+
+```{r}
+#R
+# A named list in R is the equivalent data structure for a dict 
+holding_cost <- (holding[[2]][1] * holding[[3]][1]) / 100
+holding_value <- (holding[[2]][1] * midp) / 100
+
+
+```
+
+
 
 ## 5. Market Comparison
 
