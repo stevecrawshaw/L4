@@ -24,6 +24,15 @@ First of all, run the following cell to:
 - create a DataFrame `df` containing the data for only 1st July 2020
 - take a look at the first few rows of the DataFrame
 
+```{r}
+library(fastverse) #mainly for data.table
+library(tidyverse) #mainly for dplyr
+library(lubridate) # date manipulation
+library(reticulate) # python in Rstudio
+use_condaenv("ds01") # data science conda environment
+# This scripts R code will attempt to use the data.table library where possible
+```
+
 ```{python}
 import pandas as pd
 
@@ -32,6 +41,14 @@ data['date'] = pd.to_datetime(data['date'])
 df = data[data['date'] == '2020-07-01']
 
 df.head()
+```
+
+```{r}
+#R
+data <- read_csv("data/owid-covid-data.csv") 
+# read_csv automatically detects and formats date as a Date type
+df <- data %>% 
+    filter(date == as.Date("2020-07-01"))
 ```
 
 `df` now has one row of data for each country with data present for July 1st 2020. However, it also has a row with a `location` of `World` which contains aggregated values for all countries. 
@@ -45,14 +62,33 @@ countries = df.copy()
 countries = countries[countries['location'] != "World"]
 ```
 
+```{r}
+#R
+countries <- df %>% 
+    filter(location != "World")
+
+```
+
 **Q2. Check the shape of your DataFrame to confirm that `countries` has one row fewer than `df`:**
 
 ```{python}
 print(df.shape, countries.shape)
 ```
 
+```{r}
+#R
+print(c(dim(df), dim(countries)))
+```
+
+
 ```{python}
 cols = ['continent', 'location', 'total_deaths_per_million']
+```
+
+
+```{r}
+#R
+cols <- c('continent', 'location', 'total_deaths_per_million')
 ```
 
 **Q3. Define a DataFrame based on the `countries` DataFrame, but which only contains the columns in `cols` (defined above) and assign this to a variable called `countries_dr`**
@@ -64,11 +100,19 @@ countries_dr = countries[cols].sort_values(by = 'total_deaths_per_million', asce
 countries_dr
 ```
 
+```{r}
+#R
+countries_dr <- 
+    countries[order(-countries$total_deaths_per_million),]
+countries_dr
+```
+
 **Q4. Using the `countries` DataFrame we created earlier, find the sum of `total_tests` for countries in `Africa`, assigning the result, *as an integer*, to `africa_tests`.**
 
 ```{python}
 africa_tests = countries[countries['continent'] == "Africa"].total_tests.sum()
 ```
+
 
 **Q5. How many countries in Africa have no value recorded for the number of `total_tests`? Assign the result to `africa_missing_test_data`.**
 
