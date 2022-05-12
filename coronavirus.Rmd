@@ -103,7 +103,7 @@ countries_dr
 ```{r}
 #R
 countries_dr <- 
-    countries[order(-countries$total_deaths_per_million),]
+    countries[order(-countries$total_deaths_per_million), cols]
 countries_dr
 ```
 
@@ -113,6 +113,14 @@ countries_dr
 africa_tests = countries[countries['continent'] == "Africa"].total_tests.sum()
 ```
 
+```{r}
+#R
+africa_tests <- countries %>% 
+    filter(continent == "Africa") %>% 
+    summarise(africa_tests = sum(total_tests, na.rm = TRUE)) %>% 
+    pull()
+
+```
 
 **Q5. How many countries in Africa have no value recorded for the number of `total_tests`? Assign the result to `africa_missing_test_data`.**
 
@@ -120,6 +128,14 @@ africa_tests = countries[countries['continent'] == "Africa"].total_tests.sum()
 
 ```{python}
 africa_missing_test_data = countries[countries['continent'] == "Africa"].total_tests.isna().sum()
+```
+
+```{r}
+#R
+africa_missing_test_data <- countries %>% 
+    filter(continent == "Africa",
+           is.na(total_tests)) %>% 
+    nrow()
 ```
 
 **Q6. How many countries have a higher value for `total_tests` than the `United Kingdom`? Assign your answer to a variable called `countries_more_tests`.**
@@ -132,6 +148,18 @@ uk_tests = countries[countries['location'] == "United Kingdom"].total_tests.valu
 countries_more_tests = len(countries[countries.total_tests > uk_tests])
 ```
 
+```{r}
+#R
+uk_tests <- countries %>% 
+    filter(location == "United Kingdom") %>% 
+    pull(total_tests)
+
+countries_more_tests <- countries %>% 
+    filter(total_tests > uk_tests) %>% 
+    nrow()
+```
+
+
 **Q7. Create a DataFrame called `beds_dr` which is based on the `countries` DataFrame, but contains only the columns `hospital_beds_per_thousand` and `total_deaths_per_million`.**
 
 Your answer should only  include rows where there are values present in both of these columns. *You may find the `.dropna()` method useful.*
@@ -139,6 +167,14 @@ Your answer should only  include rows where there are values present in both of 
 ```{python}
 beds_dr = countries[['hospital_beds_per_thousand', 'total_deaths_per_million']].dropna()
 ```
+
+```{r}
+#R
+beds_dr <- countries %>% 
+    select(hospital_beds_per_thousand, total_deaths_per_million) %>% 
+    na.omit()
+```
+
 
 **Q8. What is the average `total_deaths_per_million` for entries in `beds_dr` where `hospital_beds_per_thousand` is greater than the mean?**
 
@@ -149,6 +185,16 @@ dr_high_bed_ratio = beds_dr[beds_dr['hospital_beds_per_thousand'] > beds_dr['hos
 # dr_high_bed_ratio
 ```
 
+```{r}
+#R
+#dplyr
+dr_high_bed_ratio <- beds_dr %>% 
+    filter(hospital_beds_per_thousand > hospital_beds_per_thousand %>%
+               mean(na.rm = TRUE)) %>% 
+    summarise(mean(total_deaths_per_million, na.rm = TRUE)) %>% 
+    pull()
+```
+
 **Q9. What is the average `total_deaths_per_million` for entries in `beds_dr` where `hospital_beds_per_thousand` is less than the mean?**
 
 Assign the answer to `dr_low_bed_ratio`.
@@ -157,10 +203,29 @@ Assign the answer to `dr_low_bed_ratio`.
 dr_low_bed_ratio = beds_dr[beds_dr['hospital_beds_per_thousand'] < beds_dr['hospital_beds_per_thousand'].mean()].total_deaths_per_million.mean()
 ```
 
+```{r}
+#R
+#base - quite illegible
+dr_low_bed_ratio <- mean(beds_dr[beds_dr$hospital_beds_per_thousand < mean(beds_dr$hospital_beds_per_thousand, na.rm = TRUE),]$total_deaths_per_million, na.rm = TRUE)
+```
+
+
 **Q10. Create a DataFrame called `no_new_cases` which contains only rows from `countries` with zero `new_cases`.**
 
 ```{python}
 no_new_cases  = countries[countries['new_cases'] == 0]
+countries.new_cases
+no_new_cases.to_csv("data/no_new_cases.csv")
+```
+
+```{r}
+#R
+# difference here with python
+# the equivalent R code below returns 63 lines not python's 62
+# because there is a NaN for hong kong which is counted
+# so we need to add a term for filtering NA in the sq brackets
+no_new_cases <- countries[countries$new_cases == 0 & !is.na(countries$new_cases),]
+
 ```
 
 **Q11. Which country in `no_new_cases` has had the highest number of `total_cases`? Assign your answer to `highest_no_new`.**
