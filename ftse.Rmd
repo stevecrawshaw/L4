@@ -21,7 +21,7 @@ library(tidyverse) #mainly for dplyr
 library(fastverse) #mainly for data.table
 library(lubridate) # date manipulation
 library(reticulate) # python in Rstudio
-use_condaenv("ds01") # data science conda environment
+#use_condaenv("ds01") # data science conda environment
 # This scripts R code will attempt to use the data.table library where possible
 ```
 
@@ -54,13 +54,13 @@ Starting from a copy of `df`, create a new dataFrame called `clean_df` with the 
 
 ```{python}
 clean_df = df.drop(columns = 'Strong Buy').loc[df['Ticker'] != 'RDSA']
-clean_df
+clean_df.head()
 ```
 
 ```{r}
 #R
 clean_df <- df[,`Strong Buy` := NULL][Ticker != "RDSA"]
-clean_df 
+head(clean_df)
 ```
 
 ## 2. Change Column Data Type
@@ -151,7 +151,7 @@ change_df['Change (%)'] = change_df.Change.apply(format_change)
 ```{r}
 #R
 change_df <- copy(price_df)
-change_df[, `Change %` := lapply(Change, format_change)]
+change_df[, `Change %` := sapply(Change, format_change)]
 ```
 
 
@@ -203,13 +203,20 @@ holding_dict
 ```{r}
 #R
 # A named list in R is the equivalent data structure for a dict 
+midp <- change_df[Ticker == holding[1], `Mid-price (p)`]
+
 holding_cost <- (holding[[2]][1] * holding[[3]][1]) / 100
 holding_value <- (holding[[2]][1] * midp) / 100
 
+change_in_value <-  ((holding_value - holding_cost) / holding_cost) * 100
+change_in_value
 
+holding_dict = list('holding_cost' = holding_cost,
+                'holding_value' = holding_value,
+               'change_in_value' = change_in_value)
+
+holding_dict
 ```
-
-
 
 ## 5. Market Comparison
 
@@ -227,8 +234,17 @@ comparison_df = change_df.copy()
 comparison_df['Beat Market'] = comparison_df['Change (%)'] > comparison_df['Change (%)'].mean()
 comparison_df['Buy Ratio'] = comparison_df['Buy'] / comparison_df['Brokers']
 comparison_df.head()
-comparison_df
 ```
+
+```{r}
+#R
+# data.table
+comparison_df = copy(change_df)
+comparison_df[, `Beat Market` := `Change %` > mean(`Change %`, na.rm = TRUE)]
+comparison_df[, `Buy Ratio` := Buy / Brokers]
+head(comparison_df)
+```
+
 
 ## 6. Investigate
 
@@ -251,8 +267,15 @@ watchlist = [('TUI', 820.0), ('Whitbread', 4300.0), ('AstraZeneca', 7500.0),
              ('Standard Chartered', 920.0), ('Barclays', 135.5)]
 ```
 
+```{r}
+#R
+#named vector
+watchlist = c('TUI' =  820.0, 'Whitbread' = 4300.0, 'AstraZeneca' = 7500.0, 
+             'Standard Chartered' = 920.0, 'Barclays' =  135.5)
+```
+
+
 ```{python}
-comparison_df[comparison_df['Company'] == 'TUI']
 
 companies_list = []
 
@@ -268,5 +291,25 @@ for company in watchlist:
 companies_list = list(set(companies_list))
 
 companies_list
+```
+
+```{r}
+#R
+# no loops or lists
+watch_tbl <- watchlist %>% 
+    enframe(name = "Company", value = "Price") %>% 
+    setDT()
+
+#data.table - concise!
+comparison_df[watch_tbl, on = .(Company = Company)][`Mid-price (p)` < Price | `Buy Ratio` > 0.5, Company]
+
+#dplyr - readable!
+companies_list <- comparison_df %>% 
+    right_join(watch_tbl, by = "Company") %>% 
+    filter(`Mid-price (p)` < Price | `Buy Ratio` > 0.5) %>% 
+    pull(Company)
+
+companies_list
+
 ```
 

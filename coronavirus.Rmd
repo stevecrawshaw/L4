@@ -29,7 +29,7 @@ library(fastverse) #mainly for data.table
 library(tidyverse) #mainly for dplyr
 library(lubridate) # date manipulation
 library(reticulate) # python in Rstudio
-use_condaenv("ds01") # data science conda environment
+#use_condaenv("ds01") # data science conda environment now set in global options
 # This scripts R code will attempt to use the data.table library where possible
 ```
 
@@ -146,6 +146,7 @@ Remember to work from the `countries` DataFrame rather than `df`. You should avo
 uk_tests = countries[countries['location'] == "United Kingdom"].total_tests.values[0]
 
 countries_more_tests = len(countries[countries.total_tests > uk_tests])
+
 ```
 
 ```{r}
@@ -215,7 +216,7 @@ dr_low_bed_ratio <- mean(beds_dr[beds_dr$hospital_beds_per_thousand < mean(beds_
 ```{python}
 no_new_cases  = countries[countries['new_cases'] == 0]
 countries.new_cases
-no_new_cases.to_csv("data/no_new_cases.csv")
+
 ```
 
 ```{r}
@@ -236,6 +237,16 @@ highest_no_new = no_new_cases['location'][max_mask].values[0]
 highest_no_new
 ```
 
+```{r}
+#R
+# using subset function from base
+no_new_cases %>% 
+    subset(total_cases == max(total_cases, na.rm = TRUE),
+           select = location, ) %>% 
+    pull()
+
+```
+
 **Q12. What is the sum of the `population` of all countries which have had zero `total_deaths`?**
 
 Assign your answer to `sum_populations_no_deaths`. Your answer should be in millions, rounded to the nearest whole number, and converted to an integer.
@@ -243,6 +254,12 @@ Assign your answer to `sum_populations_no_deaths`. Your answer should be in mill
 ```{python}
 sum_populations_no_deaths = int(round((countries[countries['total_deaths'] == 0]['population'].sum()) / 1000000))
 sum_populations_no_deaths
+```
+
+```{r}
+#R
+#base
+round(sum(countries[countries$total_deaths == 0,]$population, na.rm = TRUE) / 1000000, 0)
 ```
 
 **Q13. Create a function called `country_metric` which accepts the following three parameters:**
@@ -258,10 +275,30 @@ def country_metric(df, location, metric):
     return df[df['location'] == location][metric].iloc[0]
 ```
 
+```{r}
+#R
+# with dplyr.
+# note !! notation for tidy eval
+country_metric <- function(df, location, metric){
+    df %>% 
+        filter(location == !!location) %>% 
+        pull(metric) %>% 
+        return()
+}
+
+```
+
+
 **Q.14 Use your function to collect the value for `Vietnam` for the metric `aged_70_older`, assigning the result to `vietnam_older_70`.**
 
 ```{python}
 vietnam_older_70 = country_metric(countries, 'Vietnam', 'aged_70_older')
+```
+
+
+```{r}
+#R
+vietnam_older_70 <- country_metric(countries, "Vietnam", "aged_70_older")
 ```
 
 **Q.15 Create another function called `countries_average`, which accepts the following three parameters:**
@@ -277,8 +314,25 @@ def countries_average(df, countries, metric):
     return df[df['location'].isin(countries)][metric].mean()
 ```
 
+```{r}
+#R
+#dplyr
+countries_average <- function(df, countries, metric){
+    df %>% 
+        filter(location %in% countries) %>% 
+        pull(metric) %>% 
+        mean(na.rm = TRUE)
+}
+```
+
+
 ```{python}
 g7 = ['United States', 'Italy', 'Canada', 'Japan', 'United Kingdom', 'Germany', 'France']
+```
+
+```{r}
+#R
+g7 <- c('United States', 'Italy', 'Canada', 'Japan', 'United Kingdom', 'Germany', 'France')
 ```
 
 **Q16. Use your `countries_average` function to find out the average `life_expectancy` of countries in the `g7` list defined above. Assign the result to the variable `g7_avg_life_expectancy`.**
@@ -287,6 +341,13 @@ g7 = ['United States', 'Italy', 'Canada', 'Japan', 'United Kingdom', 'Germany', 
 g7_avg_life_expectancy = countries_average(countries, g7, 'life_expectancy')
 g7_avg_life_expectancy
 ```
+
+```{r}
+#R
+g7_avg_life_expectancy <-  countries_average(countries, g7, 'life_expectancy')
+g7_avg_life_expectancy
+```
+
 
 **Q.17 Find the country with lowest value for `life_expectancy` in the `countries` DataFrame, and create a string which is formatted as follows:**
 
@@ -309,4 +370,17 @@ headline = f'{country_min_life_e} has a life expectancy of {minlife_diff} years 
 
 headline
 ```
+```{r}
+#R
+library(glue) # for manipulating string literals silar to f - strings
+
+minlife_e <- min(countries$life_expectancy, na.rm = TRUE)
+
+minlife_diff <- round(g7_avg_life_expectancy - minlife_e, 1)
+
+country_min_life_e <- countries[countries$life_expectancy == minlife_e & !is.na(countries$life_expectancy),]$location
+
+headline <- glue("{country_min_life_e} has a life expectancy of {minlife_diff} years lower than the G7 average.")
+```
+
 
