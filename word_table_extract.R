@@ -6,9 +6,10 @@ pkg_attach2(p)
 file <- "data/Goals for Progress Reviews.docx"
 #read doc for extracting objective names
 doc <- officer::read_docx(file)
-content_tbl <- docx_summary(doc) %>% as_tibble()
+
 # objectives
-objs <- content_tbl %>% 
+# vector of the 4 objectives
+objs <- docx_summary(doc) %>% as_tibble() %>% 
     filter(str_starts(text, "Objective [0-9]")) %>% 
     pull(text)
 # read doc and extract tables
@@ -20,12 +21,9 @@ make_gt <- . %>%
     rename(SMART = V1,
            Description = V2,
            Notes = V3) %>%
-    mutate(SMART = map(SMART, ~str_split(.x, pattern = " ")[[1]][2])) %>% 
+    mutate(SMART = map(SMART, ~str_split(.x, pattern = " ")[[1]][2]),
+           Notes = stringr::str_remove(Notes, "Notes:")) %>% 
     gt()
-
 # create list of formatted gt tables
 gt_list <- doc_table_list %>% 
     map(make_gt)
-# name them with the objectives
-names(gt_list) <- objs
-

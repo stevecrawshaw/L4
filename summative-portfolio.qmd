@@ -78,7 +78,7 @@ The strategy aims to deliver these objectives by developing a single analytics t
 
 ## Data Architecture
 
-No specific document exists about BCC's data architecture> however there is an information asset taxonomy, which is summarised in the diagram below. This was developed in 2017 by an officer who has now left BCC so the information may be somewhat outdated.
+No specific document exists about BCC's data architecture, however there is an information asset taxonomy, which is summarised in the diagram below. This was developed in 2017 by an officer who has now left BCC so the information may be somewhat outdated.
 
 ![Information Asset Taxonomy](images/Info_Asset_Taxonomy_2017.png)
 
@@ -92,7 +92,7 @@ Much of this data architecture is not of direct relevance to my work as it perta
 * A database client and analytics program (Envista ARM)
 * A SQL server database hosted on Azure
 * An open data (OD) platform provided by Opendatasoft
-* FME \ FME Server processes to ETL air quality data to the open data platform
+* FME and FME Server processes to Extract, Transform and Load (ETL) air quality data to the open data platform
 * Dashboards, visualisation and analytics delivered through the OD platform
 * Bespoke reporting and ETL pipelines delivered through R sourcing data through the OD portal and the Envista database
 
@@ -134,7 +134,7 @@ The key skills and knowledge for my role are as follows:
 * Processing and analysing medium sized (up to 10 million observations) data sets
 * SQL (SQL server, ODSSQL and MS Access)
 * Excel
-* HTML, Javascript and CSS for web development of open data
+* HTML, Javascript and CSS for web development of open data products
 * R - packages `openair`, `openaq`, `sf`, `timetk`, `fastverse`, `deweather` and `tidyverse` are relevant to the air quality domain
 * [FME](https://www.safe.com/) and FME Server for automating web services and data integration
 * Time series analysis
@@ -174,3 +174,25 @@ The key skills and knowledge for my role are as follows:
 
 I have identified four projects which align with business and apprenticeship progress review objectives. They are focussed on creating data products which will enhance business processes and increase confidence in our data and analysis. They are summarised below.
 
+```{r, results='asis'}
+source("word_table_extract.R")
+# iterate over the list of objective tables printing each one
+for(i in 1:4){
+    # print(objs[i])
+    # print(gt_list[[i]])
+    gt_list[[i]] %>% 
+        tab_header(title = objs[i]) %>% 
+        tab_style(style = cell_text(weight = "bold"),
+                  locations = cells_column_labels(
+                      columns = everything())) %>% 
+        print()
+    # line breaks
+    cat("\\ ")
+    cat("\\linebreak")
+    cat("\\linebreak")
+    cat("\\linebreak")
+}
+
+```
+
+I am able to work on these projects concurrently and I believe they are all achievable by the end of the apprenticeship.
