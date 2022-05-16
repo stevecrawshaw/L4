@@ -21,7 +21,7 @@ library(tidyverse) #mainly for dplyr
 library(fastverse) #mainly for data.table
 library(lubridate) # date manipulation
 library(reticulate) # python in Rstudio
-use_condaenv("ds01") # data science conda environment
+#use_condaenv("ds01") # data science conda environment
 
 ```
 
@@ -216,8 +216,9 @@ df_2020.set_index('Date', inplace=True)
 # set as data.table first by copying
 # then the square brackets can be used with unquoted column names
 # and omitting the comma
-df_2020 <- copy(df)[Year == 2020]
-df_2020 # is now a data.frame and a data.table
+df_2020 <- copy(setDT(df))
+df_2020 <- df_2020[Year == 2020] # is now a data.frame and a data.table
+
 ```
 
 #### 9. Continuing with `df_2020`, calculate the `.mean()` of `Change %` for entries where `Weekday == Monday`.
@@ -324,10 +325,8 @@ df_top_10 = df.sort_values('Change %', ascending = False).head(10)
 
 ```{r}
 #R
-#dplyr
-df_top_10 <- df %>% 
-    arrange(desc(`Change %`)) %>% 
-    head(10)
+#data.table
+df_top_10 <- df[order(-`Change %`)][1:10]
 ```
 
 #### 13. How many entries in `df_top_10` were *not* on a Monday?
@@ -421,6 +420,6 @@ df_var_value.head()
 
 ```{r}
 #R
-df_var_value
+head(df_var_value)
 ```
 
