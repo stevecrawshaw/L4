@@ -29,3 +29,6 @@ duties_ksb <- tibble(duties, k, s, b)
 
 duties_ksb %>% 
     write_delim(file = "data/duties_ksb.csv", delim = ";")
+
+duties_ksb <- read_csv2("data/duties_ksb.csv")
+ksb_tbl <- read_csv2("data/ksb.csv")

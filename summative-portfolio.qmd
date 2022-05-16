@@ -1,24 +1,20 @@
 ---
 title: "Summative Portfolio: L4"
-author: "Steve crawshaw"
-format:
-  docx:
-    toc: true
-    number-sections: true
----
+author: "Steve Crawshaw"
+format: html
+date: "2022-04-11"
+toc: true
+toc-title: "Table of Contents"
+toc-location: left
+number-sections: true
+number-depth: 3
+execute:
+  echo: false
+  warning: false
 
-<!-- title: "Summative Portfolio: L4" -->
-<!-- author: "Steve crawshaw" -->
-<!-- format: html -->
-<!-- date: "2022-04-11" -->
-<!-- toc: true -->
-<!-- toc-title: "Table of Contents" -->
-<!-- toc-location: left -->
-<!-- number-sections: true -->
-<!-- number-depth: 3 -->
-<!-- execute:  -->
-<!--   echo: false -->
-<!--   warning: false -->
+---
+<!-- failing to render to word on W10 -->
+<!-- https://github.com/quarto-dev/quarto-cli/issues/403 -->
 
 ```{r 'libraries', echo = FALSE, include = FALSE}
 library(xfun)
@@ -77,10 +73,28 @@ BCC is a large and complex organisation dealing with a wide range of functions, 
 A recently published ["Data, Insight and Information Strategy"](https://democracy.bristol.gov.uk/documents/s64321/DII%20Strategy%20Final.pdf) sets out the strategic direction and objectives for the council in this area:
 
 ![Data, Insights and Information Strategy Objectives](images/DII_strategy_1.png)
-The strategy aims to deliver these objectives by developing a single analytics team to deliver insights across the organisation and by consolidating the disparate and distributed datasets across the council into a corporate data lake with analysis being done on one data analytics platform. Several projects are under way to deliver this change.
+The strategy aims to deliver these objectives by developing a single analytics team to deliver insights across the organisation and by consolidating the disparate and distributed datasets across the council into a corporate data lake with analysis being done on one data analytics platform (Power BI). Several projects are under way to deliver this change.
 
 
 ## Data Architecture
+
+No specific document exists about BCC's data architecture> however there is an information asset taxonomy, which is summarised in the diagram below. This was developed in 2017 by an officer who has now left BCC so the information may be somewhat outdated.
+
+![Information Asset Taxonomy](images/Info_Asset_Taxonomy_2017.png)
+
+Much of this data architecture is not of direct relevance to my work as it pertains to other departments and functions. In my own work area, the main data architecture is summarised as follows:
+
+* 182 passive samplers (Diffusion tubes) providing monthly concentrations of pollutants (NO~2~)
+* MS Access database to hold diffusion tube and monitoring network meta data on site
+* A network of 8 real time air quality monitors (analysers)
+* 4G Telemetry to connect these devices to:
+* A proprietary communications software suite (Envista Commcentre)
+* A database client and analytics program (Envista ARM)
+* A SQL server database hosted on Azure
+* An open data (OD) platform provided by Opendatasoft
+* FME \ FME Server processes to ETL air quality data to the open data platform
+* Dashboards, visualisation and analytics delivered through the OD platform
+* Bespoke reporting and ETL pipelines delivered through R sourcing data through the OD portal and the Envista database
 
 ## Security Standards and Policies
 
@@ -154,4 +168,9 @@ The key skills and knowledge for my role are as follows:
 * Improved understanding of statistical theory and learning
 * Power BI (corporate data analytics tool)
 * Azure (corporate data platform)
-* Python and PANDAS for comprehensive tooling of data science
+* Python and PANDAS for comprehensive tooling of data science operations
+
+# Portfolio Projects
+
+I have identified four projects which align with business and apprenticeship progress review objectives. They are focussed on creating data products which will enhance business processes and increase confidence in our data and analysis. They are summarised below.
+
