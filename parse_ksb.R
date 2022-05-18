@@ -32,3 +32,4 @@ duties_ksb %>%
 
 duties_ksb <- read_csv2("data/duties_ksb.csv")
 ksb_tbl <- read_csv2("data/ksb.csv")
+
