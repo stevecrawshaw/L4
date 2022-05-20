@@ -1,7 +1,7 @@
 # parse the OTJ learning data from google drive and make a nice table for upload
 # to aptem
 # https://googlesheets4.tidyverse.org/
-
+# Libraries ----
 p <- c("tidyverse",
        "gt",
        "glue",
@@ -13,37 +13,113 @@ p <- c("tidyverse",
 
 library("xfun")
 pkg_attach2(p)
-# ignored by git for security
-config <- config::get()
-sheet_path <- config$sheet_path
-learning_raw_tbl <- read_sheet(sheet_path, col_types = "TTccccc")
+# Functions ----
+get_googlesheet <- function(){
+    # config.yml ignored by git for security
+    config <- config::get()
+    sheet_path <- config$sheet_path
+    learning_raw_tbl <- read_sheet(sheet_path, col_types = "TTccccc")
+    return(learning_raw_tbl)
+}
 
-orig_names <- names(learning_raw_tbl)
-new_names <- c("timestamp, date_of_learning_activity, hours, description_of_activity", "outcome_of_activity_roi, ksb, is_this_off_the_job_learning_or_in_your_own_time")
+# function to bold the KSB's 
+ksb_bold <- function(ksb_text){
+    repl_text = ""
+    patt_text <- str_extract_all(ksb_text, pattern = "K[0-9]+|B[0-9]+|S[0-9]+") %>% 
+        unlist()
+    repl_text <- paste0("**", patt_text, "**")
+    names(repl_text) <- patt_text
+    str_replace_all(ksb_text,
+                    repl_text) %>% 
+        return()
+}
+# custom function to add hours for a month
+sum_period_fnc <- function(period_vec){
+    
+    if(is.period(period_vec)){
+        period_vec %>%
+            period_to_seconds() %>%
+            sum(na.rm = TRUE) %>% 
+            seconds_to_period() %>% 
+            as.character() %>% 
+            return()    
+    } else {
+        return("--")
+    }
+}
 
+# theme function for GT
+basic_theme <- function(data, ...){
+    data %>% 
+        tab_options(
+            table.background.color = "white",
+            ...
+        )
+}
 
-orig_list <- map(new_names, list)
-names(orig_list) <- orig_names
+get_gt_table <- function(learning_date){
+    stopifnot("Entered date must be YYYY-MM-DD" = ymd(learning_date) %>% is.Date())
+    month_of_learning <- glue("{month.name[month(learning_date)]} {year(learning_date)}")    
 
+learning_raw_tbl <- get_googlesheet()     
+# transform the raw data
 learning_clean_tbl <- learning_raw_tbl %>%
     clean_names() %>% 
-    mutate(hours = lubridate::hms(time_spent_on_activity_hh_mm),
-           ksb = str_replace_all(select_ks_bs_that_apply,
+    select(-timestamp) %>% 
+    filter(month(date_of_learning_activity) == month(learning_date)) %>% 
+    mutate(hours = lubridate::hms(time_spent_on_activity_hh_mm), #period
+           ksb = str_replace_all(select_ks_bs_that_apply, # make CR/LF
                                         pattern = ", ",
-                                        replacement = "<br>"))
+                                        replacement = "<br>"),
+           is_this_off_the_job_learning_or_in_your_own_time = 
+               if_else(is.na(is_this_off_the_job_learning_or_in_your_own_time),
+                       "Off the job",
+                       "Own time")) %>% 
+    mutate(ksb = map_chr(ksb, ksb_bold)) # highlight the KSB ID
 
-learning_clean_tbl %>%
-    select(timestamp, date_of_learning_activity, hours, description_of_activity,
-           outcome_of_activity_roi, ksb, is_this_off_the_job_learning_or_in_your_own_time) %>% 
+# create list for the labels in the GT table
+orig_names <- names(learning_raw_tbl %>% select(-Timestamp))
+new_names <- c("date_of_learning_activity", "hours", "description_of_activity", "outcome_of_activity_roi", "ksb", "is_this_off_the_job_learning_or_in_your_own_time")
+orig_list <- map(orig_names, list)
+names(orig_list) <- new_names
+
+# create the gt table
+month_gt <- learning_clean_tbl %>%
+    select(all_of(new_names)) %>% 
     gt() %>% 
     fmt_markdown(columns = ksb) %>% 
-    gt::cols_label(.list = orig_list)
+    gt::cols_label(.list = orig_list) %>%
+    tab_options(table.width = px(1080)) %>% 
+    grand_summary_rows(columns = hours,
+                       fns = list(`Total time` = ~sum_period_fnc(.)),
+                       formatter = fmt_passthrough,
+                       pattern = "{x}") %>% 
+    cols_width(
+        date_of_learning_activity ~ pct(10),
+               hours ~ pct(10),
+               description_of_activity ~ pct(15),
+               outcome_of_activity_roi ~ pct(15),
+               ksb ~ pct(50),
+               is_this_off_the_job_learning_or_in_your_own_time ~ pct(10)) %>% 
+    tab_header(title = "Learning activity record: Steve Crawshaw",
+               subtitle = month_of_learning) %>% 
+    basic_theme(
+        column_labels.font.size = px(15),
+        column_labels.font.weight = "bold"
+    )
+return(month_gt)
+}
 
+# render_report = function(learning_date) {
+#     rmarkdown::render(
+#         "learning_table_monthly.Rmd", params = list(
+#             learning_date = learning_date
+#         ),
+#         output_file = paste0("monthly_learning_report-", learning_date, ".docx")
+#     )
+# }
 
+learning_date <- "2022-03-01"
 
-format(Sys.time(), format = "%T") %>% class()
-
-lubridate::hms(Sys.time() %>% as.character())
-
-?strftime()
-
+get_gt_table(learning_date) %>% 
+    gtsave(filename = glue("learning_record_table_{learning_date}.png"))

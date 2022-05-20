@@ -1,0 +1,17 @@
+---
+title: "Learning Record"
+output: rtf_document
+date: "`r Sys.Date()`"
+params:
+    learning_date: !r Sys.Date()
+
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r OTJ, echo = FALSE, message = FALSE, warning=FALSE}
+source("OTJ_summaries.R")
+get_gt_table(params$learning_date)
+```
