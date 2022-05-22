@@ -24,8 +24,8 @@ get_googlesheet <- function(){
 
 # function to bold the KSB's 
 ksb_bold <- function(ksb_text){
-    repl_text = ""
-    patt_text <- str_extract_all(ksb_text, pattern = "K[0-9]+|B[0-9]+|S[0-9]+") %>% 
+    patt_text <- str_extract_all(ksb_text,
+                                 pattern = "K[0-9]+|B[0-9]+|S[0-9]+") %>% 
         unlist()
     repl_text <- paste0("**", patt_text, "**")
     names(repl_text) <- patt_text
@@ -75,8 +75,14 @@ learning_clean_tbl <- learning_raw_tbl %>%
                if_else(is.na(is_this_off_the_job_learning_or_in_your_own_time),
                        "Off the job",
                        "Own time")) %>% 
+<<<<<<< HEAD
     mutate(ksb = map_chr(ksb, ksb_bold)) #%>%  # highlight the KSB ID
    # group_by(is_this_off_the_job_learning_or_in_your_own_time)
+=======
+    filter(is_this_off_the_job_learning_or_in_your_own_time == "Off the job") %>% 
+    mutate(ksb = map_chr(ksb, ksb_bold)) # highlight the KSB ID
+
+>>>>>>> f5a7df1baca74b1dc5cb0f9625a1b8d5e810bada
 # create list for the labels in the GT table
 orig_names <- names(learning_raw_tbl %>% select(-Timestamp))
 new_names <- c("date_of_learning_activity", "hours", "description_of_activity", "outcome_of_activity_roi", "ksb", "is_this_off_the_job_learning_or_in_your_own_time")
