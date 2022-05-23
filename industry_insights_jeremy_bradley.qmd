@@ -68,7 +68,6 @@ DS - iterating in an effective way to improve a situation or process from the pr
     -   No weak engagement from stakeholders
     -   No weak decision process - not prioritised by decision makers
     -   Regulation prevents implementation
-
 -   KEY INGREDIENTS
     -   DATA
     -   SCALABILITY

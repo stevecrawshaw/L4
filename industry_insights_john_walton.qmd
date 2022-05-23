@@ -1,0 +1,84 @@
+---
+title: "Industry Insights: John Walton"
+author: "Steve Crawshaw"
+format: html
+editor: visual
+---
+
+# Summary
+
+John is editor of data journalism at the BBC. This was an interesting talk on the application of data science to the world of journalism. John highlighted several projects at the BBC where data added insight to stories, or where the analysis of the data created the story. He gave advice on starting a career in data journalism and how to apply data skills in story telling.
+
+# Data Journalism
+
+More data are available nowadays and data skills are becoming more necessary than ever. Data journalists need to see the stories in the data so need data skills to do that. Data journalists need to train each other on the job - a virtuous circle. This can be rewarding and is also necessary to QA the data and for effective processing. Collaborative approach, working with many disciplines The journalistic skills are essential - inquisitive and critical.
+
+## Projects
+
+### Covid - 19
+
+-   BBC page covering COVID stats for 15 months
+-   A data dashboard basically - but no data links..
+-   Taking official figures and updating daily
+-   Trends - deaths, cases, graphics
+-   Postcode search is a key attribute
+
+### Climate change
+
+-   [How CC may affect you in your area](https://www.bbc.co.uk/news/resources/idt-d6338d9f-8789-4bc2-b6d7-3691c0e7d138)
+-   Collaboration with Met office and Panorama
+
+### NHS Waiting Lists
+
+-   Use people's stories and combine with NHS open data
+-   Explain the impact of COVID-19 on this metric
+
+### UK passport checker shows skin colour bias
+
+-   Higher rate of photo rejection on automated checking site
+-   tested \> 1000 photos automatically to identify bias
+
+### Fast fashion online advertising is more sexual
+
+-   Machine learning using a cohort of photos downloaded from online advertising
+
+## Questions
+
+-   How will data change journalism?
+    -   Not all journalists will need to code. Data analysis is a natural fit for journalists but not all journalists will need data skills
+-   Will there be more jobs for Data journalists
+    -   Quite likely, esp with increased data literacy engendered by COVID-19
+-   How do you become a data journalist?
+    -   Need to show that you can use data, or have atrack record with data stories.
+-   Advice to Potential data journalists?
+    -   Acquire data skills while studying rather than working.
+
+    -   Hurdles will depend on where you are in your career.
+
+    -   Follow your own ideas about stories from data.
+-   Data first or story first?
+    -   Depends. Can plan for release of key datasets
+
+    -   Time is a key constraint and will limit depth of data analysis
+-   Is there potential for broadcast news timescale data stories?
+    -   Yes if planning is done, but difficult to be reactive.
+-   Is analysis or data viz the most time consuming?
+    -   They both go together, data viz informs analysis
+
+    -   Use R for analysis and dataviz rather than separate software
+-   How do you ensure data stories aren't biased?
+    -   Need to try and cover significant and interesting aspects
+
+    -   Speak to people who provide the data
+-   How to identify gaps in data?
+    -   Sometimes have to accept data is imperfect and acknowledge it
+-   Why just static data viz?
+    -   Sometimes interactivity can be overkill
+
+    -   May not be appropriate for some formats (phones) or users
+-   How to target your audience and explain concepts like risk?
+    -   It's a general audience, so everyone.
+
+    -   Risk - Winton Centre, advice from Spiegelhalter
+-   Do you share best practice?
+    -   Yes, also with BBC head of Statistics
