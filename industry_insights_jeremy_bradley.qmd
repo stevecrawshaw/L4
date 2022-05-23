@@ -1,0 +1,107 @@
+---
+title: "Industry Insights - Failure to Success"
+author: "Steve Crawshaw"
+format: html
+editor: visual
+---
+
+# Summary
+
+Very well presented and clear talk from Jeremy, who is clearly a well experienced and knowledgeable data scientist. Jeremy gave some valuable insights into delivering successful (and failing) data science projects in large organisations. The points made about culture and engagement were particularly interesting and it was great to get his understanding of how DS teams operate in the corporate context.
+
+# Presentation
+
+Failure can provide key learning opportunities for data science teams.
+
+## Data Science
+
+-   Retail applications
+    -   Churn modelling
+    -   Promotion planning
+    -   Supply chain optimisation
+    -   loss modelling
+    -   HR optimisation
+-   Other applications
+    -   Demand forecasting
+    -   Epidemic modelling
+    -   Pricing algorithms
+    -   Final mile delivery optimisation
+    -   Routing service engineers
+    -   Scheduling - maintenance
+    -   Energy and utility modelling
+
+## Case study - DOMINO Royal Mail
+
+-   fleet of vans (40K)
+-   limited visibility how vans are used
+-   managers don't have time to manage fleet
+-   task - optimise van use without affecting operations
+
+### Discovery process
+
+-   Developed app to show availability
+    -   Look at routes
+    -   Predict duration
+    -   Staff availability
+-   App outputs, features and considerations
+    -   outputs a schedule for managers
+    -   used telemetry data (start and stop of duty) - only for 1/3 of vehicles
+    -   used linear optimiser to schedule - but then found other constraints - staffing schedules
+    -   important to get out and see operations to understand constraints (e.g. + exit rate from depot)
+    -   up to 27% potential improvement
+
+## What does a DS Team need?
+
+-   DATA (available, curated and at scale) - example of supermarket deleting data from closed stores
+-   META DATA (collection, storage, processing)
+-   SCIENCE - the aplication of science to data and decision making (stats, probablity, ML, game theory, NLP, optimisation)
+-   DECISION - DS must inform actionable decision (process, risk, impact, bias)
+-   IMPACT - (financial, wellbeing, legal compliance, KPI's)
+
+DS - iterating in an effective way to improve a situation or process from the previous state.
+
+## Failure and Learning from Failure
+
+-   FAILURE can be caused by:
+    -   Great science but no data
+    -   Great science and data but computation too slow to take advantage
+    -   No weak engagement from stakeholders
+    -   No weak decision process - not prioritised by decision makers
+    -   Regulation prevents implementation
+
+-   KEY INGREDIENTS
+    -   DATA
+    -   SCALABILITY
+    -   REGULATION
+    -   DECISION
+    -   ENGAGEMENT
+    -   SCIENCE
+    -   CULTURE - partner with change process team
+
+DS often demands cultural change - challenging
+
+-   DOMINO failed because
+    -   Data availability weak (1/3)
+    -   Poor engagement with stakeholders
+    -   Managers in depots weren't making the decisions anyway - couldn't convince them to do it
+
+CEO asked to reduce fleet by 1000 vans this year, so used the process to identify depots that were over - provisioned (saved £5.5M)
+
+# Questions
+
+Human factors
+
+-   Limited granularity of sub - operations on a delivery route
+-   Assumed stated times were as described
+
+Julia - Engagement is a critical factor, how to increase?
+
+Need to listen to the operations  client team to craft a narrative that is helpful (can own) and not bypassing them
+
+Approval process - how does it work?
+
+Depends on company. Sometimes internal budgets (tricky). Better to get permission to explore and partnership. But need discipline to understand when to abort.
+
+How to structure a team and projects?
+
+It's about uncertainty reduction - lots of discovery processes and testing. Using sprints or kanbans. ROI doesn't happen on every project - but these should be short. Have a balanced portfolio of projects.
