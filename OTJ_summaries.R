@@ -18,7 +18,8 @@ get_googlesheet <- function(){
     # config.yml ignored by git for security
     config <- config::get()
     sheet_path <- config$sheet_path
-    learning_raw_tbl <- read_sheet(sheet_path, col_types = "TTccccc")
+    learning_raw_tbl <- read_sheet(sheet_path,
+                                   col_types = "TTccccc")
     return(learning_raw_tbl)
 }
 
@@ -28,6 +29,7 @@ ksb_bold <- function(ksb_text){
                                  pattern = "K[0-9]+|B[0-9]+|S[0-9]+") %>% 
         unlist()
     repl_text <- paste0("**", patt_text, "**")
+    # named vector to replace with markdown bolded text
     names(repl_text) <- patt_text
     str_replace_all(ksb_text,
                     repl_text) %>% 
@@ -111,16 +113,8 @@ month_gt <- learning_clean_tbl %>%
 return(month_gt)
 }
 
-# render_report = function(learning_date) {
-#     rmarkdown::render(
-#         "learning_table_monthly.Rmd", params = list(
-#             learning_date = learning_date
-#         ),
-#         output_file = paste0("monthly_learning_report-", learning_date, ".docx")
-#     )
-# }
-
-learning_date <- "2022-03-01"
-
-get_gt_table(learning_date) %>% 
-    gtsave(filename = glue("learning_record_table_{learning_date}.png"))
+# 
+# learning_date <- "2022-03-01"
+# 
+# get_gt_table(learning_date) %>% 
+#     gtsave(filename = glue("learning_record_table_{learning_date}.png"))
