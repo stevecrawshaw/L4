@@ -154,8 +154,109 @@ n_arith(7, 9)
 ```{r "assignment_20"}
 # with native lambda notation from R 4.1
 arith <- \(x, y) c(x+y, x-y, x*y, x/y)
-
 arith(9, 7)
+```
+
+swap the keys and values in a dictionary
+```{python "assigment_21"}
+
+def swap(my_dict):
+    swapped_dict = {}
+    for k, v in my_dict.items():
+        swapped_dict[v] = k
+    return swapped_dict
+
+x = {"one":1, "two":2, "three":3}
+
+swap(x)
+
+x.items()
+
+```
+
+```{r "assignment_21"}
+
+x <- c("one" = 1, "two" = 2, "three" = 3)
+
+swap <- function(x){
+    vals <- unname(x)
+    keys <- names(x)
+    names(keys) <- vals
+    return(keys)
+}
+
+swap(x)
+```
+
+Assignment 22 - write a function to return the max value in a list without using max()
+
+```{python "assignment_22"}
+# my solution
+def max_value(alist):
+    alist.sort(reverse = True) # default inplace = True!
+    return alist[0]
+
+alist = [1, 6, 90, 120, 3]
+max_value(alist)
+
+# Udemy solution
+
+def max_l(my_list):
+    my_max = float("-inf") # a very small number to initialise
+    for e in my_list:
+        if e > my_max:
+            my_max = e # capture the biggest number in my_max
+    return my_max
+
+max_l(alist)
+
+```
+
+```{r "assignment_22"}
+
+numvec <- c(1, 4, 7, 34, 2, 5)
+rev(sort(numvec))[1]
+# using a for loop
+findmax <- function(numvec){
+    my_max = -Inf
+    for(each in numvec){
+        if(each > my_max){
+            my_max <-  each
+        }
+ }
+ return(my_max)
+}
+findmax(numvec)
+```
+
+
+Create a function to count the number of upper and lower case characters in a string
+```{python "assignment_23"}
+
+def count_case(astring):
+    u = int(0)
+    l = int(0)
+    for i in astring:
+        if i.upper() == i: # can use .isupper()
+            u += 1
+        elif i.islower():
+            l += 1
+    return (u, l)
+        
+astring = "asdBB,LLLLLG"
+
+count_case(astring)
+
+```
+
+```{r "assignment_23"}
+
+astring <-  "asdBB,LLLLLG"
+
+?toupper
+
+
+
 
 ```
 
