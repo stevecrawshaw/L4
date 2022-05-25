@@ -37,17 +37,13 @@ ksb_bold <- function(ksb_text){
 }
 # custom function to add hours for a month
 sum_period_fnc <- function(period_vec){
-    
-    if(is.period(period_vec)){
+
         period_vec %>%
             period_to_seconds() %>%
             sum(na.rm = TRUE) %>% 
             seconds_to_period() %>% 
             as.character() %>% 
             return()    
-    } else {
-        return("--")
-    }
 }
 
 # theme function for GT
@@ -59,7 +55,7 @@ basic_theme <- function(data, ...){
         )
 }
 
-get_gt_table <- function(learning_date){
+get_gt_table <- function(learning_date, OTJ_only = TRUE){
     stopifnot("Entered date must be YYYY-MM-DD" = ymd(learning_date) %>% is.Date())
     month_of_learning <- glue("{month.name[month(learning_date)]} {year(learning_date)}")    
 
@@ -77,8 +73,13 @@ learning_clean_tbl <- learning_raw_tbl %>%
                if_else(is.na(is_this_off_the_job_learning_or_in_your_own_time),
                        "Off the job",
                        "Own time")) %>% 
-    filter(is_this_off_the_job_learning_or_in_your_own_time == "Off the job") %>% 
-    mutate(ksb = map_chr(ksb, ksb_bold)) # highlight the KSB ID
+    mutate(ksb = map_chr(ksb, ksb_bold)) %>%  # highlight the KSB ID
+           mutate(ksb = map_chr(ksb, ksb_bold)) # highlight the KSB ID
+
+if(OTJ_only){
+    learning_clean_tbl <- learning_clean_tbl %>% 
+        filter(is_this_off_the_job_learning_or_in_your_own_time == "Off the job")
+}
 
 # create list for the labels in the GT table
 orig_names <- names(learning_raw_tbl %>% select(-Timestamp))
@@ -89,21 +90,26 @@ names(orig_list) <- new_names
 # create the gt table
 month_gt <- learning_clean_tbl %>%
     select(all_of(new_names)) %>% 
-    gt() %>% 
+    gt(groupname_col = "is_this_off_the_job_learning_or_in_your_own_time") %>% 
+    
     fmt_markdown(columns = ksb) %>% 
     gt::cols_label(.list = orig_list) %>%
     tab_options(table.width = px(1080)) %>% 
-    grand_summary_rows(columns = hours,
-                       fns = list(`Total time` = ~sum_period_fnc(.)),
-                       formatter = fmt_passthrough,
-                       pattern = "{x}") %>% 
+    summary_rows(columns = hours,
+                 groups = TRUE,
+                 fns = list(`Total time`  = "sum_period_fnc"),
+                 formatter = fmt_passthrough, # this formatter used for 
+                 pattern = "{x}") %>% #character output where function makes char
+    tab_options(summary_row.border.color = "black",
+                row_group.font.weight = "bold") %>% 
     cols_width(
-        date_of_learning_activity ~ pct(10),
+        date_of_learning_activity ~ pct(8),
                hours ~ pct(10),
                description_of_activity ~ pct(15),
                outcome_of_activity_roi ~ pct(15),
-               ksb ~ pct(50),
+               ksb ~ pct(45),
                is_this_off_the_job_learning_or_in_your_own_time ~ pct(10)) %>% 
+    
     tab_header(title = "Learning activity record: Steve Crawshaw",
                subtitle = month_of_learning) %>% 
     basic_theme(
@@ -113,8 +119,15 @@ month_gt <- learning_clean_tbl %>%
 return(month_gt)
 }
 
+<<<<<<< HEAD
 # 
 # learning_date <- "2022-03-01"
 # 
 # get_gt_table(learning_date) %>% 
 #     gtsave(filename = glue("learning_record_table_{learning_date}.png"))
+=======
+learning_date <- "2022-03-01"
+
+get_gt_table(learning_date, OTJ_only = FALSE) #%>% 
+    gtsave(filename = glue("learning_record_table_{learning_date}.png"))
+>>>>>>> aa0b55140936a63f9960fd77c1c9bf163deb2eca
