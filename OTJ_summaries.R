@@ -118,6 +118,7 @@ month_gt <- learning_clean_tbl %>%
     )
 return(month_gt)
 }
+
 learning_date <- "2022-03-01"
 
 get_gt_table(learning_date, OTJ_only = FALSE) #%>% 
