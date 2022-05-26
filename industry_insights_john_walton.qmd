@@ -1,7 +1,7 @@
 ---
 title: "Industry Insights: John Walton"
 author: "Steve Crawshaw"
-format: html
+format: pdf
 editor: visual
 ---
 

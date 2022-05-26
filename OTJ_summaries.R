@@ -118,16 +118,7 @@ month_gt <- learning_clean_tbl %>%
     )
 return(month_gt)
 }
-
-<<<<<<< HEAD
-# 
-# learning_date <- "2022-03-01"
-# 
-# get_gt_table(learning_date) %>% 
-#     gtsave(filename = glue("learning_record_table_{learning_date}.png"))
-=======
 learning_date <- "2022-03-01"
 
 get_gt_table(learning_date, OTJ_only = FALSE) #%>% 
     gtsave(filename = glue("learning_record_table_{learning_date}.png"))
->>>>>>> aa0b55140936a63f9960fd77c1c9bf163deb2eca
