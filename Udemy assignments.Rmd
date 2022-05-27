@@ -255,8 +255,5 @@ astring <-  "asdBB,LLLLLG"
 
 ?toupper
 
-
-
-
 ```
 
