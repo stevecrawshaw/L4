@@ -59,7 +59,7 @@ get_gt_table <- function(learning_date, OTJ_only = TRUE){
     stopifnot("Entered date must be YYYY-MM-DD" = ymd(learning_date) %>% is.Date())
     month_of_learning <- glue("{month.name[month(learning_date)]} {year(learning_date)}")    
 
-learning_raw_tbl <- get_googlesheet()     
+learning_raw_tbl <- get_googlesheet()
 # transform the raw data
 learning_clean_tbl <- learning_raw_tbl %>%
     clean_names() %>% 
@@ -68,11 +68,7 @@ learning_clean_tbl <- learning_raw_tbl %>%
     mutate(hours = lubridate::hms(time_spent_on_activity_hh_mm), #period
            ksb = str_replace_all(select_ks_bs_that_apply, # make CR/LF
                                         pattern = ", ",
-                                        replacement = "<br>"),
-           is_this_off_the_job_learning_or_in_your_own_time = 
-               if_else(is.na(is_this_off_the_job_learning_or_in_your_own_time),
-                       "Off the job",
-                       "Own time")) %>% 
+                                        replacement = "<br>")) %>% 
     mutate(ksb = map_chr(ksb, ksb_bold)) %>%  # highlight the KSB ID
            mutate(ksb = map_chr(ksb, ksb_bold)) # highlight the KSB ID
 
@@ -119,7 +115,7 @@ month_gt <- learning_clean_tbl %>%
 return(month_gt)
 }
 
-learning_date <- "2022-03-01"
+learning_date <- "2022-05-01"
 
-get_gt_table(learning_date, OTJ_only = FALSE) #%>% 
+get_gt_table(learning_date, OTJ_only = FALSE) %>% 
     gtsave(filename = glue("learning_record_table_{learning_date}.png"))
