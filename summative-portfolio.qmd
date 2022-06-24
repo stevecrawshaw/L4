@@ -94,9 +94,36 @@ Much of this data architecture is not of direct relevance to my work as it perta
 * An open data (OD) platform provided by Opendatasoft
 * FME and FME Server processes to Extract, Transform and Load (ETL) air quality data to the open data platform
 * Dashboards, visualisation and analytics delivered through the OD platform
-* Bespoke reporting and ETL pipelines delivered through R sourcing data through the OD portal and the Envista database
+* Bespoke reporting and ETL pipelines delivered through R, sourcing data through the OD portal and the Envista database
 
 ## Security Standards and Policies
+
+The over - arching Information Governance Framework  outlines roles and responsibilities, policies and procedures, along with best practice and standards for managing the Council’s information assets. This has been developed to take account of the standards set by external organisations, such as the NHS in respect of the transition of Public Health to the Council and the requirements of the Public Sector Network (PSN) Code of Connection (CoCo).
+
+The framework consists of the following areas:
+
+1. IGF Principles
+2. The Information Governance Strategy.
+3. Appropriate Information Governance Responsibilities.
+4. Information Asset Ownership
+5. An Information Governance Structure.
+6. Effective Information Governance policies and procedures.
+7. An Information Asset Register 
+8. An Information Risk Register
+9. Information Governance communication and training.
+
+There are a number of policies and procedures in the framework which deliver the outcomes of the Information Governance Strategy, including:
+
+1. Instant Messaging Policy
+2. Acceptable Use Policy
+3. Training, Awareness and Development Procedure
+4. Agile or Teleworking Policy
+5. Logical Access Control Policy
+6. Physical Access Control Policy
+7. Information Security Incident Reporting Policy
+8. Subject Access Request Policy
+
+All the policies and procedures are hosted on a "metacompliance" platform, which manages access and control of the policies and ensures that relevant staff have read and agreed to the policies.
 
 # My Role: Air Quality Project Manager
 
