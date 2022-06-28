@@ -43,7 +43,7 @@ get_zip_file_urls <- function(data_root_url, sensor, start_date) {
         glue(
             "{data_root_url}{zip_years}/{zip_months}/data-{sensor}-{zip_years}-{zip_months}.zip"
         )
-    
+
     return(zip_file_urls)
 }
 
@@ -87,7 +87,7 @@ read_sds_zip <- function(zip_url) {
     csv_from_zip <- dir_ls(tempdir, regexp = "[.]csv$")
     
     zip_file_tbl <- csv_from_zip %>%
-        map_df( ~ read_sds_csv(.x))
+        map_df(~ read_sds_csv(.x))
     
     file_delete(dir_ls(tempdir))
     
@@ -97,11 +97,11 @@ read_sds_zip <- function(zip_url) {
 
 get_madavi_combined <- function(data_root_url, sensor, start_date) {
     day_files_tbl <- get_daily_csv_urls(data_root_url, sensor) %>%
-        map_df( ~ read_sds_csv(.x))
+        map_df(~ read_sds_csv(.x))
     
     zip_sds_tbl <-
         get_zip_file_urls(data_root_url, sensor, start_date) %>%
-        map_df( ~ read_sds_zip(.x))
+        map_df(~ read_sds_zip(.x))
     
     combined_tbl <- day_files_tbl %>%
         bind_rows(zip_sds_tbl) %>%
@@ -161,31 +161,45 @@ get_ref_data <- function(start_date) {
 }
 
 
-
-# %>%
-#     pivot_wider(id_cols = date, names_from = siteid, values_from = c(pm10, pm2.5)) %>%
-#     mutate(across(where(~is.na(.x) %>% all()), ~NULL))
-
-
 # temple_way_hr_tbl <- get_madavi_combined(data_root_url, sensor, start_date)
 temple_way_hr_tbl <- read_rds(choose.files())
 parson_st_hr_tbl <- get_parson_st_data(start_date)
 ref_tbl <- get_ref_data(start_date)
 
-combined_long_tbl <- ref_tbl %>% 
-    mutate(type = "reference") %>% 
-    bind_rows(temple_way_hr_tbl %>% 
-                  mutate(siteid = 500L,
-                         type = "low cost",
-                         pm2.5 = NA)) %>% 
-    bind_rows(parson_st_hr_tbl %>% 
-                  mutate(siteid = 215L,
-                         type = "low_cost",
-                         pm10 = NA))
-    
-combined_long_tbl
-    # pivot_longer(cols = starts_with("pm"),
-    #              names_to = "pollutant",
-    #              values_to = "")
-    # rename_with(.fn = ~paste0(.x, "_reference"),
-    #             .cols = starts_with("pm"))
+combined_long_tbl <- ref_tbl %>%
+    mutate(type = "reference") %>%
+    bind_rows(temple_way_hr_tbl %>%
+                  mutate(
+                      siteid = 500L,
+                      type = "low cost",
+                      pm2.5 = NA
+                  )) %>%
+    bind_rows(parson_st_hr_tbl %>%
+                  mutate(
+                      siteid = 215L,
+                      type = "low_cost",
+                      pm10 = NA
+                  ))
+
+model_data_tbl <- combined_long_tbl %>%
+    group_by(siteid) %>%
+    nest() %>%
+    mutate(
+        md = map_df(data, ~ pluck(.x) %>%
+                        mutate(across(
+                            where( ~ is.na(.x) %>%
+                                       all()), ~ NULL
+                        ))) %>%
+            list(),
+        md_wide = map_df(
+            md,
+            ~ pluck(.x) %>%
+                na.omit() %>%
+                pivot_wider(
+                    id_cols = date,
+                    names_from = type,
+                    values_from = starts_with("pm")
+                )
+        ) %>%
+            list()
+    )
