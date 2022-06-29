@@ -162,7 +162,7 @@ get_ref_data <- function(start_date) {
 
 
 # temple_way_hr_tbl <- get_madavi_combined(data_root_url, sensor, start_date)
-temple_way_hr_tbl <- read_rds(choose.files())
+temple_way_hr_tbl <- read_rds("../air quality analysis/data/esp8266-6496445_2022-06-28_raw.rds")
 parson_st_hr_tbl <- get_parson_st_data(start_date)
 ref_tbl <- get_ref_data(start_date)
 
@@ -171,7 +171,7 @@ combined_long_tbl <- ref_tbl %>%
     bind_rows(temple_way_hr_tbl %>%
                   mutate(
                       siteid = 500L,
-                      type = "low cost",
+                      type = "low_cost",
                       pm2.5 = NA
                   )) %>%
     bind_rows(parson_st_hr_tbl %>%
@@ -194,12 +194,21 @@ model_data_tbl <- combined_long_tbl %>%
         md_wide = map_df(
             md,
             ~ pluck(.x) %>%
-                na.omit() %>%
                 pivot_wider(
                     id_cols = date,
                     names_from = type,
                     values_from = starts_with("pm")
-                )
+                ) %>% na.omit() %>% 
+                filter(reference < 200)
         ) %>%
             list()
     )
+
+
+#model_data_tbl$md_wide[1][[1]]$reference %>% max()
+
+
+lobstr::obj_size(model_data_tbl)
+model_data_tbl %>% 
+    write_rds("data/model_data_tbl.rds")
+
