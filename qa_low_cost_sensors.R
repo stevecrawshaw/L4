@@ -43,7 +43,7 @@ get_zip_file_urls <- function(data_root_url, sensor, start_date) {
         glue(
             "{data_root_url}{zip_years}/{zip_months}/data-{sensor}-{zip_years}-{zip_months}.zip"
         )
-
+    
     return(zip_file_urls)
 }
 
@@ -87,7 +87,7 @@ read_sds_zip <- function(zip_url) {
     csv_from_zip <- dir_ls(tempdir, regexp = "[.]csv$")
     
     zip_file_tbl <- csv_from_zip %>%
-        map_df(~ read_sds_csv(.x))
+        map_df( ~ read_sds_csv(.x))
     
     file_delete(dir_ls(tempdir))
     
@@ -97,11 +97,11 @@ read_sds_zip <- function(zip_url) {
 
 get_madavi_combined <- function(data_root_url, sensor, start_date) {
     day_files_tbl <- get_daily_csv_urls(data_root_url, sensor) %>%
-        map_df(~ read_sds_csv(.x))
+        map_df( ~ read_sds_csv(.x))
     
     zip_sds_tbl <-
         get_zip_file_urls(data_root_url, sensor, start_date) %>%
-        map_df(~ read_sds_zip(.x))
+        map_df( ~ read_sds_zip(.x))
     
     combined_tbl <- day_files_tbl %>%
         bind_rows(zip_sds_tbl) %>%
@@ -113,8 +113,6 @@ get_madavi_combined <- function(data_root_url, sensor, start_date) {
     return(combined_tbl)
 }
 
-#
-# write_rds(temple_way_hr_tbl, glue("../air quality analysis/data/{sensor}_{Sys.Date()}_raw.rds"))
 
 # 3.1.2 Get sensor data from the sensor at Parson Street which is registered on sensor.community and also on the open data portal
 
@@ -161,8 +159,17 @@ get_ref_data <- function(start_date) {
 }
 
 
-# temple_way_hr_tbl <- get_madavi_combined(data_root_url, sensor, start_date)
+# temple_way_hr_tbl <-
+#     get_madavi_combined(data_root_url, sensor, start_date)
+
+#
+# write_rds(
+#     temple_way_hr_tbl,
+#     glue("../air quality analysis/data/{sensor}_{Sys.Date()}_raw.rds")
+# )
+
 temple_way_hr_tbl <- read_rds("../air quality analysis/data/esp8266-6496445_2022-06-28_raw.rds")
+
 parson_st_hr_tbl <- get_parson_st_data(start_date)
 ref_tbl <- get_ref_data(start_date)
 
@@ -185,30 +192,27 @@ model_data_tbl <- combined_long_tbl %>%
     group_by(siteid) %>%
     nest() %>%
     mutate(
-        md = map_df(data, ~ pluck(.x) %>%
-                        mutate(across(
-                            where( ~ is.na(.x) %>%
-                                       all()), ~ NULL
-                        ))) %>%
-            list(),
-        md_wide = map_df(
+        md = map(data, ~ pluck(.x) %>%
+                     mutate(across(
+                         where(~ is.na(.x) %>%
+                                   all()), ~ NULL
+                     ))),
+        md_wide = map(
             md,
             ~ pluck(.x) %>%
                 pivot_wider(
                     id_cols = date,
                     names_from = type,
                     values_from = starts_with("pm")
-                ) %>% na.omit() %>% 
+                ) %>% na.omit() %>%
                 filter(reference < 200)
-        ) %>%
-            list()
+        )
     )
 
 
 #model_data_tbl$md_wide[1][[1]]$reference %>% max()
 
 
-lobstr::obj_size(model_data_tbl)
-model_data_tbl %>% 
+# lobstr::obj_size(model_data_tbl)
+model_data_tbl %>%
     write_rds("data/model_data_tbl.rds")
-
