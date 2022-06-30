@@ -32,7 +32,7 @@ plot_scatter <- function(model_data) {
     # equation labels on the plot
     model_data %>%
         ggplot(aes(x = reference, y = low_cost)) +
-        geom_point(alpha = 0.5) +
+        geom_point2(alpha = 0.5) +
         geom_smooth(method = "lm") +
         geom_xsidedensity(lwd = 1) +
         geom_ysidedensity(lwd = 2) +
@@ -91,7 +91,7 @@ model_output <- model_data_tbl %>%
                             subtitle = "Reference Instrument (BAM 1020) vs. Low Cost Sensor (SDS011)"))
     )
 
-model_output$plot[1]
+model_output$plot[2]
 
 par(mfrow = c(2, 2)) # plot all 4 plots in one
 
@@ -103,3 +103,20 @@ model_data_tbl$md_wide %>%
 test_tbl %>% 
     cor_test("reference", "low_cost") %>% 
     plot()
+
+model_output$cor
+report(test_tbl)
+
+
+
+lm_fit <- fit_lm(test_tbl)
+
+lm_fit %>% 
+    parameters() %>% 
+    plot()
+
+# qqplot in see:: needs non parsnip model
+lmt <- lm(low_cost ~ reference, data = test_tbl)
+
+check_normality(lmt) %>% 
+    plot(type = "qq")
