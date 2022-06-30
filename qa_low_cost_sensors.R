@@ -212,6 +212,20 @@ model_data_tbl <- combined_long_tbl %>%
 
 #model_data_tbl$md_wide[1][[1]]$reference %>% max()
 
+time_series_plot <- combined_long_tbl %>% 
+    pivot_longer(cols = starts_with("pm"),
+                 names_to = "pollutant",
+                 values_to = "concentration") %>%
+    filter(concentration < 200,
+           date > start_date) %>% 
+    ggplot(aes(x = date,
+               y = concentration,
+               colour = type)) +
+    geom_line() +
+    facet_wrap(~ siteid, ncol = 1, scales = "free_y")
+
+time_series_plot
+
 
 # lobstr::obj_size(model_data_tbl)
 model_data_tbl %>%
