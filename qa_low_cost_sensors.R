@@ -20,7 +20,7 @@ data_root_url <- "https://api-rrd.madavi.de/data_csv/"
 # url <-  "https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445"
 # base_url <- "https://api-rrd.madavi.de/csvfiles.php"
 sensor <- "esp8266-6496445"
-start_date <- "2022-04-23"
+start_date <- "2022-05-01"
 # ___________ ----
 # 3.0 Functions ----
 
@@ -163,18 +163,19 @@ get_ref_data <- function(start_date) {
 #     get_madavi_combined(data_root_url, sensor, start_date)
 
 #
-# write_rds(
-#     temple_way_hr_tbl,
-#     glue("../air quality analysis/data/{sensor}_{Sys.Date()}_raw.rds")
-# )
+write_rds(
+    temple_way_hr_tbl,
+    glue("../air quality analysis/data/{sensor}_{Sys.Date()}_raw.rds")
+)
 
-temple_way_hr_tbl <- read_rds("../air quality analysis/data/esp8266-6496445_2022-06-28_raw.rds")
+temple_way_hr_tbl <- read_rds("../air quality analysis/data/esp8266-6496445_2022-06-30_raw.rds")
 
 parson_st_hr_tbl <- get_parson_st_data(start_date)
 ref_tbl <- get_ref_data(start_date)
 
 combined_long_tbl <- ref_tbl %>%
     mutate(type = "reference") %>%
+    mutate(pm2.5 = if_else(pm2.5 > 200, NA_real_, pm2.5)) %>% 
     bind_rows(temple_way_hr_tbl %>%
                   mutate(
                       siteid = 500L,
