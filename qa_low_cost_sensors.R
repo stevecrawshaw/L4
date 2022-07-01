@@ -30,7 +30,7 @@ start_date <- "2022-05-01"
 # sensor.community. This is available through the madavi.de API
 # as csv and zip files
 get_zip_file_urls <- function(data_root_url, sensor, start_date) {
-    previous_month <- (Sys.Date() - dmonths(1)) %>% as.Date()
+    previous_month <- (Sys.Date() - months(1)) %>% as.Date()
     
     seq_dates <- seq.Date(from = start_date %>% as.Date(),
                           to = previous_month,
@@ -131,6 +131,7 @@ get_parson_st_data <- function(start_date) {
     
     ps_raw_tbl %>%
         select(date, pm2.5 = pm2_5) %>%
+        filter(date > start_date %>% as.POSIXct()) %>% 
         return()
 }
 
@@ -159,8 +160,8 @@ get_ref_data <- function(start_date) {
 }
 
 
-# temple_way_hr_tbl <-
-#     get_madavi_combined(data_root_url, sensor, start_date)
+temple_way_hr_tbl <-
+    get_madavi_combined(data_root_url, sensor, start_date)
 
 #
 write_rds(
@@ -168,7 +169,7 @@ write_rds(
     glue("../air quality analysis/data/{sensor}_{Sys.Date()}_raw.rds")
 )
 
-temple_way_hr_tbl <- read_rds("../air quality analysis/data/esp8266-6496445_2022-06-30_raw.rds")
+temple_way_hr_tbl <- read_rds("../air quality analysis/data/esp8266-6496445_2022-07-01_raw.rds")
 
 parson_st_hr_tbl <- get_parson_st_data(start_date)
 ref_tbl <- get_ref_data(start_date)
@@ -204,30 +205,43 @@ model_data_tbl <- combined_long_tbl %>%
                 pivot_wider(
                     id_cols = date,
                     names_from = type,
-                    values_from = starts_with("pm")
-                ) %>% na.omit() %>%
-                filter(reference < 200)
+                    values_from = starts_with("pm"))
+            )
         )
-    )
-
-
-#model_data_tbl$md_wide[1][[1]]$reference %>% max()
-
-time_series_plot <- combined_long_tbl %>% 
-    pivot_longer(cols = starts_with("pm"),
-                 names_to = "pollutant",
-                 values_to = "concentration") %>%
-    filter(concentration < 200,
-           date > start_date) %>% 
-    ggplot(aes(x = date,
-               y = concentration,
-               colour = type)) +
-    geom_line() +
-    facet_wrap(~ siteid, ncol = 1, scales = "free_y")
-
-time_series_plot
-
-
-# lobstr::obj_size(model_data_tbl)
+# 
+# model_data_tbl$md_wide[1][[1]] %>%
+#     openair::timePlot(pollutant = "pm2.5", type = "type")
+# 
+# #model_data_tbl$md_wide[1][[1]]$reference %>% max()
+# 
+# time_series_plot <- combined_long_tbl %>% 
+#     pivot_longer(cols = starts_with("pm"),
+#                  names_to = "pollutant",
+#                  values_to = "concentration") %>%
+#     filter(siteid == 215 & pollutant == "pm2.5" |
+#            siteid == 500 & pollutant == "pm10") %>% 
+#     # filter(concentration < 200,
+#     #        date > start_date) %>% 
+#     ggplot(aes(x = date,
+#                y = concentration,
+#                colour = type)) +
+#     geom_line() +
+#     facet_wrap(~ siteid, ncol = 1, scales = "free_y")
+# 
+# time_series_plot
+# 
+# 
+# # lobstr::obj_size(model_data_tbl)
 model_data_tbl %>%
     write_rds("data/model_data_tbl.rds")
+# 
+# 
+# temple_way_hr_tbl %>% 
+#     openair::timePlot(pollutant = "pm10")
+# 
+# ref_tbl    %>% 
+#     mutate(across(starts_with("pm"),
+#                   ~if_else(.x > 500, NA_real_, .x))) %>%
+#     filter(siteid == 215) %>%
+#     openair::timePlot(pollutant = "pm2.5")
+
