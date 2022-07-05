@@ -1,0 +1,290 @@
+---
+title: An R Markdown document converted from "bokeh-workbook.ipynb"
+output: html_document
+---
+
+# Interactive Data Visualisation with Bokeh
+
+First some housekeeping, to ensure that we have everything needed to use this notebook installed.
+
+If you are running this notebook locally (KATE is recommended) then you will first need to answer the questions below. This is also a helpful checklist when checking 
+
+The `!` is a 'magic' notebook command which allows use of the `command line` from within a notebook.
+
+- is there any version of bokeh installed?
+- is the version of pandas 0.25 or greater?
+- is there any version of pandas-bokeh installed?
+
+For any of the above that are 'No', uncomment the given line in the cell below and run it.  
+The `-y` command is used so that any confirmation prompts during installation are automatically answered 'Yes'.
+
+```{r}
+source("libs_and_env.R")
+
+```
+
+
+```{python}
+import pandas as pd
+```
+
+```{python}
+import pandas_bokeh
+from bokeh.plotting import figure, show, output_notebook
+import warnings
+warnings.filterwarnings('ignore')
+#https://kloud.edukate.ai/user/cs-11339/lu-4334-32-1.2/edit/additional_materials/data/flights.csv
+```
+
+### Bokeh.plotting
+
+Let's start with a simple plot using bokeh.plotting. First we will import some methods, and run `output notebook()`. This will result in our plots being shown in the notebook rather than in a separate page.
+
+```{python}
+output_notebook()
+
+x = [0, 10, 20, 30, 40, 50]
+y0 = [0, 1, 4, 9, 16, 25]
+y1 = [25, 16, 9, 4, 1, 0]
+```
+
+**Q1.** Create a figure assigned to the variable `s` and then plot the data in `x` and `y0` from above. Plot both `line` and `circle` glyphs with the data, and experiment with the `size`, `alpha`, and `color` parameters for each. `show` the plot in the notebook.
+
+```{python}
+s = figure(width=300, height=300)
+s.line(x = x, y = y0, color = "red")
+s.scatter(x = x, y = y0, marker = "circle", size = 6, alpha = 0.5)
+show(s)
+```
+
+### Bokeh.models.widgets
+
+```{python}
+from bokeh.models.widgets import Tabs, Panel
+```
+
+We're now going to use the `Tabs` and `Panel` widgets to have multiple plots available to view via tabbed navigation.
+
+**Q2.** First, create another figure like the one created above, except using `y1` instead of `y0`, and assigning it to the variable `d`. Make the glyph styling a little different, for example by using a different colour.
+
+*It's worth noting here that the manner in which Bokeh creates the output means that we need to create a new figure from scratch rather than attempting to copy and then modify the previous figure.*
+
+*If we subsequently want to update specific attributes of each figure with the same values, we can do so using iteration.*
+
+```{python}
+d = figure(width=300, height=300)
+d.line(x = x, y = y1, color = "purple")
+d.scatter(x = x, y = y1, marker = "circle", size = 10, alpha = 0.9)
+show(d)
+```
+
+**Q3.** We need to create a `Panel` object for each `figure` we want to include, using the `child` argument to specify the figure and add a `title` for each one:
+
+- 'Supply' for the `s` panel
+- 'Demand' for the `d` panel
+
+Next, create a `Tabs` object, giving a list of the panels created as the `tabs` argument, and then `show` the result.
+
+Look at the [documentation]('https://docs.bokeh.org/en/latest/docs/reference/models/layouts.html?highlight=panel#panel') for help and examples.
+
+```{python}
+supply_panel = Panel(child = s, title = "Supply")
+demand_panel = Panel(child = d, title = "Demand")
+both = Tabs(tabs=[supply_panel, demand_panel])
+show(both)
+```
+
+Note that the figures in each panel remain independent of one another. 
+
+**Q4.** If we want to update properties with a common value across all graphs, we can use iteration; set the following properties with the same values of your choice for figures `s` and `d`: 
+
+`xaxis.axis_label`, `yaxis.axis_label`, `plot_width`, `plot_height`, `toolbar_location`  
+
+See the [documentation](https://bokeh.pydata.org/en/latest/docs/user_guide/tools.html) for more details on toolbar configuration options.
+
+```{python}
+for i in [s, d]:
+    i.xaxis.axis_label = "X"
+    i.yaxis.axis_label = "X"
+    i.plot_width = 400
+    i.plot_height = 200
+    i.toolbar_location = "above"
+    
+```
+
+```{python}
+show(s)
+```
+
+### Pandas-Bokeh
+
+[Pandas-Bokeh](https://github.com/PatrikHlobil/Pandas-Bokeh) is a library which simplifies the creation of Bokeh plots when using Pandas DataFrames as the data source. It was integrated more directly with Pandas in Pandas version 0.25 (which is why we checked our version at the top of the notebeook).  
+
+This integration allows us to set bokeh as our default plotting backend for Pandas, thus replacing matplotlib when `df.plot` is used and adding Bokeh methods to `pd.plotting`. Note that not all plot types are supported, but what is available should be more than sufficient for most purposes.
+
+```{python}
+pd.set_option('plotting.backend', 'pandas_bokeh')
+```
+
+```{python}
+import warnings
+warnings.filterwarnings("ignore")
+```
+
+First we'll load some data. The dataset gives details of 350,000+ domestic commercial flights in the USA from 1990 - 2009.  
+
+It's important to understand that **much of the work required for visualisation comes in the processing of the data** (even when the data is in a clean and tidy state such as the file we will be using below is), so we will walk through this together. 
+
+Take a moment to look at the cell below and understand what's going on; we are loading a comma-separated values file, adding column headers, and then using Pandas `datetime` methods to extract the year and month for each row.  
+
+More information about the dataset can be found in the `.yaml` file in the `data` folder.
+
+```{python}
+df = pd.read_csv('data/flights.csv',
+                 names=['Origin', 'Destination','Origin_City', 'Destination_City', 
+                        'Passengers', 'Seats', 'Flights', 'Distance','Date', 
+                        'Origin_City_Popn','Destination_City_Popn'])
+```
+
+```{python}
+df.shape
+```
+
+```{python}
+df['Date'] = pd.to_datetime(df['Date'], format='%Y%m')
+df['Year'] = df['Date'].dt.year
+df['Month'] = df['Date'].dt.month
+```
+
+We will now calculate some further columns derived from columns of interest, and check that our extended DataFrame looks as expected:
+
+```{python}
+df['Empty_Seats'] = df['Seats'] - df['Passengers']
+df['Spare_Capacity_%'] = (1 - df['Passengers'] / df['Seats']) * 100
+df['Passenger_Miles'] = df['Passengers'] * df['Distance']
+df.head()
+```
+
+We would like to look at the progression over time of the volume of flights and passengers from a specific airport. There's a number of approaches that could be taken to achieve this but use of `.groupby` is shown. Note how this creates a `MultiIndex` DataFrame.
+
+```{python}
+org = df.groupby(['Origin', 'Year']).sum()
+org.head()
+```
+
+Notice how as a result of using `.sum` in the `.groupby`, some columns (such as `Date`) have been dropped because they could not be summed, while others (such as `Month` and `Spare_Capacity_%`) no longer contain values which are particularly useful.  
+
+We'll now extract only the columns of use and the rows for a specific airport. Note the assignment of the airport code to a variable `airport`; this should make things easier if we subsequently want to re-use our code for analysis of a different airport, perhaps within a function.
+
+```{python}
+airport = 'JFK'
+ap = org.loc[airport][['Passengers', 'Passenger_Miles','Flights', 'Seats', 'Empty_Seats']]
+ap.head()
+```
+
+We can see that the values in each column are of quite different magnitudes; so that we can more easily see their progression over time relative to one another, let's use the 1990 values for each as a base year for comparison:
+
+```{python}
+base = ap.iloc[0]
+ap_90 = ap / base
+ap_90.head()
+```
+
+We now have a tidy DataFrame with `Year` as the index and the progression of various metrics for a given airport over the time period.   
+
+**Q5.** Try using the`.plot` method on the `ap_90` DataFrame and see what you get:
+
+```{python}
+ap_90.plot();
+```
+
+Pandas-Bokeh has done a lot of work for us here - try clicking on the different labels in the legend, and hovering over the lines. The package has created a Bokeh `Figure` object, and from the `bokeh.models` module used `ColumnDataSource` to interpret the DataFrame and `HoverTool` to add further interactivity to the chart.
+
+The above plot was produced without providing any [keyword arguments](https://treyhunner.com/2018/04/keyword-arguments-in-python/) to the `.plot` method, but we can provide further [optional parameter values](https://github.com/PatrikHlobil/Pandas-Bokeh#lineplot) when using it for customisation.
+
+
+We can assign the resulting Bokeh figure to a variable, and then make further modifications to it. When doing so we may wish to use the `show_figure=False` argument with the `.plot` method so we don't display it unnecessarily.  
+
+**Q6.** Use the `.plot` method on `ap_90` to assign a figure to a variable, which does not have a `hovertool` and uses a `colormap` of your choice from the [palettes](https://bokeh.pydata.org/en/latest/docs/reference/palettes.html), while preventing the figure being displayed.  
+
+Have a go at updating the figure using Bokeh methods, such as `toolbar_location`, `legend.location`, and `plot_width`. Remember we may need to use `show` to see it.
+
+```{python}
+ap_90_plot = ap_90.plot(show_figure = False);
+```
+
+```{python}
+ap_90_plot.legend.location = "top_center"
+ap_90_plot.toolbar_location = "above"
+ap_90_plot.plot_width = 1000
+show(ap_90_plot)
+```
+
+**Q7.** What do you think has happened to the average spare capacity at which the planes have run, and the average distance of a flight from this airport? 
+
+Use `.groupby` on `df` to find the `mean` of all the values for each airport by each year, and then create a new dataframe with only the two columns of interest and the rows for the given airport.
+
+```{python}
+ap_mean = df.groupby(["Origin", "Year"]).mean()[['Distance', 'Spare_Capacity_%']].loc[airport].reset_index()
+
+ap_mean.head()
+# df_sc_d.shape
+```
+
+We could do as we did previously with the `.sum` data and use the 1990 values as a base. But sometimes it may be useful or necessary to see the absolute values on the chart.
+
+### Further customisation with Bokeh
+
+```{python}
+from bokeh.models import LinearAxis, Range1d, HoverTool
+```
+
+**Q8.** Using the bokeh `Figure` class, have a go at creating a plot which displays the progression of distance and spare capacity over time, with the ability to view the values via the plot. Try to:
+- add a secondary y-axis 
+- set an appropriate range and scale for each y-axis
+- add a tooltip showing the values in an appropriate format
+- add labels to each y-axis
+- add a legend and title  
+
+You may find it helpful to investigate the classes imported above from `bokeh.models`.
+
+```{python}
+hover = HoverTool(
+        tooltips=[
+            ("Distance", "@{Distance}{int} miles"),
+            ("Capacity", "@{Spare_Capacity_%}{1.1}%")])
+
+mn = figure(plot_width=800,plot_height=400,
+            title='Distance and spare capacity averages 1990 - 2009',            
+            tools=[hover],
+            toolbar_location=None,
+            y_axis_label='Distance (miles)',
+            x_axis_label='Year')
+
+mn.y_range = Range1d(0, 2000)
+mn.extra_y_ranges = {"y2_range": Range1d(start=25, end=50)}
+mn.add_layout(LinearAxis(y_range_name="y2_range", axis_label="Spare Capacity (%)"), 'right')
+
+mn.line("Year", "Distance", color="#3288bd", source=ap_mean, legend_label="Distance (miles)")
+mn.line("Year", "Spare_Capacity_%", color="#99d594", source=ap_mean, legend_label="Spare Capacity (%)", y_range_name="y2_range")
+
+mn.legend.location = "bottom_left"
+mn.legend.click_policy="hide"
+
+show(mn)
+```
+
+**Q9.** Finally, we'll take a look at the use of `layouts` to display multiple plots together. The `pd.plotting.plot_grid` method takes a list of lists containing plots and will display each list in turn as a row in a grid.
+
+Using this method, create a layout which displays the plot of the summed data over time for the given airport from earlier in the notebook, with plot of the averaged data for distance and capacity we just produced below it.
+
+Assign this layout to a variable and then use the `save` method (imported from `bokeh.plotting`) to create a file called `flights.html`, using `inline` for the `resources` parameter.
+
+```{python}
+from bokeh.plotting import save
+
+
+grid = pd.plotting.plot_grid([[ap_90_plot],[mn]]);
+save(grid, filename='flights.html', resources='inline');
+```
+
