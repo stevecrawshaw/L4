@@ -26,7 +26,6 @@ model_data_tbl <-
 test_tbl <- model_data_tbl$md_wide[2][[1]]
 
 source("../airquality_GIT/gg_themes.R") # for nice gg themes
-# test_data <- model_data_tbl$md_wide[1][[1]]
 
 # function to generate scatter and density plots from the model data
 plot_scatter <- function(model_data) {
@@ -101,8 +100,23 @@ prep_timeplot <- function(model_data_tbl) {
         return()
 }
 
-plot_time_series <- function(time_plot_data) {
-    time_plot_data %>%
+plot_time_series <- function(time_plot_data, interval = "hour") {
+    
+    if (interval == "hour"){
+        plot_data <- time_plot_data
+        title_interval <- "hourly"
+    } else if (interval == "day"){
+        plot_data <- time_plot_data %>%
+            group_by(siteid,
+                     pollutant,
+                     site,
+                     type,
+                     date = as.Date(date)) %>% 
+            summarise(concentration = mean(concentration, na.rm = TRUE))
+        title_interval = "daily"
+    }
+    
+    plot_data %>% 
         ggplot(aes(x = date,
                    y = concentration,
                    colour = type)) +
@@ -115,7 +129,7 @@ plot_time_series <- function(time_plot_data) {
             values = c("#A15766", "#1C6762")
         ) +
         labs(
-            title = "Time series plot of hourly PM at colocated sites",
+            title = glue("Time series plot of {title_interval} PM at colocated sites"),
             x = "date",
             y = quickText("ugm-3"),
             colour = "Type"
@@ -145,10 +159,10 @@ model_output_tbl <- model_data_tbl %>%
         )
     )
 
-model_output_tbl$plot[1]
+model_output_tbl$plot[2]
 
 # Time Plot ----
 
 time_plot_data <- prep_timeplot(model_data_tbl)
 
-plot_time_series(time_plot_data)
+plot_time_series(time_plot_data, interval = "day")

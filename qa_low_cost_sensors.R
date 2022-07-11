@@ -12,7 +12,7 @@ library(xfun)
 pkg_attach2(p)
 rm(p)
 
-source("../airquality_GIT/importODS.R")
+source("../airquality_GIT/ods-import-httr2.R")
 #____________----
 # 2.0 Variables ----
 data_root_url <- "https://api-rrd.madavi.de/data_csv/"
@@ -117,16 +117,14 @@ get_madavi_combined <- function(data_root_url, sensor, start_date) {
 # 3.1.2 Get sensor data from the sensor at Parson Street which is registered on sensor.community and also on the open data portal
 
 get_parson_st_data <- function(start_date) {
-    ps_raw_tbl <- getODSExport(
-        select_str = "sensor_id, date, pm2_5",
-        where_str = "sensor_id = 71552",
+    ps_raw_tbl <- import_ods(
+        select = "sensor_id, date, pm2_5",
+        where = "sensor_id = 71552",
         date_col = "date",
         dateon = start_date,
         dateoff = Sys.Date(),
         dataset = "luftdaten_pm_bristol",
-        order_by = "date",
-        refine = NULL,
-        apikey = NULL
+        order_by = "date"
     )
     
     ps_raw_tbl %>%
@@ -139,26 +137,19 @@ get_parson_st_data <- function(start_date) {
 
 get_ref_data <- function(start_date) {
     raw_ref_tbl <-
-        getODSExport(
-            select_str = "siteid, date_time, pm25, pm10",
-            where_str = "(siteid = 215 OR siteid = 500) AND date_time IN [date'2022'..date'2022']",
-            date_col = NULL,
-            dateon = NULL,
-            dateoff = NULL,
-            dataset = "air-quality-data-continuous",
-            order_by = "siteid, date_time",
-            refine = NULL,
-            apikey = NULL
-        )
+        import_ods(
+            "air-quality-data-continuous",
+            select = "siteid, date_time, pm25, pm10",
+            where = "(siteid = 215 OR siteid = 500) AND date_time IN [date'2022'..date'2022']",
+            order_by = "siteid, date_time"
+            )
     
     raw_ref_tbl %>%
         filter(date_time >= start_date) %>%
         rename(date = date_time,
                pm2.5 = pm25) %>%
         return()
-    
 }
-
 
 temple_way_hr_tbl <-
     get_madavi_combined(data_root_url, sensor, start_date)
@@ -205,7 +196,12 @@ model_data_tbl <- combined_long_tbl %>%
                 pivot_wider(
                     id_cols = date,
                     names_from = type,
-                    values_from = starts_with("pm"))
+                    values_from = starts_with("pm")) %>% 
+                group_by(date = as.Date(date)) %>% 
+                summarise(reference = mean(reference,
+                                           na.rm = TRUE),
+                          low_cost = mean(low_cost,
+                                          na.rm = TRUE))
             )
         )
 # 
