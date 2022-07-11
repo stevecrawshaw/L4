@@ -7,25 +7,30 @@ output: html_document
 
 First some housekeeping, to ensure that we have everything needed to use this notebook installed.
 
-If you are running this notebook locally (KATE is recommended) then you will first need to answer the questions below. This is also a helpful checklist when checking 
+If you are running this notebook locally (KATE is recommended) then you will first need to answer the questions below. This is also a helpful checklist when checking
 
 The `!` is a 'magic' notebook command which allows use of the `command line` from within a notebook.
 
-- is there any version of bokeh installed?
-- is the version of pandas 0.25 or greater?
-- is there any version of pandas-bokeh installed?
+-   is there any version of bokeh installed?
+-   is the version of pandas 0.25 or greater?
+-   is there any version of pandas-bokeh installed?
 
-For any of the above that are 'No', uncomment the given line in the cell below and run it.  
+For any of the above that are 'No', uncomment the given line in the cell below and run it.\
 The `-y` command is used so that any confirmation prompts during installation are automatically answered 'Yes'.
 
 ```{r}
-source("libs_and_env.R")
+library(tidyverse)
+library(reticulate)
+Sys.setenv("RETICULATE_PYTHON" = "/home/steve/miniconda3/envs/py38/bin/python")
+use_condaenv("py38") #ds01 won't install pandas-bokeh
 
 ```
 
-
 ```{python}
 import pandas as pd
+import os
+
+os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = "home/steve/miniconda3/envs/py38/plugins/platforms"
 ```
 
 ```{python}
@@ -80,8 +85,8 @@ show(d)
 
 **Q3.** We need to create a `Panel` object for each `figure` we want to include, using the `child` argument to specify the figure and add a `title` for each one:
 
-- 'Supply' for the `s` panel
-- 'Demand' for the `d` panel
+-   'Supply' for the `s` panel
+-   'Demand' for the `d` panel
 
 Next, create a `Tabs` object, giving a list of the panels created as the `tabs` argument, and then `show` the result.
 
@@ -94,11 +99,11 @@ both = Tabs(tabs=[supply_panel, demand_panel])
 show(both)
 ```
 
-Note that the figures in each panel remain independent of one another. 
+Note that the figures in each panel remain independent of one another.
 
-**Q4.** If we want to update properties with a common value across all graphs, we can use iteration; set the following properties with the same values of your choice for figures `s` and `d`: 
+**Q4.** If we want to update properties with a common value across all graphs, we can use iteration; set the following properties with the same values of your choice for figures `s` and `d`:
 
-`xaxis.axis_label`, `yaxis.axis_label`, `plot_width`, `plot_height`, `toolbar_location`  
+`xaxis.axis_label`, `yaxis.axis_label`, `plot_width`, `plot_height`, `toolbar_location`
 
 See the [documentation](https://bokeh.pydata.org/en/latest/docs/user_guide/tools.html) for more details on toolbar configuration options.
 
@@ -118,7 +123,7 @@ show(s)
 
 ### Pandas-Bokeh
 
-[Pandas-Bokeh](https://github.com/PatrikHlobil/Pandas-Bokeh) is a library which simplifies the creation of Bokeh plots when using Pandas DataFrames as the data source. It was integrated more directly with Pandas in Pandas version 0.25 (which is why we checked our version at the top of the notebeook).  
+[Pandas-Bokeh](https://github.com/PatrikHlobil/Pandas-Bokeh) is a library which simplifies the creation of Bokeh plots when using Pandas DataFrames as the data source. It was integrated more directly with Pandas in Pandas version 0.25 (which is why we checked our version at the top of the notebeook).
 
 This integration allows us to set bokeh as our default plotting backend for Pandas, thus replacing matplotlib when `df.plot` is used and adding Bokeh methods to `pd.plotting`. Note that not all plot types are supported, but what is available should be more than sufficient for most purposes.
 
@@ -131,11 +136,11 @@ import warnings
 warnings.filterwarnings("ignore")
 ```
 
-First we'll load some data. The dataset gives details of 350,000+ domestic commercial flights in the USA from 1990 - 2009.  
+First we'll load some data. The dataset gives details of 350,000+ domestic commercial flights in the USA from 1990 - 2009.
 
-It's important to understand that **much of the work required for visualisation comes in the processing of the data** (even when the data is in a clean and tidy state such as the file we will be using below is), so we will walk through this together. 
+It's important to understand that **much of the work required for visualisation comes in the processing of the data** (even when the data is in a clean and tidy state such as the file we will be using below is), so we will walk through this together.
 
-Take a moment to look at the cell below and understand what's going on; we are loading a comma-separated values file, adding column headers, and then using Pandas `datetime` methods to extract the year and month for each row.  
+Take a moment to look at the cell below and understand what's going on; we are loading a comma-separated values file, adding column headers, and then using Pandas `datetime` methods to extract the year and month for each row.
 
 More information about the dataset can be found in the `.yaml` file in the `data` folder.
 
@@ -172,7 +177,7 @@ org = df.groupby(['Origin', 'Year']).sum()
 org.head()
 ```
 
-Notice how as a result of using `.sum` in the `.groupby`, some columns (such as `Date`) have been dropped because they could not be summed, while others (such as `Month` and `Spare_Capacity_%`) no longer contain values which are particularly useful.  
+Notice how as a result of using `.sum` in the `.groupby`, some columns (such as `Date`) have been dropped because they could not be summed, while others (such as `Month` and `Spare_Capacity_%`) no longer contain values which are particularly useful.
 
 We'll now extract only the columns of use and the rows for a specific airport. Note the assignment of the airport code to a variable `airport`; this should make things easier if we subsequently want to re-use our code for analysis of a different airport, perhaps within a function.
 
@@ -190,7 +195,7 @@ ap_90 = ap / base
 ap_90.head()
 ```
 
-We now have a tidy DataFrame with `Year` as the index and the progression of various metrics for a given airport over the time period.   
+We now have a tidy DataFrame with `Year` as the index and the progression of various metrics for a given airport over the time period.
 
 **Q5.** Try using the`.plot` method on the `ap_90` DataFrame and see what you get:
 
@@ -202,10 +207,9 @@ Pandas-Bokeh has done a lot of work for us here - try clicking on the different 
 
 The above plot was produced without providing any [keyword arguments](https://treyhunner.com/2018/04/keyword-arguments-in-python/) to the `.plot` method, but we can provide further [optional parameter values](https://github.com/PatrikHlobil/Pandas-Bokeh#lineplot) when using it for customisation.
 
+We can assign the resulting Bokeh figure to a variable, and then make further modifications to it. When doing so we may wish to use the `show_figure=False` argument with the `.plot` method so we don't display it unnecessarily.
 
-We can assign the resulting Bokeh figure to a variable, and then make further modifications to it. When doing so we may wish to use the `show_figure=False` argument with the `.plot` method so we don't display it unnecessarily.  
-
-**Q6.** Use the `.plot` method on `ap_90` to assign a figure to a variable, which does not have a `hovertool` and uses a `colormap` of your choice from the [palettes](https://bokeh.pydata.org/en/latest/docs/reference/palettes.html), while preventing the figure being displayed.  
+**Q6.** Use the `.plot` method on `ap_90` to assign a figure to a variable, which does not have a `hovertool` and uses a `colormap` of your choice from the [palettes](https://bokeh.pydata.org/en/latest/docs/reference/palettes.html), while preventing the figure being displayed.
 
 Have a go at updating the figure using Bokeh methods, such as `toolbar_location`, `legend.location`, and `plot_width`. Remember we may need to use `show` to see it.
 
@@ -220,7 +224,7 @@ ap_90_plot.plot_width = 1000
 show(ap_90_plot)
 ```
 
-**Q7.** What do you think has happened to the average spare capacity at which the planes have run, and the average distance of a flight from this airport? 
+**Q7.** What do you think has happened to the average spare capacity at which the planes have run, and the average distance of a flight from this airport?
 
 Use `.groupby` on `df` to find the `mean` of all the values for each airport by each year, and then create a new dataframe with only the two columns of interest and the rows for the given airport.
 
@@ -239,12 +243,7 @@ We could do as we did previously with the `.sum` data and use the 1990 values as
 from bokeh.models import LinearAxis, Range1d, HoverTool
 ```
 
-**Q8.** Using the bokeh `Figure` class, have a go at creating a plot which displays the progression of distance and spare capacity over time, with the ability to view the values via the plot. Try to:
-- add a secondary y-axis 
-- set an appropriate range and scale for each y-axis
-- add a tooltip showing the values in an appropriate format
-- add labels to each y-axis
-- add a legend and title  
+**Q8.** Using the bokeh `Figure` class, have a go at creating a plot which displays the progression of distance and spare capacity over time, with the ability to view the values via the plot. Try to: - add a secondary y-axis - set an appropriate range and scale for each y-axis - add a tooltip showing the values in an appropriate format - add labels to each y-axis - add a legend and title
 
 You may find it helpful to investigate the classes imported above from `bokeh.models`.
 
@@ -287,4 +286,3 @@ from bokeh.plotting import save
 grid = pd.plotting.plot_grid([[ap_90_plot],[mn]]);
 save(grid, filename='flights.html', resources='inline');
 ```
-
