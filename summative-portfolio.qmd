@@ -18,7 +18,7 @@ execute:
 
 ```{r 'libraries', echo = FALSE, include = FALSE}
 library(xfun)
-packages <- c("wikipediapreview")
+packages <- c("wikipediapreview", "tidyverse", "openair", "glue", "lubridate", "gt")
 pkg_attach2(packages)
 wikipediapreview::wp_init()
 ```
@@ -223,3 +223,62 @@ for(i in 1:4){
 ```
 
 I am able to work on these projects concurrently and I believe they are all achievable by the end of the apprenticeship.
+
+## Project 4:Comparing performance of low – cost sensors with reference method instruments
+
+### Introduction
+
+The Slow the Smoke (StS) project is a Citizen Science project funded by Defra's Air Quality Grant. It aims to test engagement approaches based on citizen monitoring of air quality with a particular focus on emissions from domestic solid fuel burning (wood burning stoves etc.).   
+
+Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities.  
+
+The combination of citizen science, community engagement and behavioural surveys is intended to identify effective approaches to influencing behaviour in relation to domestic emissions to air.
+
+Ten citizen scientists have self selected in the study area which is a ward in the city centre called Ashley. This ward was selected because we have evidence that there is a higher level of solid fuel burning than average.  
+
+The citizen scientists have each been given a "low cost" air sensor that monitors particulate matter (PM). PM is fine dust in the air, including smoke. There are two fractions of PM that are important for health; PM~10~ (aerodynamic diameter < 10 &mu;) and PM~2.5~ (aerodynamic diameter < 10 &mu;). The devices deployed monitor both of these fractions using a light - scattering approach, where the diffusion of laser light is a function of the concentration of PM in the sampled air.  
+
+Because these devices do not directly measure concentration of PM, but use a proxy measure, they are not as accurate as "approved" measuring instruments used to assess compliance with air quality objectives. It is therefore necessary to attempt to characterise the performance of these devices in relation to approved or "reference method" devices by co - locating the low cost sensors with reference method instruments and comparing measurements.  
+
+### Co - location Study
+
+There are three monitoring sites which measure PM in Bristol. A map and summary data for the sites are shown below.
+
+[](<iframe src="https://opendata.bristol.gov.uk/explore/embed/dataset/air-quality-monitoring-sites/map/?disjunctive.pollutants&refine.current=True&refine.pollutants=PM10&refine.pollutants=PM2.5&location=13,51.44776,-2.59447&basemap=jawg.streets&static=false&datasetcard=false&scrollWheelZoom=true" width="700" height="500" frameborder="2"></iframe>)
+
+
+```{r}
+source("../airquality_GIT/ods-import-httr2.R")
+
+pm_tbl <- import_ods("air-quality-monitoring-sites",
+                     endpoint = "exports",
+                     select = "location, siteid, pollutants, description, current",
+                     refine = "pollutants:PM10",
+                     refine = "current:True",
+                     refine = "pollutants:PM2.5")
+
+pm_tbl %>% 
+    separate_rows(pollutants, sep = ",") %>% 
+    filter(str_starts(pollutants, "PM")) %>% 
+    group_by(location, siteid, description) %>% 
+    summarise(pollutants = paste(pollutants, collapse = ", ")) %>% 
+    gt() %>% 
+    # tab_header(title = NULL) %>% 
+    tab_spanner(label = "Co - location Site Summary", columns = c(description, pollutants)) %>% 
+    cols_label(description = "Site description", pollutants = "Pollutants")
+```
+
+The co - location study used two of these sites; Parson Street School and Temple Way. This is because these sites are both operated by the council. Using the AURN St Pauls site would have required permissions from the Environment Agency which would have been a time consuming and uncertain process.  
+
+The [airrohr SDS011 fine dust sensors](https://sensor.community/en/sensors/airrohr/) require a wifi signal in order to push data to a server. The Bristol City Council sites did not previously have wifi access available. The telemetry at our air monitoring sites was a combination of 3G modems and analogue land lines in 2021. In order to accommodate the co - location study and also for the purposes of virtualising our data collection machine, I procured, configured and installed Teltonika RUT950 4G LTE routers at all of our monitoring sites. This enabled 4G TCP/IP access to the data loggers or instruments at all of the sites, and also provided a wifi hotspot to enable the SDS011 sensors to send data.
+
+The physical installation of the SDS011 at both sites was complete in early May 2022.
+
+#### Colocation Study: Concept
+
+The aim of the colocation study is to compare the performance of the low cost sensors with the performance of reference method instruments measuring the same pollutant. The method of implementing this comparison was to collect hourly data for the two co - located  devices and establish the linearity of the response using a linear model to report coefficients and r^2^.
+
+Within this study it was not possible to compare the responses of multiple low cost sensors with each other as there was not a budget to purchase additional devices for this purpose.
+
+
+

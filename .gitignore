@@ -40,3 +40,6 @@ vignettes/*.pdf
 
 # Google sheet path
 config.yml
+
+# Thumbs
+Thumbs.db
