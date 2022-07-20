@@ -1,0 +1,219 @@
+---
+title: An R Markdown document converted from "energy.ipynb"
+output: html_document
+---
+
+# Energy Analysis
+
+KATE expects your code to define variables with specific names that correspond to certain things we are interested in.
+
+KATE will run your notebook from top to bottom and check the latest value of those variables, so make sure you don't overwrite them.
+
+* Remember to uncomment the line assigning the variable to your answer and don't change the variable or function names.
+* Use copies of the original or previous DataFrames to make sure you do not overwrite them by mistake.
+
+You will find instructions below about how to define each variable.
+
+Once you're happy with your code, upload your notebook to KATE to check your feedback.
+
+Run the cell below first, to import `pandas`, and `matplotlib` `pyplot`. The `matplotlib` code isn't important, but prevents some unnecessary warnings from showing.
+
+
+```{r}
+library(tidyverse) #mainly for dplyr
+library(lubridate) # date manipulation
+library("glue")
+library("collapse")
+library("fs")
+library(reticulate) # python in Rstudio
+#use_condaenv("ds01") # data science conda environment
+use_condaenv("ds01")
+```
+
+```{python}
+import pandas as pd
+
+from matplotlib import pyplot as plt
+from matplotlib.axes._axes import _log as matplotlib_axes_logger
+matplotlib_axes_logger.setLevel('ERROR')
+```
+
+
+This assignment will focus on data visualisation using pandas. 
+
+We have written some code below to do some initial collation and cleaning of the datasets we'll be working with - see if you can follow along and understand what each line is doing.
+
+### Data collection
+
+Run the following cell to import and concatenate the datasets, assigning the result to `data`:
+
+```{python}
+df1 = pd.read_csv('data/heating_2018.csv')
+df2 = pd.read_csv('data/hot_water_2018.csv')
+df3 = pd.read_csv('data/catering_2018.csv')
+data = pd.concat([df1, df2, df3], keys=['Heating', 'Hot Water', 'Catering']).reset_index(level=[0])
+```
+
+Running `data.head()` will show us the top of our DataFrame:
+
+```{python}
+data.head()
+```
+
+```{r}
+files <- dir_ls("data", glob = "*2018.csv")
+data <- map_dfr(files, read_csv, .id = "file") %>% 
+    mutate(Use = str_sub(file, start = 6, end = -10) %>% 
+               str_replace("_", " ") %>% 
+               str_to_title(),
+           file = NULL)
+head(data)
+```
+
+### Data processing
+
+**Q1.** First of all, let's tidy up the `data` DataFrame:
+
+- Use the `.rename()` method to change the name of the `level_0` column to `Use`
+- Use the `.fillna()` method to update all `NaN` values to `0`
+- Use the `astype()` method to convert the numerical columns to integers
+- Create a new column `Total` which contains the sum of the other numerical columns
+
+KATE will evaluate your updated version of `data` to check these changes have been made.
+
+```{python}
+#add your code to update the `data` DataFrame below
+data.rename(columns = {'level_0': 'Use'}, inplace=True)
+data.fillna(0, inplace=True)
+
+data['District Heating'] = data['District Heating'].astype('int')
+data.Other = data.Other.astype('int')
+data['Total'] = data[['Electricity', 'Natural Gas', 'Oil', 'District Heating', 'Other']].sum(axis = 1)
+```
+
+```{r}
+
+data %<>% 
+    mutate(across(where(is.numeric),
+                  .fns = ~replace_na(.x, replace = 0) %>% 
+                      as.integer())) %>% 
+    rowwise() %>% 
+    mutate(Total = sum(Electricity,
+                       Oil,
+                       `Natural Gas`,
+                       `District Heating`,
+                       Other)) %>% 
+    ungroup()
+
+```
+
+### Data grouping
+
+**Q2.** Create a new DataFrame called `ss`, using `.groupby()` to group `data` by `Sub-Sector`, which contains the `.sum()` for each of the numerical (energy type) columns for each group:
+
+```{python}
+ss = data.groupby('Sub-Sector').sum()
+```
+
+```{r}
+
+ss <- data %>% 
+    group_by(`Sub-Sector`) %>% 
+    summarise(across(where(is.numeric), sum, na.rm = TRUE))
+
+```
+
+**Q3.** Create a new DataFrame called `use`, using `.groupby()` to group `data` by `Use`, which contains the `.sum()` for each of the numerical (energy type) columns for each group:
+
+```{python}
+use = data.groupby('Use').sum()
+```
+
+```{r}
+
+use <- data %>% 
+    group_by(Use) %>% 
+    summarise(across(where(is.numeric), sum, na.rm = TRUE))
+
+```
+
+**Q4.** Create a new DataFrame called `sector`, using `.groupby()` to group `data` by `Sector`, and `.agg()` on the `Total` column such that the new DataFrame has columns for `sum`, `mean`, and `count` of the values in `Total`:
+
+- Use the `sort_values()` method to sort the resulting DataFrame by `sum`, in *descending* order
+
+- You may find [this documentation page](https://pandas.pydata.org/pandas-docs/version/0.23.1/generated/pandas.core.groupby.DataFrameGroupBy.agg.html) useful
+
+```{python}
+sector = data.groupby('Sector').Total.agg(['sum', 'mean', 'count']).sort_values('sum', ascending = False)
+
+sector.head()
+```
+
+```{r}
+# collapse
+
+ss <- collap(data, Total ~ Sector, list(fsum, fmean, fnobs)) %>% 
+    arrange(-fsum.Total)
+# data.table
+setDT(data)
+ssdt <- data[, .(Mean = mean(Total), Sum = sum(Total), Count =  .N), by = Sector]
+setorder(ssdt, -Sum)
+```
+
+
+*You may want to submit your notebook to KATE to ensure your `data`, `ss`, and `use` and `sector` DataFrames are as expected before moving on to the visualisations.*
+
+### Data visualisation
+
+**Q5.** Create a **histogram** from the `Electricity` column of `ss` using the `.plot()` method:
+- The histogram should have 5 `bins`
+- Assign the plot to the variable `elec_hist`
+- Ensure your code cell starts with `plt.figure()`
+
+*We need to execute `plt.figure()` before creating each new plot in the notebook, otherwise the properties of previous plots will be overwritten in memory and KATE will not evaluate them correctly.*
+
+`plt.figure()`  
+`elec_hist = ss.plot(....)`
+
+```{python}
+plt.figure()
+elec_hist = ss.Electricity.plot(kind = 'hist', bins = 5)
+```
+
+**Q6.** Create a **scatter plot** of `Natural Gas` vs `Total`, to see the relationship between the two values.
+
+- Use the `.plot()` method on `ss`
+- Have `Natural Gas` on the x-axis and `Total` on the y-axis
+- Assign the plot to the variable `gas_total`
+- Ensure your code cell starts with `plt.figure()`
+
+```{python}
+#gas_total/n#hide
+plt.figure()
+gas_total = ss.plot(x='Natural Gas', y='Total', kind='scatter');
+```
+
+**Q7.** Create a **bar chart** of the `sum` column of the `sector` DataFrame using the `.plot()` method:
+
+- Add a title of `Energy consumption by sector` to the plot
+- Assign the plot to the variable `sector_sum`
+- Ensure your code cell starts with `plt.figure()`
+
+```{python}
+plt.figure()
+sector_sum = sector.reset_index().plot(x = 'Sector', y = 'sum', kind = 'bar', title = 'Energy consumption by sector');
+```
+
+**Q8.** Create a *horizontal* and *stacked* bar chart from the `use` DataFrame, using the `.plot()` method:
+
+- Do not include the `Total` column values
+- Assign the plot to the variable `use_type`
+- Give it a `figsize` of `(12, 12)`
+- You may find [this page](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.plot.barh.html) useful
+- Ensure your code cell starts with `plt.figure()`
+
+```{python}
+plt.figure();
+use_type = use.drop(columns = 'Total').plot(kind = 'barh', stacked = True, figsize = (12,12))
+```
+

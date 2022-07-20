@@ -1,0 +1,37 @@
+Sector,Sub-Sector,Electricity,Natural Gas,Oil,District Heating
+"Arts, leisure and community",Clubs & community centres,14,139,60,8
+"Arts, leisure and community",Leisure Centres,5,159,7,18
+"Arts, leisure and community",Museums,2,12,3, 	0   
+"Arts, leisure and community",Places of Worship,29,377,110,13
+"Arts, leisure and community",Theatres,1,35,2, 	0   
+Education,Nurseries,2,37,15, 	0   
+Education,State Primary schools, 	0   ,437,134, 	0   
+Education,State Secondary schools,7,342,49, 	0   
+Education,Uni - Non-residential,5,266, 	0   ,45
+Education,Uni - Residential,4,58,9,31
+Emergency Services,Fire and Ambulance stations,3,70,8,1
+Emergency Services,Law courts,1,20,4, 	0   
+Emergency Services,Police stations,3,189,3, 	0   
+Emergency Services,Prisons, 	0   ,108,27, 	0   
+Health,Health Centres,6,98,2, 	0   
+Health,Hospitals,7,878, 	0   ,31
+Health,Nursing Homes,1,16,5, 	0   
+Hospitality,Cafes,4,5, 	0   , 	0   
+Hospitality,Hotels,18,146,5, 	0   
+Hospitality,Pubs,5,187,183, 	0   
+Hospitality,Restaurants & takeaways,12,26,6, 	0   
+Military,Military civilian accommodation, 	0   ,8, 	0   ,1
+Military,Military offices,0,38,13,53
+Military,Military storage,0,53,5,50
+Offices,Offices (private),184,882,120,4
+Offices,Offices (public),14,182,33,10
+Retail,Hairdressers,6,5, 	0   , 	0   
+Retail,Large food shops,10,339, 	0   , 	0   
+Retail,Large non-food shops,57,55, 	0   , 	0   
+Retail,Retail Warehouse,18,109,11, 	0   
+Retail,Showrooms,26,86,26, 	0   
+Retail,Small shops,258,151,76, 	0   
+Storage,Cold Stores,0,0, 	0   , 	0   
+Storage,Large Distribution Centres,8,108,31, 	0   
+Storage,Stores,7,32,13, 	0   
+Storage,Warehouses,45,391,642, 	0   

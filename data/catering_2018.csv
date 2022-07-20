@@ -1,0 +1,37 @@
+Sector,Sub-Sector,Electricity,Natural Gas,Oil
+"Arts, leisure and community",Clubs & community centres,13,19,14
+"Arts, leisure and community",Leisure Centres,1,0,0
+"Arts, leisure and community",Museums,0,1,0
+"Arts, leisure and community",Places of Worship,23,36,43
+"Arts, leisure and community",Theatres,1,1,1
+Education,Nurseries,1,2,0
+Education,State Primary schools,19,16,4
+Education,State Secondary schools,29,27,5
+Education,Uni - Non-residential,12,23,0
+Education,Uni - Residential,5,4,5
+Emergency Services,Fire and Ambulance stations,1,0,0
+Emergency Services,Law courts,0,0,0
+Emergency Services,Police stations,1,0,0
+Emergency Services,Prisons,2,1,0
+Health,Health Centres,2,0,0
+Health,Hospitals,28,54,3
+Health,Nursing Homes,2,4,2
+Hospitality,Cafes,50,36,23
+Hospitality,Hotels,41,31,113
+Hospitality,Pubs,98,137,130
+Hospitality,Restaurants & takeaways,324,138,361
+Military,Military civilian accommodation,1,1,0
+Military,Military offices,2,4,0
+Military,Military storage,0,0,0
+Offices,Offices (private),34,16,70
+Offices,Offices (public),4,3,2
+Retail,Hairdressers,0,0,0
+Retail,Large food shops,44,25,0
+Retail,Large non-food shops,2,0,1
+Retail,Retail Warehouse,1,0,0
+Retail,Showrooms,2,1,1
+Retail,Small shops,9,2,21
+Storage,Cold Stores,0,0,0
+Storage,Large Distribution Centres,3,4,1
+Storage,Stores,1,0,0
+Storage,Warehouses,2,1,0
