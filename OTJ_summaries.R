@@ -13,6 +13,9 @@ p <- c("tidyverse",
 
 library("xfun")
 pkg_attach2(p)
+
+learning_date <- "2022-07-01"
+
 # Functions ----
 get_googlesheet <- function(){
     # config.yml ignored by git for security
@@ -115,7 +118,7 @@ month_gt <- learning_clean_tbl %>%
 return(month_gt)
 }
 
-learning_date <- "2022-06-01"
+
 
 get_gt_table(learning_date, OTJ_only = FALSE) %>% 
     gtsave(filename = glue("learning_record_table_{learning_date}.png"),
