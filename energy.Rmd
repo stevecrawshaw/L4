@@ -25,6 +25,7 @@ library(lubridate) # date manipulation
 library("glue")
 library("collapse")
 library("fs")
+library("data.table")
 library(reticulate) # python in Rstudio
 #use_condaenv("ds01") # data science conda environment
 use_condaenv("ds01")
@@ -152,12 +153,16 @@ sector.head()
 ```{r}
 # collapse
 
-ss <- collap(data, Total ~ Sector, list(fsum, fmean, fnobs)) %>% 
-    arrange(-fsum.Total)
+# sector <- collap(data, Total ~ Sector, list("Sum" = fsum,
+#                                         "Mean" = fmean,
+#                                         "Count" = fnobs)) %>% 
+#     arrange(-Sum.Total)
+
+
 # data.table
 setDT(data)
-ssdt <- data[, .(Mean = mean(Total), Sum = sum(Total), Count =  .N), by = Sector]
-setorder(ssdt, -Sum)
+sector <- data[, .(Mean = mean(Total), Sum = sum(Total), Count =  .N), by = Sector]
+setorder(sector, -Sum)
 ```
 
 
@@ -178,6 +183,12 @@ setorder(ssdt, -Sum)
 ```{python}
 plt.figure()
 elec_hist = ss.Electricity.plot(kind = 'hist', bins = 5)
+plt.show()
+```
+
+
+```{r}
+hist(ss$Electricity, main = "Electricity Histogram", xlab = "Kwh")
 ```
 
 **Q6.** Create a **scatter plot** of `Natural Gas` vs `Total`, to see the relationship between the two values.
@@ -191,6 +202,12 @@ elec_hist = ss.Electricity.plot(kind = 'hist', bins = 5)
 #gas_total/n#hide
 plt.figure()
 gas_total = ss.plot(x='Natural Gas', y='Total', kind='scatter');
+plt.show()
+```
+```{r}
+plot(x = ss$`Natural Gas`, y = ss$Total, xlab = "Natural Gas",
+     ylab = "Total", main = "Natural Gas by Total Scatter Plot")
+
 ```
 
 **Q7.** Create a **bar chart** of the `sum` column of the `sector` DataFrame using the `.plot()` method:
@@ -202,6 +219,14 @@ gas_total = ss.plot(x='Natural Gas', y='Total', kind='scatter');
 ```{python}
 plt.figure()
 sector_sum = sector.reset_index().plot(x = 'Sector', y = 'sum', kind = 'bar', title = 'Energy consumption by sector');
+plt.show()
+```
+
+```{r}
+barplot(height = sector$Sum,
+        main = 'Energy consumption by sector',
+        names.arg = sector$Sector)
+
 ```
 
 **Q8.** Create a *horizontal* and *stacked* bar chart from the `use` DataFrame, using the `.plot()` method:
@@ -215,5 +240,21 @@ sector_sum = sector.reset_index().plot(x = 'Sector', y = 'sum', kind = 'bar', ti
 ```{python}
 plt.figure();
 use_type = use.drop(columns = 'Total').plot(kind = 'barh', stacked = True, figsize = (12,12))
+plt.show()
+```
+
+```{r}
+use_type <- use %>% 
+    select(-Total) %>% 
+    pivot_longer(cols = -Use) %>% 
+    ggplot(aes(x = Use, y = value, fill = name)) +
+    geom_col() +
+    coord_flip() +
+    theme_bw() +
+    labs(title = "Energy use by Sector and Sub Sector",
+         y = "Kwh",
+         x = "Sector",
+         fill = "Sub Sector",
+         colour = NULL)
 ```
 

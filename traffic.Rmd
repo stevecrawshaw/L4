@@ -1,0 +1,281 @@
+---
+title: An R Markdown document converted from "traffic.ipynb"
+output: html_document
+---
+
+# Assignment - British road network use
+
+KATE expects your code to define variables with specific names that correspond to certain things we are interested in.
+
+KATE will run your notebook from top to bottom and check the latest value of those variables, so make sure you don't overwrite them.
+
+* Remember to uncomment the line assigning the variable to your answer and don't change the variable or function names.
+* Use copies of the original or previous DataFrames to make sure you do not overwrite them by mistake.
+
+You will find instructions below about how to define each variable.
+
+Once you're happy with your code, upload your notebook to KATE to check your feedback.
+
+First of all, we will import `pandas` and `pandas_bokeh` and set them up:
+
+```{r}
+library(tidyverse) #mainly for dplyr
+library(lubridate) # date manipulation
+library("glue")
+library("collapse")
+library("fs")
+library("data.table")
+library(reticulate) # python in Rstudio
+#use_condaenv("ds01") # data science conda environment
+use_condaenv("py38")
+```
+
+```{python}
+import pandas as pd
+import pandas_bokeh
+from bokeh.plotting import show
+
+from bokeh.plotting import output_notebook
+output_notebook()
+pd.set_option('plotting.backend', 'pandas_bokeh')
+
+import warnings 
+warnings.filterwarnings('ignore')
+```
+
+Use `.read_csv()` to get our dataset `data/region_traffic.csv` and assign to `df`:
+
+```{python}
+df = pd.read_csv('data/region_traffic.csv')
+df
+```
+
+```{r}
+df <- read_csv("data/region_traffic.csv")
+df %>% names()
+
+```
+
+
+**Q1.** Use `.groupby()` to create a DataFrame called `year` which groups `df` by `year` and contains the columns `['pedal_cycles', 'cars_and_taxis', 'all_hgvs']`, with the `.sum()` of each of these for each year:
+
+```{python}
+year = df.groupby('year')['pedal_cycles', 'cars_and_taxis', 'all_hgvs'].sum()
+year.head()
+```
+
+```{r}
+
+year <- df %>% 
+    group_by(year) %>% 
+    summarise(across(.cols = c(pedal_cycles,
+                               cars_and_taxis,
+                               all_hgvs),
+                     sum, na.rm = TRUE))
+
+```
+
+
+We want to look at the change over time of each of these forms of transport relative to the earliest values. 
+
+To do so, we will create an *index*. An index allows us to inspect the growth over time of a variable relative to some starting value (known as the *base*). By convention, this starting value is `100.0`. If the value of our variable doubles in some future time period, then the value of our index in that future time period would be `200.0`. 
+
+**Q2.** Create a new DataFrame called `year_index` as a `.copy()` of `year`. For our index, we will select 1993 as the base year. This means that all values for 1993 should be equal to `100.0`. All subsequent years should be relative to that.
+
+Note that you do not need to apply any rounding to the index.
+
+```{python}
+yr = year.copy()
+
+base = yr.loc[1993]
+year_index = (yr * 100)/ base
+year_index
+```
+
+```{r}
+
+normalise <- function(vec){
+    (vec * 100) / vec[1]
+}
+
+year_index = year %>% 
+    mutate(across(.cols = -year, normalise))
+
+```
+
+
+**Q3.** Having already imported and set up `pandas_bokeh` at the start of the notebook, we can now create a Bokeh plot of `year_index` simply using the `.plot()` method and setting to variable `yi_fig`. 
+
+**Do not pass any additional arguments to `.plot()`**
+
+```{python}
+yi_fig = year_index.plot()
+```
+
+```{r}
+
+yi_fig <- year_index %>% 
+    pivot_longer(-year) %>% 
+    ggplot(aes(x = year, y = value, group = name, colour = name)) +
+    geom_line(lwd = 1) +
+    labs(x = "Year", 
+         y = "Road use by distance (1993 = 100)",
+         title = "Change in road use by vehicle type over time",
+         colour = "Vehicle Type") +
+    scale_x_continuous(breaks = seq(1993, 2018, 5)) +
+    theme_bw()
+
+yi_fig
+
+```
+
+
+**Q4.** Now that you have created your `yi_fig` variable using just `.plot()`, make the following changes to the specified properties of `yi_fig`:
+
+- change the `text` of the `title` to 'Change in road use by vehicle type over time'
+- change the `axis_label` of the `yaxis` to 'Road use by distance (1993 = 100)'
+- change the `axis_label` of the `xaxis` to 'Year'
+- remove the toolbar (by setting the `.toolbar_location` attribute to `None`)
+- set the legend location to `top_left`
+- change the `ticker` of the `xaxis` to use the values `[1993, 1998, 2003, 2008, 2013, 2018]`
+
+```{python}
+yi_fig.title = "Change in road use by vehicle type over time"
+yi_fig.yaxis.axis_label = 'Road use by distance (1993 = 100)'
+yi_fig.xaxis.axis_label = 'Year'
+yi_fig.toolbar_location = None
+yi_fig.legend.location = "top_left"
+yi_fig.xaxis.ticker = [1993, 1998, 2003, 2008, 2013, 2018]
+```
+
+Run the cell below to see that your changes have been implemented as expected:
+
+```{python}
+show(yi_fig)
+```
+
+**Q5.** Create a DataFrame called `green_2018` which:
+- uses only the data from `df` for 2018
+- groups this 2018 data by `name`
+- contains the columns `['pedal_cycles', 'buses_and_coaches']` which have the `.sum()` for each group
+- is sorted in *descending* order by the values for `pedal_cycles`
+- divide all of the values in the resulting DataFrame by 1,000,000
+
+```{python}
+green_2018 = df[df.year == 2018] \
+.groupby('name')['pedal_cycles', 'buses_and_coaches'] \
+.sum() \
+.sort_values('pedal_cycles', ascending = False) \
+/ 1000000
+green_2018
+```
+
+
+```{r}
+
+green_2018 <- df %>% 
+    filter(year == 2018) %>% 
+    group_by(name) %>% 
+    summarise(across(.cols = c(pedal_cycles, buses_and_coaches),
+                     ~sum(.x) %>% `/`(1000000), na.rm = TRUE)) %>% 
+    arrange(desc(pedal_cycles))
+
+green_2018
+
+```
+
+**Q6.** Use the `.plot()` method to create a *horizontal, stacked* bar chart from the `green_2018` DataFrame, assigning it to `green_bar`:
+
+- you may find the [documentation](https://patrikhlobil.github.io/Pandas-Bokeh/#barplot) useful
+
+```{python}
+green_bar = green_2018.plot.barh(stacked = True)
+```
+
+**Q7.** Once you have created your `green_bar` variable (specifying only that it should be a stacked, horizontal bar plot), modify the following properties of your variable such that:
+    
+- the plot `.width` is `800` pixels
+- the `axis_label` of the `xaxis` is 'Vehicle miles (millions)'
+- the `axis_label` of the `yaxis` is 'Region'
+- the `text` of the `title` is 'Regional travel by bicycle and bus in 2018'
+
+```{python}
+green_bar.width = 800
+green_bar.xaxis.axis_label = 'Vehicle miles (millions)'
+green_bar.yaxis.axis_label = 'Region'
+green_bar.title = 'Regional travel by bicycle and bus in 2018'
+```
+
+Use `show()` to check that your changes have been made as expected:
+
+```{python}
+show(green_bar)
+```
+
+**Q8.** Create a DataFrame called `length_motor` as follows:
+
+- group `df` by `['year', 'name']` with columns for `['total_link_length_miles', 'all_motor_vehicles']` containing the `.sum()` of these
+- add a column called 'million_vehicle_miles_per_road_mile' which is equal to `(['all_motor_vehicles'] / 1000000) / 'total_link_length_miles'`   
+    
+
+```{python}
+length_motor = df.groupby(['year', 'name'])['total_link_length_miles', 'all_motor_vehicles'].sum()
+length_motor['million_vehicle_miles_per_road_mile'] = \
+(length_motor['all_motor_vehicles'] / 1000000) / length_motor['total_link_length_miles']
+length_motor
+```
+
+**Q9.** From `length_motor`, create a new DataFrame called `reg_density` which has a row index of `year` (i.e. one row for each year 1993-2018), and a column for each region (i.e. each unique value in `name`), with the values within the DataFrame being the appropriate `million_vehicle_miles_per_road_mile` for that year in the given region:
+
+- do not change the original `length_motor` DataFrame
+- you may find `.reset_index()` and the `.pivot()` method useful
+- you can refer to the [documentation here](https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.pivot.html)
+
+```{python}
+reg_density = length_motor.copy().reset_index(level = ("name")).pivot(columns = 'name')['million_vehicle_miles_per_road_mile']
+reg_density
+```
+
+**Q10.** As we did earlier when creating `year_index`, create a new DataFrame called `density_index`, which is the same as `reg_density` except the all values are relative to the 1993 value, which should equal `100`:
+
+- do not modify `reg_density`
+
+```{python}
+ninety3 = reg_density.copy().loc[1993]
+
+density_index = (reg_density.copy() *100) / ninety3
+```
+
+```{python}
+# density_index.reset_index(inplace=True)
+density_index
+```
+
+
+**Q11.** Assign to `density_plot` a figure created by using the `.plot()` method on `density_index`, with the parameter `hovertool=False`.
+
+```{python}
+density_plot = density_index.plot(hovertool = False)
+```
+
+**Q12.** Make the following changes to `density_plot`:
+
+- make the `height` and `width` both `800`
+- remove the toolbar
+- move the legend to the `top_left`
+- use the following values on the x-axis: `[1993, 1998, 2003, 2008, 2013, 2018]`
+
+```{python}
+density_plot.height = 800
+density_plot.width = 800
+density_plot.toolbar_location = None
+density_plot.legend.location = "top_left"
+density_plot.xaxis.ticker = [1993, 1998, 2003, 2008, 2013, 2018]
+```
+
+Run the following cell to check your changes have been applied as expected:
+
+```{python}
+show(density_plot)
+```
+
