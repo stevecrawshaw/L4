@@ -25,6 +25,8 @@ library("glue")
 library("collapse")
 library("fs")
 library("data.table")
+library("ragg")
+library("plotly")
 library(reticulate) # python in Rstudio
 #use_condaenv("ds01") # data science conda environment
 use_condaenv("py38")
@@ -65,7 +67,6 @@ year.head()
 ```
 
 ```{r}
-
 year <- df %>% 
     group_by(year) %>% 
     summarise(across(.cols = c(pedal_cycles,
@@ -101,6 +102,9 @@ normalise <- function(vec){
 year_index = year %>% 
     mutate(across(.cols = -year, normalise))
 
+# collapse
+year_index <- year %>%
+    ftransformv(pedal_cycles:all_hgvs, normalise)
 ```
 
 
@@ -110,6 +114,8 @@ year_index = year %>%
 
 ```{python}
 yi_fig = year_index.plot()
+
+
 ```
 
 ```{r}
@@ -124,8 +130,11 @@ yi_fig <- year_index %>%
          colour = "Vehicle Type") +
     scale_x_continuous(breaks = seq(1993, 2018, 5)) +
     theme_bw()
+#make interactive
+library(plotly)
+yi_fig %>% ggplotly()
 
-yi_fig
+
 
 ```
 
@@ -151,7 +160,11 @@ yi_fig.xaxis.ticker = [1993, 1998, 2003, 2008, 2013, 2018]
 Run the cell below to see that your changes have been implemented as expected:
 
 ```{python}
-show(yi_fig)
+show(yi_fig) # opens in browser
+# to save
+from bokeh.plotting import figure, output_file, save
+output_file(filename="yi_fig.html", title="yi_fig_html")
+save(yi_fig)
 ```
 
 **Q5.** Create a DataFrame called `green_2018` which:
@@ -172,7 +185,7 @@ green_2018
 
 
 ```{r}
-
+# dplyr
 green_2018 <- df %>% 
     filter(year == 2018) %>% 
     group_by(name) %>% 
@@ -182,6 +195,13 @@ green_2018 <- df %>%
 
 green_2018
 
+# collapse
+green_2018 <- df %>% 
+    sbt(year == 2018) %>% 
+    collap(~name,
+           FUN = \(x){sum(x) / 1000000},
+           cols = c("pedal_cycles", "buses_and_coaches")) %>% 
+    roworder(-pedal_cycles)
 ```
 
 **Q6.** Use the `.plot()` method to create a *horizontal, stacked* bar chart from the `green_2018` DataFrame, assigning it to `green_bar`:
@@ -206,6 +226,26 @@ green_bar.yaxis.axis_label = 'Region'
 green_bar.title = 'Regional travel by bicycle and bus in 2018'
 ```
 
+
+```{r}
+green_bar <- green_2018 %>% 
+    pivot_longer(-name, names_to = "vehicle_type", values_to = "total_km") %>% 
+    ggplot(aes(x = total_km, y = fct_reorder(name, -total_km), fill = vehicle_type)) +
+    geom_col() +
+    labs(title = 'Regional travel by bicycle and bus in 2018',
+         x = 'Vehicle miles (millions)',
+         y = 'Region',
+         fill = "Vehicle Type")
+
+png_file <- fs::path(knitr::fig_path(), "green_bar.png")    
+
+# using the ragg device agg_png you can increase the scaling parameter 
+#to proportionately increase the scale of the geoms when the widtha nd height are 
+#increased
+ggsave(png_file, green_bar, device = agg_png, width = 8000, height = 6000, units = "px", res = 300, scaling = 3)
+
+```
+
 Use `show()` to check that your changes have been made as expected:
 
 ```{python}
@@ -224,6 +264,23 @@ length_motor['million_vehicle_miles_per_road_mile'] = \
 (length_motor['all_motor_vehicles'] / 1000000) / length_motor['total_link_length_miles']
 length_motor
 ```
+```{r}
+#dplyr
+length_motor <- df %>% 
+    group_by(year, name) %>% 
+    summarise(across(.cols = c(total_link_length_miles, all_motor_vehicles),
+                     sum), .groups = "drop") %>% 
+    mutate(million_vehicle_miles_per_road_mile = (all_motor_vehicles / 1000000) / total_link_length_miles)
+
+
+# collapse
+length_motor <- collap(df, by = ~year + ~name,
+        cols = c("total_link_length_miles", "all_motor_vehicles"),
+        FUN = fsum)
+# by reference
+settfm(length_motor,
+       million_vehicle_miles_per_road_mile = (all_motor_vehicles / 1000000) / total_link_length_miles)
+```
 
 **Q9.** From `length_motor`, create a new DataFrame called `reg_density` which has a row index of `year` (i.e. one row for each year 1993-2018), and a column for each region (i.e. each unique value in `name`), with the values within the DataFrame being the appropriate `million_vehicle_miles_per_road_mile` for that year in the given region:
 
@@ -236,15 +293,28 @@ reg_density = length_motor.copy().reset_index(level = ("name")).pivot(columns = 
 reg_density
 ```
 
+```{r}
+reg_density <- length_motor %>% 
+    pivot_wider(id_cols = year, names_from = name, values_from = million_vehicle_miles_per_road_mile)
+    
+reg_density
+```
+
+
 **Q10.** As we did earlier when creating `year_index`, create a new DataFrame called `density_index`, which is the same as `reg_density` except the all values are relative to the 1993 value, which should equal `100`:
 
 - do not modify `reg_density`
 
 ```{python}
 ninety3 = reg_density.copy().loc[1993]
-
 density_index = (reg_density.copy() *100) / ninety3
 ```
+
+```{r}
+density_index <- reg_density %>% 
+    mutate(across(.cols = -year, .fns = normalise))
+```
+
 
 ```{python}
 # density_index.reset_index(inplace=True)
@@ -272,6 +342,25 @@ density_plot.toolbar_location = None
 density_plot.legend.location = "top_left"
 density_plot.xaxis.ticker = [1993, 1998, 2003, 2008, 2013, 2018]
 ```
+
+```{r}
+
+density_plot <- density_index %>% 
+    pivot_longer(cols = -year, names_to = "region", values_to = "miles_r_1993") %>% 
+    ggplot() +
+    geom_line(aes(x = year, y = miles_r_1993, colour = region),
+              lwd = 2) +
+    scale_x_continuous(breaks = seq(1993, 2018, 5)) +
+    labs(title = "Traffic growth by region",
+         x  = "Year", 
+         y = "Vehicle mileage (1993 = 100)",
+         colour = "Region") +
+    theme_bw()
+
+density_plot %>% ggplotly()
+
+```
+
 
 Run the following cell to check your changes have been applied as expected:
 

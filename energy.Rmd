@@ -93,7 +93,6 @@ data['Total'] = data[['Electricity', 'Natural Gas', 'Oil', 'District Heating', '
 ```
 
 ```{r}
-
 data %<>% 
     mutate(across(where(is.numeric),
                   .fns = ~replace_na(.x, replace = 0) %>% 
@@ -117,7 +116,6 @@ ss = data.groupby('Sub-Sector').sum()
 ```
 
 ```{r}
-
 ss <- data %>% 
     group_by(`Sub-Sector`) %>% 
     summarise(across(where(is.numeric), sum, na.rm = TRUE))
@@ -131,7 +129,6 @@ use = data.groupby('Use').sum()
 ```
 
 ```{r}
-
 use <- data %>% 
     group_by(Use) %>% 
     summarise(across(where(is.numeric), sum, na.rm = TRUE))
