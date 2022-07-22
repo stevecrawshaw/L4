@@ -21,15 +21,15 @@ First of all, we will import `pandas` and `pandas_bokeh` and set them up:
 ```{r}
 library(tidyverse) #mainly for dplyr
 library(lubridate) # date manipulation
-library("glue")
-library("collapse")
-library("fs")
-library("data.table")
-library("ragg")
-library("plotly")
+library("glue") # literal string manipulation
+library("collapse") # fast data transformation and aggregateion
+library("fs") # file system operations
+library("data.table") # fast data transformation and aggregation
+library("ragg") # resizing graphics output
+library("plotly") # making plots interactive
 library(reticulate) # python in Rstudio
 #use_condaenv("ds01") # data science conda environment
-use_condaenv("py38")
+use_condaenv("py38") # need python 3.8 for bokeh
 ```
 
 ```{python}
@@ -39,6 +39,8 @@ from bokeh.plotting import show
 
 from bokeh.plotting import output_notebook
 output_notebook()
+from bokeh.plotting import figure, output_file, save # this is needed when running in
+# an IDE not a notebook
 pd.set_option('plotting.backend', 'pandas_bokeh')
 
 import warnings 
@@ -67,13 +69,13 @@ year.head()
 ```
 
 ```{r}
+# dplyr
 year <- df %>% 
     group_by(year) %>% 
     summarise(across(.cols = c(pedal_cycles,
                                cars_and_taxis,
                                all_hgvs),
                      sum, na.rm = TRUE))
-
 ```
 
 
@@ -94,11 +96,11 @@ year_index
 ```
 
 ```{r}
-
+# use a custom function
 normalise <- function(vec){
     (vec * 100) / vec[1]
 }
-
+# apply with mutate and across for multiple columns
 year_index = year %>% 
     mutate(across(.cols = -year, normalise))
 
@@ -114,12 +116,10 @@ year_index <- year %>%
 
 ```{python}
 yi_fig = year_index.plot()
-
-
 ```
 
 ```{r}
-
+# using ggplot
 yi_fig <- year_index %>% 
     pivot_longer(-year) %>% 
     ggplot(aes(x = year, y = value, group = name, colour = name)) +
@@ -131,10 +131,7 @@ yi_fig <- year_index %>%
     scale_x_continuous(breaks = seq(1993, 2018, 5)) +
     theme_bw()
 #make interactive
-library(plotly)
 yi_fig %>% ggplotly()
-
-
 
 ```
 
@@ -160,10 +157,8 @@ yi_fig.xaxis.ticker = [1993, 1998, 2003, 2008, 2013, 2018]
 Run the cell below to see that your changes have been implemented as expected:
 
 ```{python}
+output_file(filename="bokeh.html", title="Bokeh Plot")
 show(yi_fig) # opens in browser
-# to save
-from bokeh.plotting import figure, output_file, save
-output_file(filename="yi_fig.html", title="yi_fig_html")
 save(yi_fig)
 ```
 
@@ -197,11 +192,11 @@ green_2018
 
 # collapse
 green_2018 <- df %>% 
-    sbt(year == 2018) %>% 
-    collap(~name,
+    sbt(year == 2018) %>% #subset
+    collap(~name, #group and summarise (collapse)
            FUN = \(x){sum(x) / 1000000},
            cols = c("pedal_cycles", "buses_and_coaches")) %>% 
-    roworder(-pedal_cycles)
+    roworder(-pedal_cycles) #reorder rows
 ```
 
 **Q6.** Use the `.plot()` method to create a *horizontal, stacked* bar chart from the `green_2018` DataFrame, assigning it to `green_bar`:
@@ -242,7 +237,7 @@ png_file <- fs::path(knitr::fig_path(), "green_bar.png")
 # using the ragg device agg_png you can increase the scaling parameter 
 #to proportionately increase the scale of the geoms when the widtha nd height are 
 #increased
-ggsave(png_file, green_bar, device = agg_png, width = 8000, height = 6000, units = "px", res = 300, scaling = 3)
+ggsave(png_file, green_bar, device = agg_png, width = 800, height = 600, units = "px", res = 300, scaling = 1)
 
 ```
 
@@ -311,6 +306,7 @@ density_index = (reg_density.copy() *100) / ninety3
 ```
 
 ```{r}
+# reuse the normalise function from before
 density_index <- reg_density %>% 
     mutate(across(.cols = -year, .fns = normalise))
 ```
