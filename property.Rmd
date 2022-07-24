@@ -1,0 +1,345 @@
+---
+title: An R Markdown document converted from "property.ipynb"
+output: html_document
+---
+
+# Plotting a Property Dataset
+
+KATE expects your code to define variables with specific names that correspond to certain things we are interested in.
+
+KATE will run your notebook from top to bottom and check the latest value of those variables, so make sure you don't overwrite them.
+
+* Remember to uncomment the line assigning the variable to your answer and don't change the variable or function names.
+* Use copies of the original or previous DataFrames to make sure you do not overwrite them by mistake.
+
+You will find instructions below about how to define each variable.
+
+Once you're happy with your code, upload your notebook to KATE to check your feedback.
+
+Run the following cell to import packages and set plotting styling. 
+
+**The plotting styling should not be changed**; doing so may result in KATE incorrectly evaluating your plots.
+
+*Note: `matplotlib` does a lot of work in the background to "guess" what figure to plot on. This can have the effect of modifying figures you have created before in the notebook, which will cause your plots to be wrong on KATE. To ensure your plots are always created properly, call `plt.figure()` before each command that creates a new plot, this will ensure you plot on a new figure everytime.*
+```{r}
+library("tidyverse") #mainly for dplyr
+library("highcharter") # date manipulation
+library("glue") # literal string manipulation
+library("collapse") # fast data transformation and aggregateion
+library("fs") # file system operations
+library("ragg") # resizing graphics output
+library("plotly") # making plots interactive
+library("reticulate") # python in Rstudio
+#use_condaenv("ds01") # data science conda environment
+use_condaenv("py38") # need python 3.8 for bokeh
+```
+
+
+```{python}
+import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
+sns.set()
+
+from matplotlib.axes._axes import _log as matplotlib_axes_logger
+matplotlib_axes_logger.setLevel('ERROR') #prevents unnecessary mpl warnings about sns color palette
+```
+
+```{python}
+df = pd.read_csv('data/assessments.csv')
+```
+
+```{r}
+df <- read_csv("data/assessments.csv")
+```
+
+
+The `data-dictionary.pdf` file provided gives details about each field.
+
+## Charting residential properties with pandas
+
+**Q1.** Create a DataFrame containing only properties from `df` with a `CLASSDESC` of `RESIDENTIAL`.
+Store the answer in a variable called `res`
+
+```{python}
+df.head()
+```
+
+```{python}
+#add your code below...
+res = df[df.CLASSDESC == 'RESIDENTIAL']
+```
+
+```{r}
+res <- df %>% 
+    filter(CLASSDESC == "RESIDENTIAL")
+
+```
+**Q2.** Create a DataFrame containing only properties from `res` with `BEDROOMS` greater than 0 and less than 7.
+
+- Use the `.copy()` method so that you have a distinct DataFrame in memory
+- Use the `.notnull()` method to mask out the rows in `BEDROOMS` which are null
+- Use the `.astype()` method to change the data type of the `BEDROOMS` column to `int`
+- Filter the new DataFrame to only contain rows where `BEDROOMS` is greater than `0` and less than `7`
+
+Call the new dataframe `res_16`
+
+```{python}
+# Add your code below
+res_16 = res.copy()[res['BEDROOMS'].notnull()] \
+.astype({'BEDROOMS': int}) \
+[res['BEDROOMS'] > 0][res['BEDROOMS'] < 7]
+# .loc[(res['BEDROOMS'] > 0) & (res['BEDROOMS'] < 7)]
+res_16
+```
+
+```{r}
+res_16 <- res %>% 
+    filter(between(BEDROOMS, 1, 6),
+           !is.na(BEDROOMS)) %>% 
+    mutate(BEDROOMS = as.integer(BEDROOMS))
+res_16
+```
+**Q3.** Use `.groupby()` on `res_16` to create a Series with an index of `BEDROOMS` and values of the `.mean()` of `FULLBATHS` for each number of `BEDROOMS`.
+
+Assign this series to a new variable called `bed_bath`
+
+```{python}
+# Add your code below
+bed_bath = res_16.groupby('BEDROOMS')['FULLBATHS'].mean()
+bed_bath.head(8)
+```
+
+```{r}
+bed_bath <- res_16 %>% 
+    group_by(BEDROOMS) %>% 
+    summarise(FULLBATHS = mean(FULLBATHS, na.rm = TRUE))
+bed_bath
+```
+
+**Q4.** Use the `.plot()` method on `bed_bath` to create a plot of `kind='line'`.
+
+- This should result in a plot of `BEDROOMS` on the x-axis with the average number of `FULLBATHS` on the y-axis
+- Save your plot into a new variable, `bb_line`
+
+```{python}
+# We create a new figure to make other figures in the notebook don't get modified
+plt.figure()
+# Add your code below
+bb_line = bed_bath.plot(kind = 'line')
+# appears in plot window
+plt.show()
+```
+
+```{r}
+# highcharter
+bed_bath %>% 
+    hchart("line", hcaes(x = BEDROOMS, y = FULLBATHS)) %>% 
+    hc_title(text = "Relationship between Bedrooms and Bathrooms")
+
+```
+
+**Q5.** Using the `res_16` DataFrame, create a Series with an index of `BEDROOMS` and values of the `.value_counts()` of each number, using `.sort_index()` to order it by the index.
+
+Call the new variable `beds`
+
+```{python}
+# Add your code below
+beds= res_16.BEDROOMS.value_counts().sort_index()
+beds
+```
+
+```{r}
+beds <- res_16 %>%
+    count(BEDROOMS)
+```
+**Q6.** Use the `.plot()` method on `beds` to create a plot of `kind='bar'`, with variable `bar_title` as the `title`.
+
+Save your plot into a variable called `beds_bar`
+
+```{python}
+bar_title = 'Residential housing by number of bedrooms'
+```
+
+```{python}
+# We create a new figure to make sure other figures in the notebook don't get modified
+plt.figure()
+# Add your code below
+beds_bar = beds.plot(title = bar_title, kind = 'bar')
+plt.show()
+```
+
+```{r}
+beds_bar <- beds %>% 
+    ggplot() +
+    geom_col(aes(x = BEDROOMS, y = n), fill = "blue") +
+    labs(title = py$bar_title,
+         y = "Number of properties") +
+    scale_x_continuous(breaks = beds$BEDROOMS)
+
+beds_bar
+
+```
+
+```{r}
+# highcharter
+beds %>% 
+    hchart("column", hcaes(x = BEDROOMS, y = n)) %>% 
+    hc_title(text = py$bar_title) %>% 
+    hc_yAxis(title = list(text = "Number of properties")) %>% 
+    hc_xAxis(title = list(text = "Bedrooms"))
+```
+
+**Q7.** Create a function called `zip_land` which takes two arguments: a DataFrame (with the same columns as `df`) and an integer (which it can be assumed will always be present in the `PROPERTYZIP` column of the DataFrame).
+
+- This function will need to filter down the `df` argument to the rows where the `PROPERTYZIP` column is equal to the `zip_code` argument, before returning a `scatter` plot with the following properties:
+
+    - `x=LOTAREA`
+    - `y=FAIRMARKETLAND`
+    - `xlim` and `ylim` both from `0` to double the `.mean()` of the respective column values
+    - `alpha` = 0.4
+    - `figsize` = (12, 10)
+
+Note: make sure you return the plot. You should have in your code something like `my_plot = [command to plot]` and then `return my_plot`
+
+```{python}
+# Add your code below to implement zip_land
+def zip_land(df, zip_code):  
+    filt_df = df[df['PROPERTYZIP'] == zip_code]
+    xlim_max = filt_df.LOTAREA.mean() * 2
+    ylim_max = filt_df.FAIRMARKETLAND.mean() * 2
+    theplot = filt_df.plot(x = 'LOTAREA',
+                           y = 'FAIRMARKETLAND',
+                           xlim = (0, xlim_max),
+                           ylim = (0, ylim_max),
+                           alpha = 0.4,
+                           figsize = (12, 10),
+                            kind = 'scatter')
+    return theplot
+```
+
+
+```{r}
+
+zip_land <- function(df, zip_code)
+    {
+    filt_df <- df %>% 
+        filter(PROPERTYZIP == zip_code)
+    xlim_max = (filt_df$LOTAREA %>% mean(na.rm = TRUE)) * 2
+    ylim_max = (filt_df$FAIRMARKETLAND %>% mean(na.rm = TRUE)) * 2
+    
+    theplot <- filt_df %>% 
+        ggplot(aes(x = LOTAREA, y = FAIRMARKETLAND)) +
+        
+        expand_limits(x = c(10000, 20000), y = c(24000, 40000)) +
+        geom_point(alpha = 0.4)
+    return(theplot)
+}
+
+```
+
+Run the following code cell to check that your function returns a chart as expected:
+
+```{python}
+# We create a new figure to make other figures in the notebook don't get modified
+plt.figure()
+zip_chart = zip_land(df, 15236)
+plt.show()
+```
+
+```{r}
+zip_chart <- zip_land(df, 15236)
+zip_chart
+```
+
+
+
+### Charting property values with seaborn
+
+**Q8.** Create a DataFrame which contains only entries from `df` with a `SALEDESC` of `VALID SALE`.
+- Use the `.copy()` method to ensure you have a distinct DataFrame in memory
+
+Call the new dataframe `sales`
+
+```{python}
+# Add your code below
+sales = df[df.SALEDESC == 'VALID SALE'].copy()
+```
+
+**Q9.** Add a column to `sales` called `PITTSBURGH`, containing boolean values of `True` where `PROPERTYCITY` equals `PITTSBURGH` and `False` if not.
+
+```{python}
+sales['PITTSBURGH'] = sales['PROPERTYCITY'] == 'PITTSBURGH'
+```
+
+**Q10.** Create a seaborn `.violinplot()` with the following properties:
+
+`x` = `PITTSBURGH`  
+`y` = `FAIRMARKETTOTAL`   
+`data` = only entries from `sales` where `['BEDROOMS'] == 1`
+
+*Put the `sns.type_of_plot(...)` statement after the `=` assignment sign; you will still see the resulting plot in the notebook, and KATE will be able to evaluate it.*
+
+Call the new variable `pitts_violin`
+
+```{python}
+# We create a new figure to make other figures in the notebook don't get modified
+plt.figure()
+onebeds = sales[sales['BEDROOMS'] == 1]
+
+pitts_violin = sns.violinplot(x = 'PITTSBURGH', y = 'FAIRMARKETTOTAL', data = onebeds)
+```
+
+**Q11.** Create a seaborn `.regplot()` with the following properties:
+
+`x` = `SALEPRICE`    
+`y` = `FAIRMARKETTOTAL`  
+`data` = only entries from `sales` where `['GRADEDESC'] == 'EXCELLENT'`
+
+Call the new variable `exc_reg`
+
+```{python}
+# We create a new figure to make other figures in the notebook don't get modified
+plt.figure()
+exc_grade = sales[sales['GRADEDESC'] == 'EXCELLENT']
+exc_reg = sns.regplot(x = 'SALEPRICE', y = 'FAIRMARKETTOTAL', data = exc_grade)
+```
+
+**Q12.** Create a DataFrame called `bus` which contains only entries from `sales` where `CLASSDESC` `.isin(['COMMERCIAL', 'INDUSTRIAL', 'AGRICULTURAL'])`.
+
+```{python}
+bus = sales[sales['CLASSDESC'].isin(['COMMERCIAL', 'INDUSTRIAL', 'AGRICULTURAL'])]
+```
+
+**Q13.** Create a DataFrame using the `.groupby()` method on the `bus` DataFrame with the following properties:
+
+- Data grouped by `['CLASSDESC', 'PITTSBURGH']` where the values are of the `.mean()` of `FAIRMARKETTOTAL`
+- Use `.reset_index()` so that a DataFrame is created
+- Use `.sort_values(by='FAIRMARKETTOTAL')` to order it
+
+
+Call the new dataframe `bus_value`
+
+```{python}
+bus_value = bus \
+.groupby(['CLASSDESC', 'PITTSBURGH'])['FAIRMARKETTOTAL']. \
+mean(). \
+reset_index(). \
+sort_values(by = 'FAIRMARKETTOTAL')
+bus_value
+```
+
+**Q14.** Create a seaborn `.barplot()` with the following properties:
+- `x` = `CLASSDESC`
+- `y` = `FAIRMARKETTOTAL`
+- `hue` = `PITTSBURGH`
+- `data` = `bus_value`
+
+Call the new variable `bus_bar`
+
+```{python}
+# We create a new figure to make other figures in the notebook don't get modified
+plt.figure()
+bus_bar =  sns.barplot(x = 'CLASSDESC', y = 'FAIRMARKETTOTAL', hue = 'PITTSBURGH', data = bus_value)
+```
+
