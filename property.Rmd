@@ -21,7 +21,7 @@ Run the following cell to import packages and set plotting styling.
 **The plotting styling should not be changed**; doing so may result in KATE incorrectly evaluating your plots.
 
 *Note: `matplotlib` does a lot of work in the background to "guess" what figure to plot on. This can have the effect of modifying figures you have created before in the notebook, which will cause your plots to be wrong on KATE. To ensure your plots are always created properly, call `plt.figure()` before each command that creates a new plot, this will ensure you plot on a new figure everytime.*
-```{r}
+```{r, message=FALSE}
 library("tidyverse") #mainly for dplyr
 library("highcharter") # date manipulation
 library("glue") # literal string manipulation
@@ -89,7 +89,6 @@ Call the new dataframe `res_16`
 res_16 = res.copy()[res['BEDROOMS'].notnull()] \
 .astype({'BEDROOMS': int}) \
 [res['BEDROOMS'] > 0][res['BEDROOMS'] < 7]
-# .loc[(res['BEDROOMS'] > 0) & (res['BEDROOMS'] < 7)]
 res_16
 ```
 
@@ -162,9 +161,7 @@ bar_title = 'Residential housing by number of bedrooms'
 ```
 
 ```{python}
-# We create a new figure to make sure other figures in the notebook don't get modified
 plt.figure()
-# Add your code below
 beds_bar = beds.plot(title = bar_title, kind = 'bar')
 plt.show()
 ```
@@ -175,10 +172,9 @@ beds_bar <- beds %>%
     geom_col(aes(x = BEDROOMS, y = n), fill = "blue") +
     labs(title = py$bar_title,
          y = "Number of properties") +
-    scale_x_continuous(breaks = beds$BEDROOMS)
+scale_x_continuous(breaks = beds$BEDROOMS)
 
 beds_bar
-
 ```
 
 ```{r}
@@ -217,8 +213,6 @@ def zip_land(df, zip_code):
                             kind = 'scatter')
     return theplot
 ```
-
-
 ```{r}
 
 zip_land <- function(df, zip_code)
@@ -253,6 +247,7 @@ plt.show()
 zip_chart <- zip_land(df, 15236)
 zip_chart
 ```
+
 ### Charting property values with seaborn
 
 **Q8.** Create a DataFrame which contains only entries from `df` with a `SALEDESC` of `VALID SALE`.
@@ -303,6 +298,7 @@ pitts_violin <- onebeds %>%
     ggplot(aes(x = PITTSBURGH, y = FAIRMARKETTOTAL, fill = PITTSBURGH)) +
     geom_violin(trim = FALSE)
 
+pitts_violin
 ```
 
 **Q11.** Create a seaborn `.regplot()` with the following properties:

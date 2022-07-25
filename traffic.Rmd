@@ -18,30 +18,38 @@ Once you're happy with your code, upload your notebook to KATE to check your fee
 
 First of all, we will import `pandas` and `pandas_bokeh` and set them up:
 
-```{r}
-library(tidyverse) #mainly for dplyr
-library(lubridate) # date manipulation
-library("glue") # literal string manipulation
-library("collapse") # fast data transformation and aggregateion
-library("fs") # file system operations
-library("data.table") # fast data transformation and aggregation
-library("ragg") # resizing graphics output
-library("plotly") # making plots interactive
-library(reticulate) # python in Rstudio
+```{r, message=FALSE, warning=FALSE}
+# library(tidyverse) #mainly for dplyr
+# library(lubridate) # date manipulation
+# library("glue") # literal string manipulation
+# library("collapse") # fast data transformation and aggregateion
+# library("fs") # file system operations
+# library("data.table") # fast data transformation and aggregation
+# library("ragg") # resizing graphics output
+# library("plotly") # making plots interactive
+#library(reticulate) # python in Rstudio
 #use_condaenv("ds01") # data science conda environment
-use_condaenv("py38") # need python 3.8 for bokeh
+reticulate::use_condaenv("py38", required = TRUE) # need python 3.8 for bokeh
 ```
 
 ```{python}
 import pandas as pd
-import pandas_bokeh
+
+```
+
+
+```{python}
+import pandas-bokeh
+```
+
+```{python}
 from bokeh.plotting import show
 
 from bokeh.plotting import output_notebook
 output_notebook()
 from bokeh.plotting import figure, output_file, save # this is needed when running in
 # an IDE not a notebook
-pd.set_option('plotting.backend', 'pandas_bokeh')
+
 
 import warnings 
 warnings.filterwarnings('ignore')
@@ -56,10 +64,7 @@ df
 
 ```{r}
 df <- read_csv("data/region_traffic.csv")
-df %>% names()
-
 ```
-
 
 **Q1.** Use `.groupby()` to create a DataFrame called `year` which groups `df` by `year` and contains the columns `['pedal_cycles', 'cars_and_taxis', 'all_hgvs']`, with the `.sum()` of each of these for each year:
 
@@ -92,7 +97,11 @@ yr = year.copy()
 
 base = yr.loc[1993]
 year_index = (yr * 100)/ base
-year_index
+year_index.head()
+```
+
+```{python}
+pandas.set_option('plotting.backend', 'pandas_bokeh')
 ```
 
 ```{r}
@@ -103,10 +112,10 @@ normalise <- function(vec){
 # apply with mutate and across for multiple columns
 year_index = year %>% 
     mutate(across(.cols = -year, normalise))
-
 # collapse
 year_index <- year %>%
     ftransformv(pedal_cycles:all_hgvs, normalise)
+head(year_index)
 ```
 
 
@@ -115,6 +124,7 @@ year_index <- year %>%
 **Do not pass any additional arguments to `.plot()`**
 
 ```{python}
+output_file(filename="bokeh.html", title="Bokeh Plot")
 yi_fig = year_index.plot()
 ```
 
@@ -157,9 +167,7 @@ yi_fig.xaxis.ticker = [1993, 1998, 2003, 2008, 2013, 2018]
 Run the cell below to see that your changes have been implemented as expected:
 
 ```{python}
-output_file(filename="bokeh.html", title="Bokeh Plot")
 show(yi_fig) # opens in browser
-save(yi_fig)
 ```
 
 **Q5.** Create a DataFrame called `green_2018` which:
@@ -175,7 +183,7 @@ green_2018 = df[df.year == 2018] \
 .sum() \
 .sort_values('pedal_cycles', ascending = False) \
 / 1000000
-green_2018
+green_2018.head()
 ```
 
 
@@ -188,8 +196,6 @@ green_2018 <- df %>%
                      ~sum(.x) %>% `/`(1000000), na.rm = TRUE)) %>% 
     arrange(desc(pedal_cycles))
 
-green_2018
-
 # collapse
 green_2018 <- df %>% 
     sbt(year == 2018) %>% #subset
@@ -197,6 +203,7 @@ green_2018 <- df %>%
            FUN = \(x){sum(x) / 1000000},
            cols = c("pedal_cycles", "buses_and_coaches")) %>% 
     roworder(-pedal_cycles) #reorder rows
+head(green_2018)
 ```
 
 **Q6.** Use the `.plot()` method to create a *horizontal, stacked* bar chart from the `green_2018` DataFrame, assigning it to `green_bar`:
@@ -231,11 +238,11 @@ green_bar <- green_2018 %>%
          x = 'Vehicle miles (millions)',
          y = 'Region',
          fill = "Vehicle Type")
-
+# make file name
 png_file <- fs::path(knitr::fig_path(), "green_bar.png")    
 
 # using the ragg device agg_png you can increase the scaling parameter 
-#to proportionately increase the scale of the geoms when the widtha nd height are 
+#to proportionately increase the scale of the geoms when the width and height are 
 #increased
 ggsave(png_file, green_bar, device = agg_png, width = 800, height = 600, units = "px", res = 300, scaling = 1)
 
@@ -257,8 +264,9 @@ show(green_bar)
 length_motor = df.groupby(['year', 'name'])['total_link_length_miles', 'all_motor_vehicles'].sum()
 length_motor['million_vehicle_miles_per_road_mile'] = \
 (length_motor['all_motor_vehicles'] / 1000000) / length_motor['total_link_length_miles']
-length_motor
+length_motor.head()
 ```
+
 ```{r}
 #dplyr
 length_motor <- df %>% 
@@ -285,14 +293,14 @@ settfm(length_motor,
 
 ```{python}
 reg_density = length_motor.copy().reset_index(level = ("name")).pivot(columns = 'name')['million_vehicle_miles_per_road_mile']
-reg_density
+reg_density.head()
 ```
 
 ```{r}
 reg_density <- length_motor %>% 
     pivot_wider(id_cols = year, names_from = name, values_from = million_vehicle_miles_per_road_mile)
     
-reg_density
+glimpse(reg_density)
 ```
 
 
@@ -314,7 +322,7 @@ density_index <- reg_density %>%
 
 ```{python}
 # density_index.reset_index(inplace=True)
-density_index
+density_index.head()
 ```
 
 
