@@ -231,7 +231,9 @@ zip_land <- function(df, zip_code)
     theplot <- filt_df %>% 
         ggplot(aes(x = LOTAREA, y = FAIRMARKETLAND)) +
         
-        expand_limits(x = c(10000, 20000), y = c(24000, 40000)) +
+        # expand_limits(x = c(10000, 20000), y = c(24000, 40000)) +
+        xlim(0, xlim_max) +
+        ylim(0, ylim_max) +
         geom_point(alpha = 0.4)
     return(theplot)
 }
@@ -251,9 +253,6 @@ plt.show()
 zip_chart <- zip_land(df, 15236)
 zip_chart
 ```
-
-
-
 ### Charting property values with seaborn
 
 **Q8.** Create a DataFrame which contains only entries from `df` with a `SALEDESC` of `VALID SALE`.
@@ -272,6 +271,11 @@ sales = df[df.SALEDESC == 'VALID SALE'].copy()
 sales['PITTSBURGH'] = sales['PROPERTYCITY'] == 'PITTSBURGH'
 ```
 
+```{r}
+sales <- df %>% 
+    filter(SALEDESC == 'VALID SALE') %>% 
+    mutate(PITTSBURGH = (PROPERTYCITY == "PITTSBURGH"))
+```
 **Q10.** Create a seaborn `.violinplot()` with the following properties:
 
 `x` = `PITTSBURGH`  
@@ -288,6 +292,17 @@ plt.figure()
 onebeds = sales[sales['BEDROOMS'] == 1]
 
 pitts_violin = sns.violinplot(x = 'PITTSBURGH', y = 'FAIRMARKETTOTAL', data = onebeds)
+plt.show()
+```
+
+```{r}
+onebeds <- sales %>% 
+    filter(BEDROOMS == 1) 
+
+pitts_violin <- onebeds %>% 
+    ggplot(aes(x = PITTSBURGH, y = FAIRMARKETTOTAL, fill = PITTSBURGH)) +
+    geom_violin(trim = FALSE)
+
 ```
 
 **Q11.** Create a seaborn `.regplot()` with the following properties:
@@ -303,6 +318,19 @@ Call the new variable `exc_reg`
 plt.figure()
 exc_grade = sales[sales['GRADEDESC'] == 'EXCELLENT']
 exc_reg = sns.regplot(x = 'SALEPRICE', y = 'FAIRMARKETTOTAL', data = exc_grade)
+plt.show()
+```
+```{r}
+
+exc_grade <- sales %>% 
+    filter(GRADEDESC == "EXCELLENT")
+
+exc_reg <- exc_grade %>% 
+    ggplot(aes(x = SALEPRICE, y = FAIRMARKETTOTAL)) +
+    geom_point(alpha = 0.4, size = 2) +
+    geom_smooth(method = "lm")
+
+exc_reg
 ```
 
 **Q12.** Create a DataFrame called `bus` which contains only entries from `sales` where `CLASSDESC` `.isin(['COMMERCIAL', 'INDUSTRIAL', 'AGRICULTURAL'])`.
@@ -311,12 +339,17 @@ exc_reg = sns.regplot(x = 'SALEPRICE', y = 'FAIRMARKETTOTAL', data = exc_grade)
 bus = sales[sales['CLASSDESC'].isin(['COMMERCIAL', 'INDUSTRIAL', 'AGRICULTURAL'])]
 ```
 
+```{r}
+bus <- sales %>% 
+    filter(CLASSDESC %in% c('COMMERCIAL', 'INDUSTRIAL', 'AGRICULTURAL'))
+```
+
+
 **Q13.** Create a DataFrame using the `.groupby()` method on the `bus` DataFrame with the following properties:
 
 - Data grouped by `['CLASSDESC', 'PITTSBURGH']` where the values are of the `.mean()` of `FAIRMARKETTOTAL`
 - Use `.reset_index()` so that a DataFrame is created
 - Use `.sort_values(by='FAIRMARKETTOTAL')` to order it
-
 
 Call the new dataframe `bus_value`
 
@@ -326,6 +359,15 @@ bus_value = bus \
 mean(). \
 reset_index(). \
 sort_values(by = 'FAIRMARKETTOTAL')
+bus_value
+```
+
+```{r}
+bus_value <- bus %>% 
+    group_by(CLASSDESC, PITTSBURGH) %>% 
+    summarise(FAIRMARKETTOTAL = mean(FAIRMARKETTOTAL, na.rm = TRUE)) %>% 
+    arrange(FAIRMARKETTOTAL)
+
 bus_value
 ```
 
@@ -341,5 +383,24 @@ Call the new variable `bus_bar`
 # We create a new figure to make other figures in the notebook don't get modified
 plt.figure()
 bus_bar =  sns.barplot(x = 'CLASSDESC', y = 'FAIRMARKETTOTAL', hue = 'PITTSBURGH', data = bus_value)
+plt.show()
+```
+
+```{r}
+#ggplot
+bus_value %>% 
+    ggplot(aes(x = CLASSDESC,
+               y = FAIRMARKETTOTAL, 
+               fill = PITTSBURGH,
+               group = PITTSBURGH)) +
+    geom_col(position = position_dodge(preserve = "single"))
+#highcharts
+bus_value %>% 
+    # ungroup() %>% 
+    hchart("column", hcaes(x = CLASSDESC,
+                           y = FAIRMARKETTOTAL,
+                           color = PITTSBURGH,
+                           group = PITTSBURGH))
+
 ```
 
