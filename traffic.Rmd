@@ -19,16 +19,16 @@ Once you're happy with your code, upload your notebook to KATE to check your fee
 First of all, we will import `pandas` and `pandas_bokeh` and set them up:
 
 ```{r, message=FALSE, warning=FALSE}
-# library(tidyverse) #mainly for dplyr
-# library(lubridate) # date manipulation
-# library("glue") # literal string manipulation
-# library("collapse") # fast data transformation and aggregateion
-# library("fs") # file system operations
-# library("data.table") # fast data transformation and aggregation
-# library("ragg") # resizing graphics output
-# library("plotly") # making plots interactive
-#library(reticulate) # python in Rstudio
-#use_condaenv("ds01") # data science conda environment
+library(tidyverse) #mainly for dplyr
+library(lubridate) # date manipulation
+library("glue") # literal string manipulation
+library("collapse") # fast data transformation and aggregateion
+library("fs") # file system operations
+library("data.table") # fast data transformation and aggregation
+library("ragg") # resizing graphics output
+library("plotly") # making plots interactive
+# disable python environments in Rstudio Global options
+# and sys.unsetenv("RETICULATE_PYTHON")
 reticulate::use_condaenv("py38", required = TRUE) # need python 3.8 for bokeh
 ```
 
@@ -39,7 +39,7 @@ import pandas as pd
 
 
 ```{python}
-import pandas-bokeh
+import pandas_bokeh
 ```
 
 ```{python}
@@ -58,6 +58,7 @@ warnings.filterwarnings('ignore')
 Use `.read_csv()` to get our dataset `data/region_traffic.csv` and assign to `df`:
 
 ```{python}
+import pandas as pd # seems very picky about where import pandas is!
 df = pd.read_csv('data/region_traffic.csv')
 df
 ```
@@ -101,7 +102,7 @@ year_index.head()
 ```
 
 ```{python}
-pandas.set_option('plotting.backend', 'pandas_bokeh')
+pd.set_option('plotting.backend', 'pandas_bokeh')
 ```
 
 ```{r}
@@ -167,7 +168,7 @@ yi_fig.xaxis.ticker = [1993, 1998, 2003, 2008, 2013, 2018]
 Run the cell below to see that your changes have been implemented as expected:
 
 ```{python}
-show(yi_fig) # opens in browser
+yi_fig # opens in browser
 ```
 
 **Q5.** Create a DataFrame called `green_2018` which:
@@ -251,7 +252,7 @@ ggsave(png_file, green_bar, device = agg_png, width = 800, height = 600, units =
 Use `show()` to check that your changes have been made as expected:
 
 ```{python}
-show(green_bar)
+green_bar
 ```
 
 **Q8.** Create a DataFrame called `length_motor` as follows:
@@ -365,10 +366,9 @@ density_plot %>% ggplotly()
 
 ```
 
-
 Run the following cell to check your changes have been applied as expected:
 
 ```{python}
-show(density_plot)
+density_plot
 ```
 
