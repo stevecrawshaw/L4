@@ -20,13 +20,13 @@ Run the cell below first, to import `pandas`, and `matplotlib` `pyplot`. The `ma
 
 
 ```{r}
-library(tidyverse) #mainly for dplyr
-library(lubridate) # date manipulation
+library("tidyverse") #mainly for dplyr
+library("lubridate") # date manipulation
 library("glue")
 library("collapse")
 library("fs")
 library("data.table")
-library(reticulate) # python in Rstudio
+library("reticulate") # python in Rstudio
 #use_condaenv("ds01") # data science conda environment
 use_condaenv("ds01")
 ```
@@ -52,7 +52,8 @@ Run the following cell to import and concatenate the datasets, assigning the res
 df1 = pd.read_csv('data/heating_2018.csv')
 df2 = pd.read_csv('data/hot_water_2018.csv')
 df3 = pd.read_csv('data/catering_2018.csv')
-data = pd.concat([df1, df2, df3], keys=['Heating', 'Hot Water', 'Catering']).reset_index(level=[0])
+data = pd.concat([df1, df2, df3],
+keys=['Heating', 'Hot Water', 'Catering']).reset_index(level=[0])
 ```
 
 Running `data.head()` will show us the top of our DataFrame:
@@ -61,14 +62,16 @@ Running `data.head()` will show us the top of our DataFrame:
 data.head()
 ```
 
-```{r}
+Iterate over all files ending in "2018.csv", reading them in and returning a dataframe with a field called "file" which contains the file name for the data.
+
+```{r, message=FALSE}
 files <- dir_ls("data", glob = "*2018.csv")
 data <- map_dfr(files, read_csv, .id = "file") %>% 
     mutate(Use = str_sub(file, start = 6, end = -10) %>% 
                str_replace("_", " ") %>% 
                str_to_title(),
            file = NULL)
-head(data)
+glimpse(data)
 ```
 
 ### Data processing
@@ -92,6 +95,7 @@ data.Other = data.Other.astype('int')
 data['Total'] = data[['Electricity', 'Natural Gas', 'Oil', 'District Heating', 'Other']].sum(axis = 1)
 ```
 
+We use the magrittr::%<>% operator to reassign the manipulated data to the original object. 
 ```{r}
 data %<>% 
     mutate(across(where(is.numeric),
@@ -115,6 +119,7 @@ data %<>%
 ss = data.groupby('Sub-Sector').sum()
 ```
 
+The `across` and `where` functions conditionally summarise columns that are numeric with the specified function (mean) 
 ```{r}
 ss <- data %>% 
     group_by(`Sub-Sector`) %>% 
@@ -147,6 +152,8 @@ sector = data.groupby('Sector').Total.agg(['sum', 'mean', 'count']).sort_values(
 sector.head()
 ```
 
+An example is provided for `collapse::` (commented out) but the operation is carried out in `data.table`, another fast data manipulation package. Multiple functions are applied to the specified columns inside the `[]`. The data frame must first be converted to a Data Table using the `SetDT` function. After the functions are applied by group, the row order is set by reference.
+
 ```{r}
 # collapse
 
@@ -154,8 +161,6 @@ sector.head()
 #                                         "Mean" = fmean,
 #                                         "Count" = fnobs)) %>% 
 #     arrange(-Sum.Total)
-
-
 # data.table
 setDT(data)
 sector <- data[, .(Mean = mean(Total), Sum = sum(Total), Count =  .N), by = Sector]
@@ -183,7 +188,7 @@ elec_hist = ss.Electricity.plot(kind = 'hist', bins = 5)
 plt.show()
 ```
 
-
+The `hist` function is used from the graphics package. 
 ```{r}
 hist(ss$Electricity, main = "Electricity Histogram", xlab = "Kwh")
 ```
@@ -201,6 +206,9 @@ plt.figure()
 gas_total = ss.plot(x='Natural Gas', y='Total', kind='scatter');
 plt.show()
 ```
+
+`graphics::plot` defaults to a scatter plot.
+
 ```{r}
 plot(x = ss$`Natural Gas`, y = ss$Total, xlab = "Natural Gas",
      ylab = "Total", main = "Natural Gas by Total Scatter Plot")
@@ -223,7 +231,6 @@ plt.show()
 barplot(height = sector$Sum,
         main = 'Energy consumption by sector',
         names.arg = sector$Sector)
-
 ```
 
 **Q8.** Create a *horizontal* and *stacked* bar chart from the `use` DataFrame, using the `.plot()` method:
@@ -240,6 +247,8 @@ use_type = use.drop(columns = 'Total').plot(kind = 'barh', stacked = True, figsi
 plt.show()
 ```
 
+The chart below is made with `ggplot2`, a more modern implementation for data visualisation in R.
+
 ```{r}
 use_type <- use %>% 
     select(-Total) %>% 
@@ -253,5 +262,7 @@ use_type <- use %>%
          x = "Sector",
          fill = "Sub Sector",
          colour = NULL)
+
+use_type
 ```
 

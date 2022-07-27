@@ -43,3 +43,6 @@ config.yml
 
 # Thumbs
 Thumbs.db
+
+#pdfs - too bulky
+/pdf
