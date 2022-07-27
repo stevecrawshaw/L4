@@ -280,5 +280,71 @@ The aim of the colocation study is to compare the performance of the low cost se
 
 Within this study it was not possible to compare the responses of multiple low cost sensors with each other as there was not a budget to purchase additional devices for this purpose.
 
+#### Reference Method Equipment
+
+Continuous Ambient Air Quality Monitoring Systems (CAMS) are certified by the Environment Agency under their MCERTS scheme. This certifies the quality regimes and equipment for environmental permit holders. Local authorities are required to use MCERTS (or equivalent) equipment for monitoring air quality under the LAQM (Local Air Quality Management) regime. The certification and approval process ensures that the measurement standard provides data of an acceptable quality. In addition to the specification of the equipment, a local authority is required to adhere to the calibration and maintenance requirements for the equipment as set out in the relevant guidance [LAQM.TG(16)](https://laqm.defra.gov.uk/documents/LAQM-TG16-April-21-v1.pdf) and the [Local Site Operator (LSO) manual](https://uk-air.defra.gov.uk/assets/documents/reports/empire/lsoman/lsoman.html) for sites that are part of, or affiliated to the national AURN (Automated Urban and Rural Network).
+
+The equipment used in this colocation study is the Met One BAM 1020 Continuous Particulate Monitor, hereafter referred to as "BAM 1020". The instrument works by drawing a sample of air through a filter tape every hour. The deposited PM is then exposed to a source of radiactive Carbon 14 on one side of the filter tape. A beta radiation detector is on the other side of the tape and measures the attenuation of the beta radiation through the sampled filter. The attenuation of the beta radiation is a function of the deposited PM mass on the filter tape. Because the flow rate of the sampled air is known, the concentration in &mu;gm^-3^ can be calculated. Hourly concentrations are recorded, either on an internal or external data logger. These data are regularly polled by a central telemetry system.
+
+#### Colocation Sites: Temple Way
+
+The [Temple Way site](https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:500) is affiliated to the national monitoring network. This means that the site is owned by Bristol City Council, but the management of the data and the oversight of the QA regime is done by the Environment Agency's contractors. PM~10~ and NOx are measured at this site and summary metadata are provided below.
+
+```{r}
+pm_meta <- import_ods("air-quality-monitoring-sites",
+                       where = "siteid=500 OR siteid=215", select = "*")
+
+site_details <- function(wide_site){
+    # gt seems to reformat date as timestamp(!)
+    site_prepared <- wide_site %>% 
+        mutate(across(where(is.POSIXct), ~as.Date(.x) %>% as.character()))
+do.call(rbind, site_prepared) %>%
+    enframe(name = "Parameter",
+            value = "Value") %>%
+    mutate(Parameter = str_to_sentence(Parameter) %>% 
+               str_replace_all(pattern = "_", replacement = " ")) %>% 
+    filter(!is.na(Value)) %>% 
+    mutate(Value = ifelse(str_starts(Value, "http"),
+                          map(Value, ~htmltools::img(src=.x,
+                                                     alt = "Site Photo",
+                                                     width = "500") %>% 
+                                 as.character() %>%
+                              gt::html()), Value)) %>% 
+    gt() %>%
+        return()
+}
+
+site_details(pm_meta %>% filter(siteid == 500))
+```
+
+#### Colocation Sites: Parson Street School
+
+Oxides of Nitrogen (NOx) have been measured at [Parson Street School](https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:215) for many years. The enclosure is close to the roadside of a busy, queuing road and represents exposure of schoolchildren and school staff. In recognition of the need to understand exposure to PM~2.5~ at a roadside site the monitoring station was updated with a BAM 1020 in 2021. The BAM 1020 when configured for monitoring PM~2.5~ includes an additional particle size cut off filter and also incorporates a heated inlet to drive off volatile compounds from the sampled air. The summary metadata for the site is shown below.
+
+```{r}
+site_details(pm_meta %>% filter(siteid == 215))
+```
+
+#### Colocation Configuration
+
+The low cost sensors were co - located inside the cages of the monitoring sites. Parson Street was installed on 29th March 2022 and Bristol Temple Way was installed on 1st May 2022. The photographs below show the detail of the colocated devices at each monitoring site.
+
+:::{layout-ncol=2 layout-valign="center"}
+
+![Temple Way](images/btw_cage.jpg)
+
+![Parson Street](images/ps_cage.jpg)
+
+Co - located instruments
+:::
+
+#### Data Processing Pipeline
+
+Data from one low cost sensor and from both reference instruments are published in near real time on the council's open data portal. The BAM 1020 data are available through the [`air-quality-data-continuous`](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location) dataset and the Parson Street data are available through the [`luftdaten_pm_bristol`](https://opendata.bristol.gov.uk/explore/dataset/luftdaten_pm_bristol/table/?disjunctive.sensor_id&q=sensor_id+%3D+71552&sort=date&location=22,51.43267,-2.60496&basemap=jawg.streets) dataset. This is a dataset that is a geographical subset of the sensor.community [archive](https://archive.sensor.community/) focussed on Bristol. In addition, data are aggregated to give an hourly mean value for both PM~10~ and PM~2.5~. Data for these two BAM 1020 instruments and the Parson Street low cost sensor are retrieved using a purpose built R function which uses endpoints from the [Opendatasoft API](https://opendata.bristol.gov.uk/api/v2/console).
+
+For the Temple Way sensor, it was not possible to register this on the sensor.community website. A different approach was developed to retrieve the data, which is available through the [Madavi API](https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445) as a combination of csv and zip files. Custom functions were written in R to access these files and import the data as data frames.
+
+Pseudo - code for the pre - modelling pipeline is shown below.
+
 
 
