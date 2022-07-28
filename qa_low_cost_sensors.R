@@ -19,8 +19,8 @@ data_root_url <- "https://api-rrd.madavi.de/data_csv/"
 
 # url <-  "https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445"
 # base_url <- "https://api-rrd.madavi.de/csvfiles.php"
-sensor <- "esp8266-6496445"
-start_date <- "2022-05-01"
+sensor <- "esp8266-6496445" # Temple Way - not registered on sensor.community
+start_date <- "2022-05-01" # BTW started operating
 # ___________ ----
 # 3.0 Functions ----
 
@@ -59,7 +59,7 @@ get_daily_csv_urls <- function(data_root_url, sensor) {
     )
     
 }
-
+# read the daily csv files
 read_sds_csv <- function(filename) {
     #fname <- glue("../air quality analysis/data/{filename}")
     colspec <- cols_only(
@@ -76,7 +76,7 @@ read_sds_csv <- function(filename) {
         return()
     
 }
-
+# read the zip files for each month
 read_sds_zip <- function(zip_url) {
     tempdir <- "../air quality analysis/data/sds_csv/"
     destfile <-  "../air quality analysis/data/sds_csv/temp.zip"
@@ -94,6 +94,7 @@ read_sds_zip <- function(zip_url) {
     return(zip_file_tbl)
     
 }
+# read the zip and csv files and combine
 
 get_madavi_combined <- function(data_root_url, sensor, start_date) {
     day_files_tbl <- get_daily_csv_urls(data_root_url, sensor) %>%
@@ -126,7 +127,6 @@ get_parson_st_data <- function(start_date) {
         dataset = "luftdaten_pm_bristol",
         order_by = "date"
     )
-    
     ps_raw_tbl %>%
         select(date, pm2.5 = pm2_5) %>%
         filter(date > start_date %>% as.POSIXct()) %>% 
@@ -151,6 +151,7 @@ get_ref_data <- function(start_date) {
         return()
 }
 
+# retrieve the Temple way low cost sensor data
 temple_way_hr_tbl <-
     get_madavi_combined(data_root_url, sensor, start_date)
 
@@ -160,11 +161,13 @@ write_rds(
     glue("../air quality analysis/data/{sensor}_{Sys.Date()}_raw.rds")
 )
 
-temple_way_hr_tbl <- read_rds("../air quality analysis/data/esp8266-6496445_2022-07-01_raw.rds")
+temple_way_hr_tbl <- read_rds("../air quality analysis/data/esp8266-6496445_2022-07-28_raw.rds")
 
-parson_st_hr_tbl <- get_parson_st_data(start_date)
-ref_tbl <- get_ref_data(start_date)
+parson_st_hr_tbl <- get_parson_st_data(start_date) # parson st low cost
+ref_tbl <- get_ref_data(start_date) # BAM data from both sites
 
+# wrangling to combine reference and low cost sensors in long format
+# removing data due to faults and assigning siteids manually
 combined_long_tbl <- ref_tbl %>%
     mutate(type = "reference") %>%
     mutate(pm2.5 = if_else(pm2.5 > 200, NA_real_, pm2.5)) %>% 
@@ -181,16 +184,18 @@ combined_long_tbl <- ref_tbl %>%
                       pm10 = NA
                   ))
 
+# nesting data for modelling
+
 model_data_tbl <- combined_long_tbl %>%
     group_by(siteid) %>%
     nest() %>%
     mutate(
-        md = map(data, ~ pluck(.x) %>%
+        md = map(data, ~ pluck(.x) %>% # just the relevant pollutants included
                      mutate(across(
                          where(~ is.na(.x) %>%
                                    all()), ~ NULL
                      ))),
-        md_wide = map(
+        md_wide = map( # daily data
             md,
             ~ pluck(.x) %>%
                 pivot_wider(
@@ -210,22 +215,43 @@ model_data_tbl <- combined_long_tbl %>%
 # 
 # #model_data_tbl$md_wide[1][[1]]$reference %>% max()
 # 
-# time_series_plot <- combined_long_tbl %>% 
-#     pivot_longer(cols = starts_with("pm"),
-#                  names_to = "pollutant",
-#                  values_to = "concentration") %>%
-#     filter(siteid == 215 & pollutant == "pm2.5" |
-#            siteid == 500 & pollutant == "pm10") %>% 
-#     # filter(concentration < 200,
-#     #        date > start_date) %>% 
-#     ggplot(aes(x = date,
-#                y = concentration,
-#                colour = type)) +
-#     geom_line() +
-#     facet_wrap(~ siteid, ncol = 1, scales = "free_y")
-# 
-# time_series_plot
-# 
+time_series_plot <- combined_long_tbl %>%
+    pivot_longer(cols = starts_with("pm"),
+                 names_to = "pollutant",
+                 values_to = "concentration") %>%
+    filter(siteid == 215 & pollutant == "pm2.5" |
+           siteid == 500 & pollutant == "pm10") %>%
+    # filter(concentration < 200,
+    #        date > start_date) %>%
+    ggplot(aes(x = date,
+               y = concentration,
+               colour = type)) +
+    geom_line() +
+    facet_wrap(~ siteid, ncol = 1, scales = "free_y")
+
+time_series_plot
+
+plot_drift <- function(model_data_tbl, siteid = 215){
+    model_data_tbl %>% 
+        ungroup() %>% 
+        filter(siteid == {{siteid}}) %>% 
+        select(md_wide) %>% 
+        pluck(1, 1) %>% 
+        mutate(diff = reference - low_cost) %>% 
+        na.omit() %>% 
+        ggplot(aes(x = date, y = diff)) +
+        geom_smooth() +
+        labs(title = "Smoothed daily mean drift between reference and low cost sensor",
+             subtitle = glue("Site ID {siteid}"),
+             x = "Date",
+             y = "\u00B5gm \u207B\u00B3"
+             ) +
+        theme_bw()
+}
+
+plot_drift(model_data_tbl, siteid = 500)
+
+
 # 
 # # lobstr::obj_size(model_data_tbl)
 model_data_tbl %>%
