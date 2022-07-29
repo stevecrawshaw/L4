@@ -7,7 +7,8 @@ p <-
       "jsonlite",
       "glue",
       "janitor",
-      "fs")
+      "fs",
+      "padr")
 library(xfun)
 pkg_attach2(p)
 rm(p)
@@ -19,7 +20,8 @@ data_root_url <- "https://api-rrd.madavi.de/data_csv/"
 
 # url <-  "https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445"
 # base_url <- "https://api-rrd.madavi.de/csvfiles.php"
-sensor <- "esp8266-6496445" # Temple Way - not registered on sensor.community
+sensor <-
+    "esp8266-6496445" # Temple Way - not registered on sensor.community
 start_date <- "2022-05-01" # BTW started operating
 # ___________ ----
 # 3.0 Functions ----
@@ -87,7 +89,7 @@ read_sds_zip <- function(zip_url) {
     csv_from_zip <- dir_ls(tempdir, regexp = "[.]csv$")
     
     zip_file_tbl <- csv_from_zip %>%
-        map_df( ~ read_sds_csv(.x))
+        map_df(~ read_sds_csv(.x))
     
     file_delete(dir_ls(tempdir))
     
@@ -98,11 +100,11 @@ read_sds_zip <- function(zip_url) {
 
 get_madavi_combined <- function(data_root_url, sensor, start_date) {
     day_files_tbl <- get_daily_csv_urls(data_root_url, sensor) %>%
-        map_df( ~ read_sds_csv(.x))
+        map_df(~ read_sds_csv(.x))
     
     zip_sds_tbl <-
         get_zip_file_urls(data_root_url, sensor, start_date) %>%
-        map_df( ~ read_sds_zip(.x))
+        map_df(~ read_sds_zip(.x))
     
     combined_tbl <- day_files_tbl %>%
         bind_rows(zip_sds_tbl) %>%
@@ -129,7 +131,7 @@ get_parson_st_data <- function(start_date) {
     )
     ps_raw_tbl %>%
         select(date, pm2.5 = pm2_5) %>%
-        filter(date > start_date %>% as.POSIXct()) %>% 
+        filter(date > start_date %>% as.POSIXct()) %>%
         return()
 }
 
@@ -142,7 +144,7 @@ get_ref_data <- function(start_date) {
             select = "siteid, date_time, pm25, pm10",
             where = "(siteid = 215 OR siteid = 500) AND date_time IN [date'2022'..date'2022']",
             order_by = "siteid, date_time"
-            )
+        )
     
     raw_ref_tbl %>%
         filter(date_time >= start_date) %>%
@@ -161,16 +163,18 @@ write_rds(
     glue("../air quality analysis/data/{sensor}_{Sys.Date()}_raw.rds")
 )
 
-temple_way_hr_tbl <- read_rds("../air quality analysis/data/esp8266-6496445_2022-07-28_raw.rds")
+temple_way_hr_tbl <-
+    read_rds("../air quality analysis/data/esp8266-6496445_2022-07-28_raw.rds")
 
-parson_st_hr_tbl <- get_parson_st_data(start_date) # parson st low cost
+parson_st_hr_tbl <-
+    get_parson_st_data(start_date) # parson st low cost
 ref_tbl <- get_ref_data(start_date) # BAM data from both sites
 
 # wrangling to combine reference and low cost sensors in long format
 # removing data due to faults and assigning siteids manually
 combined_long_tbl <- ref_tbl %>%
     mutate(type = "reference") %>%
-    mutate(pm2.5 = if_else(pm2.5 > 200, NA_real_, pm2.5)) %>% 
+    mutate(pm2.5 = if_else(pm2.5 > 200, NA_real_, pm2.5)) %>%
     bind_rows(temple_way_hr_tbl %>%
                   mutate(
                       siteid = 500L,
@@ -192,78 +196,83 @@ model_data_tbl <- combined_long_tbl %>%
     mutate(
         md = map(data, ~ pluck(.x) %>% # just the relevant pollutants included
                      mutate(across(
-                         where(~ is.na(.x) %>%
-                                   all()), ~ NULL
+                         where( ~ is.na(.x) %>%
+                                    all()), ~ NULL
                      ))),
-        md_wide = map( # daily data
+        md_wide = map(
+            # daily data
             md,
             ~ pluck(.x) %>%
                 pivot_wider(
                     id_cols = date,
                     names_from = type,
-                    values_from = starts_with("pm")) %>% 
-                group_by(date = as.Date(date)) %>% 
-                summarise(reference = mean(reference,
-                                           na.rm = TRUE),
-                          low_cost = mean(low_cost,
-                                          na.rm = TRUE))
-            )
+                    values_from = starts_with("pm")
+                ) %>%
+                group_by(date = as.Date(date)) %>%
+                summarise(
+                    reference = mean(reference,
+                                     na.rm = TRUE),
+                    low_cost = mean(low_cost,
+                                    na.rm = TRUE)
+                )
         )
-# 
-# model_data_tbl$md_wide[1][[1]] %>%
-#     openair::timePlot(pollutant = "pm2.5", type = "type")
-# 
-# #model_data_tbl$md_wide[1][[1]]$reference %>% max()
-# 
-time_series_plot <- combined_long_tbl %>%
+    )
+
+time_series_plot   <- combined_long_tbl %>%
     pivot_longer(cols = starts_with("pm"),
                  names_to = "pollutant",
                  values_to = "concentration") %>%
     filter(siteid == 215 & pollutant == "pm2.5" |
-           siteid == 500 & pollutant == "pm10") %>%
-    # filter(concentration < 200,
-    #        date > start_date) %>%
+               siteid == 500 & pollutant == "pm10") %>%
+    group_by(siteid, type, pollutant, date = as.Date(date)) %>%
+    add_count() %>% filter(n >= 18) %>% select(-n) %>% # filter < 75% DC
+    summarise(concentration = mean(concentration, na.rm = TRUE)) %>%
+    pad(interval = "day") %>%
     ggplot(aes(x = date,
                y = concentration,
                colour = type)) +
     geom_line() +
-    facet_wrap(~ siteid, ncol = 1, scales = "free_y")
+    facet_wrap( ~ siteid, ncol = 1, scales = "free_y")
 
 time_series_plot
 
-plot_drift <- function(model_data_tbl, siteid = 215){
-    model_data_tbl %>% 
-        ungroup() %>% 
-        filter(siteid == {{siteid}}) %>% 
-        select(md_wide) %>% 
-        pluck(1, 1) %>% 
-        mutate(diff = reference - low_cost) %>% 
-        na.omit() %>% 
+plot_drift <- function(model_data_tbl, siteid = 215) {
+    model_data_tbl %>%
+        ungroup() %>%
+        filter(siteid == {
+            {
+                siteid
+            }
+        }) %>%
+        select(md_wide) %>%
+        pluck(1, 1) %>%
+        mutate(diff = reference - low_cost) %>%
+        na.omit() %>%
         ggplot(aes(x = date, y = diff)) +
         geom_smooth() +
-        labs(title = "Smoothed daily mean drift between reference and low cost sensor",
-             subtitle = glue("Site ID {siteid}"),
-             x = "Date",
-             y = "\u00B5gm \u207B\u00B3"
-             ) +
+        labs(
+            title = "Smoothed daily mean drift between reference and low cost sensor",
+            subtitle = glue("Site ID {siteid}"),
+            x = "Date",
+            y = "\u00B5gm \u207B\u00B3"
+        ) +
         theme_bw()
 }
 
 plot_drift(model_data_tbl, siteid = 500)
 
 
-# 
+#
 # # lobstr::obj_size(model_data_tbl)
 model_data_tbl %>%
     write_rds("data/model_data_tbl.rds")
-# 
-# 
-# temple_way_hr_tbl %>% 
+#
+#
+# temple_way_hr_tbl %>%
 #     openair::timePlot(pollutant = "pm10")
-# 
-# ref_tbl    %>% 
+#
+# ref_tbl    %>%
 #     mutate(across(starts_with("pm"),
 #                   ~if_else(.x > 500, NA_real_, .x))) %>%
 #     filter(siteid == 215) %>%
 #     openair::timePlot(pollutant = "pm2.5")
-
