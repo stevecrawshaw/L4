@@ -21,6 +21,8 @@ library(xfun)
 packages <- c("wikipediapreview", "tidyverse", "openair", "glue", "lubridate", "gt")
 pkg_attach2(packages)
 wikipediapreview::wp_init()
+source("../airquality_GIT/ods-import-httr2.R")
+
 ```
 
 
@@ -248,7 +250,6 @@ There are three monitoring sites which measure PM in Bristol. A map and summary 
 
 
 ```{r}
-source("../airquality_GIT/ods-import-httr2.R")
 
 pm_tbl <- import_ods("air-quality-monitoring-sites",
                      endpoint = "exports",
@@ -294,10 +295,26 @@ The [Temple Way site](https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q
 pm_meta <- import_ods("air-quality-monitoring-sites",
                        where = "siteid=500 OR siteid=215", select = "*")
 
+trunc_lat_long <- function(x){
+    # split a lat long string and round, then reassemble for nice display
+ x %>% str_split(pattern = ", ") %>%
+    unlist() %>%
+    map_chr(~as.double(.x) %>%
+                round(3) %>%
+                as.character()) %>%
+    paste(collapse = ", ") %>% 
+        return()
+}
+
 site_details <- function(wide_site){
     # gt seems to reformat date as timestamp(!)
     site_prepared <- wide_site %>% 
-        mutate(across(where(is.POSIXct), ~as.Date(.x) %>% as.character()))
+        mutate(
+            across(where(is.POSIXct), ~as.Date(.x) %>% as.character()),
+            across(where(is.double), ~round(.x)),
+            Lat_Long = trunc_lat_long(geo_point_2d),
+            geo_point_2d = NULL
+            )
 do.call(rbind, site_prepared) %>%
     enframe(name = "Parameter",
             value = "Value") %>%
