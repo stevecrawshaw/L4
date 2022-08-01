@@ -2,7 +2,7 @@
 title: "Summative Portfolio: L4"
 author: "Steve Crawshaw"
 format: html
-date: "2022-04-11"
+date: "`r Sys.Date()`"
 toc: true
 toc-title: "Table of Contents"
 toc-location: left
@@ -244,7 +244,7 @@ Because these devices do not directly measure concentration of PM, but use a pro
 
 There are three monitoring sites which measure PM in Bristol. A map and summary data for the sites are shown below.
 
-[](<iframe src="https://opendata.bristol.gov.uk/explore/embed/dataset/air-quality-monitoring-sites/map/?disjunctive.pollutants&refine.current=True&refine.pollutants=PM10&refine.pollutants=PM2.5&location=13,51.44776,-2.59447&basemap=jawg.streets&static=false&datasetcard=false&scrollWheelZoom=true" width="700" height="500" frameborder="2"></iframe>)
+<iframe src="https://opendata.bristol.gov.uk/explore/embed/dataset/air-quality-monitoring-sites/map/?disjunctive.pollutants&refine.current=True&refine.pollutants=PM10&refine.pollutants=PM2.5&location=13,51.44776,-2.59447&basemap=jawg.streets&static=false&datasetcard=false&scrollWheelZoom=true" width="700" height="500" frameborder="2"></iframe>
 
 
 ```{r}
@@ -264,7 +264,7 @@ pm_tbl %>%
     summarise(pollutants = paste(pollutants, collapse = ", ")) %>% 
     gt() %>% 
     # tab_header(title = NULL) %>% 
-    tab_spanner(label = "Co - location Site Summary", columns = c(description, pollutants)) %>% 
+    tab_spanner(label = "Co - location: Potential Sites", columns = c(description, pollutants)) %>% 
     cols_label(description = "Site description", pollutants = "Pollutants")
 ```
 

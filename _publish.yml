@@ -1,0 +1,4 @@
+- source: summative-portfolio.qmd
+  quarto-pub:
+    - id: e89de375-eb16-401d-9163-8209192f05cc
+      url: 'https://quartopub.org/sites/stevecrawshaw/summative-portfolio-l4-fe76'
