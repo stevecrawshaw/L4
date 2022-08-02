@@ -306,20 +306,25 @@ trunc_lat_long <- function(x){
         return()
 }
 
+
 site_details <- function(wide_site){
     # gt seems to reformat date as timestamp(!)
-    site_prepared <- wide_site %>% 
+    field_names <- get_fields_fnc("air-quality-monitoring-sites") %>% 
+    pull(label)
+    
+    site_prepared <- wide_site %>%
+        set_names(field_names) %>% 
         mutate(
             across(where(is.POSIXct), ~as.Date(.x) %>% as.character()),
             across(where(is.double), ~round(.x)),
-            Lat_Long = trunc_lat_long(geo_point_2d),
+            `Lat Long` = trunc_lat_long(geo_point_2d),
             geo_point_2d = NULL
             )
 do.call(rbind, site_prepared) %>%
     enframe(name = "Parameter",
             value = "Value") %>%
-    mutate(Parameter = str_to_sentence(Parameter) %>% 
-               str_replace_all(pattern = "_", replacement = " ")) %>% 
+    # mutate(Parameter = str_to_sentence(Parameter) %>% 
+    #            str_replace_all(pattern = "_", replacement = " ")) %>% 
     filter(!is.na(Value)) %>% 
     mutate(Value = ifelse(str_starts(Value, "http"),
                           map(Value, ~htmltools::img(src=.x,
