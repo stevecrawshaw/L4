@@ -1,0 +1,53 @@
+---
+title: "flowchart"
+format: html
+---
+
+```{r}
+library("reticulate")
+use_condaenv("graphs")
+
+```
+
+```{python}
+
+import schemdraw
+from schemdraw.flow import *
+with schemdraw.Drawing() as d:
+    d+= Start(w = 10).label("Inspect Time Series Chart")
+    d+= Arrow(l = 1).down()
+    d+= Data(w = 10).label("Apply Zero and Span Factor X 4") # Parallelogram
+    d+= Arrow(l = 1).down()
+    d+= Process(w = 10).label("Derive NO2 from NOx - NO")
+    d+= Arrow(l = 1).down()
+    d+= (decision := Decision(w = 5, h= 5,
+                       S = "Pass",
+                        E = "Fail").label("Visual Inspection"))
+    d+= Arrow(l = 2).right(d.unit).at(decision.E)
+    d+= (process1 := Process(w = 10, N = "back").label("Edit data or factors"))
+    d+= Arrow(l = 6.6).up().at(process1.N)
+    d+= Arrow(l = 5.2).left()
+    d+= Arrow(l = 2).down().at(decision.S)
+    d+= Process(w = 10).label("Calculate Units")
+    d+= Arrow(l = 1).down()
+    d+= Process(w = 10).label("Calculate Time Average")
+    d+= Arrow(l = 1).down()
+    d+= (decision := Decision(w = 5, h= 5,
+                       S = "Pass",
+                        E = "Fail").label("Visual Inspection"))
+    d+= Arrow(l = 4).right().at(decision.E)
+    d+= Arrow(l = 12).up()
+    d+= Arrow(l = 1).down().at(decision.S)
+    d+= Process(w = 10).label("Remove Anomalous Data (spikes \ missing)")
+    d+= Arrow(l = 1).down()
+    d+= (decision := Decision(w = 5, h= 5,
+                       S = "Pass",
+                        E = "Fail").label("Visual Inspection"))
+    d+= Arrow(l = 4).right().at(decision.E)
+    d+= Arrow(l = 9).up()
+    d+= Arrow(l = 1).down().at(decision.S)
+    d+= Process(w = 10).label("Publish as open data")
+    d.save("images/ratification_flowchart.jpeg", dpi = 90)
+
+```
+

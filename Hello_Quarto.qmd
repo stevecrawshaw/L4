@@ -11,37 +11,48 @@ Quarto enables you to weave together content and executable code into a finished
 
 What is Quarto? In this talk, in four acts, we will discuss how Quarto unifies and extends the R Markdown ecosystem. Through our work with NASA Openscapes, Duke University, and RStudio, we will share our experiences sharing, teaching, collaborating, and reimagining with Quarto. Full of demos with Quarto in RStudio and Jupyter and weaving together narrative and code, this talk will help you get the most out of Quarto regardless of your background with R Markdown, the computing language(s) you may use, and your tool of choice for authoring.
 
-Mine Çetinkaya-Rundel is Professor of the Practice at Duke University and Developer Educator at RStudio. Mine's work focuses on innovation in statistics and data science pedagogy, with an emphasis on computing, reproducible research, student-centered learning, and open-source education.
+Mine Çetinkaya-Rundel is Professor of the Practice at Duke University and Developer Educator at RStudio. Mine’s work focuses on innovation in statistics and data science pedagogy, with an emphasis on computing, reproducible research, student-centered learning, and open-source education.
 
 Julia Stewart Lowndes, PhD is founding director of Openscapes. She is a marine ecologist and champion for making science more open, efficient, inclusive, and kind. Working at the intersection of actionable environmental science, data science, and open science.
 
 # Talk Notes
+- Unifies and extends Rmarkdown.
+- Accomodates multiple languages and formats
 
--   Unifies and extends Rmarkdown.
--   Accomodates multiple languages and formats
-
-<https://mine.quarto.pub/hello-quarto/#/hello-quarto-title> Guardrails, YAML completion, python, julia
+<https://mine.quarto.pub/hello-quarto/#/hello-quarto-title>
+Guardrails, YAML completion, python, julia
 
 quarto can render rmarkdown
 
-use format: in yaml instead of output: format: pdf - appears in viewer not pop up use #\| (hash pipe) in the chunk for chunk options
+use format: in yaml instead of output:
+format: pdf - appears in viewer not pop up
+use #| (hash pipe) in the chunk for chunk options
 
 set global chunks in yaml like this:
 
-`execute:     echo: false`
-
+`execute:
+    echo: false`
+    
 can just change to `format: revealjs` to create a presentation. section headers become new slides.
 
 ## Making a website
 
-change to index.qmd create a yaml file in rstudio
+change to index.qmd
+create a yaml file in rstudio
 
-\_quarto.yml
+_quarto.yml
 
-website: title: quarto navbar: left: - index.qmd - hello.qmd - python_notebook.ipynb \# to include a python notebook in a rendered qmd
+website:
+    title: quarto
+    navbar:
+    left:
+    - index.qmd
+    - hello.qmd
+    - python_notebook.ipynb # to include a python notebook in a rendered qmd
 
-execute: freeze: true #(controls computation - only run if instructed)
-
+execute:
+    freeze: true #(controls computation - only run if instructed)
+    
 then publish from terminal `quarto publish`
 
 ## How does it work?
@@ -52,25 +63,32 @@ now quarto is a separete program. Quarto CLI orchestrates each step of the rende
 
 easy to move between formats
 
-Content is: - reprodicible - portable
+Content is:
+- reprodicible
+- portable
 
-just change the yaml `format: html` - `format: revealjs`
+just change the yaml `format: html`  - `format: revealjs`
 
 ## Sharing
 
 Openscapes - mentoring research teams in open science. Shift culture with open source software and approaches.
 
-Application - NASA migrating data platform to cloud. NASA + Openscapes. Collaboration entailed need to embrace python. 2021 cloud hackathon - transition earthdata workflows to cloud can use multople ide's to collaborate
+Application - NASA migrating data platform to cloud. NASA + Openscapes. Collaboration entailed need to embrace python.
+2021 cloud hackathon - transition earthdata workflows to cloud
+can use multople ide's to collaborate
 
-**can use #\| chunk options within ipython jupyter notebooks**
+**can use #| chunk options within ipython jupyter notebooks**
 
-Can do quarto convert \*.ipynb to a quarto doc - will include python code and can run in rstudio
+Can do quarto convert *.ipynb to a quarto doc - will include python code and can run in rstudio
 
-`code-link: true` - enables hyperlinks for packages  code
+`code-link: true` - enables hyperlinks for packages \ code
 
 useful errors generated when incorrect yaml is created
 
-`chalkboard: true` for drawing on screen `code-line-numbers: "|1-2|3"` to animate code lines on screen
+
+`chalkboard: true` for drawing on screen
+`code-line-numbers: "|1-2|3"` to animate code lines on screen
+
 
 use templates - enables changing styles easily for different journals
 
@@ -84,4 +102,5 @@ image paste, resize, then view source code
 
 render on save (when light computation only)
 
-can add citation with \@ using Zotero library or / citation link to DOI
+can add citation with @ using Zotero library or / citation link to DOI
+
