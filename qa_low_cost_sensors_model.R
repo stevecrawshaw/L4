@@ -140,6 +140,8 @@ plot_time_series <- function(time_plot_data, interval = "hour") {
 # pipeline to run model and add artefacts to an output tbl
 model_output_tbl <- model_data_tbl %>%
     mutate(
+        model_obj = map(md_wide, ~pluck(.x) %>% 
+                            lm(low_cost ~ reference, data = .)),
         coefs = map(md_wide, ~ pluck(.x) %>%
                         fit_lm() %>%
                         tidy()),
@@ -147,7 +149,9 @@ model_output_tbl <- model_data_tbl %>%
                        fit_lm() %>%
                        glance()),
         cor_test = map(md_wide,
-                       ~ cor_test(.x, "reference", "low_cost") %>%
+                       ~ cor_test(.x,
+                                  "reference",
+                                  "low_cost") %>%
                            as_tibble()),
         plot = map(
             md_wide,
@@ -160,6 +164,31 @@ model_output_tbl <- model_data_tbl %>%
     )
 
 model_output_tbl$plot[2]
+# 
+# need to install from install.packages("easystats", repos = "https://easystats.r-universe.dev")
+model_output_tbl$model_obj[[2]] %>% 
+easystats::model_dashboard(
+    parameters_args = NULL,
+  performance_args = NULL,
+  output_file = "easydashboard.html",
+  output_dir = here::here(),
+  rmd_dir = system.file("templates/easydashboard.Rmd", package = "easystats")
+)
+
+if (FALSE) {
+  mod <- lm(wt ~ mpg, mtcars)
+
+  # with default options
+  model_dashboard(mod)
+
+  # customizing {parameters} output: standardize coefficients
+  model_dashboard(mod, parameters_args = list(standardize = "refit"))
+
+  # customizing {performance} output: only show selected performance metrics
+  model_dashboard(mod, performance_args = list(metrics = c("AIC", "RMSE")))
+}
+
+
 
 # Time Plot ----
 
