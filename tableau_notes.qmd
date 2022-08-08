@@ -1,0 +1,22 @@
+---
+title: "Tableau Notes"
+format: html
+---
+
+## Video
+
+James Goodall Surrey CC
+Chairs the Public sector tableau user group.
+
+3 Modules
+
+- Intro
+- Intermediate
+- Advanced
+
+Double click on source table to change behaviour so that the data can be JOINED. Specify join types and fields in the dialog.
+
+Relationships are the new paradigm - delayed evaluation and dynamic.
+
+Calculated fields - right click on field to bring up dialog (CREATE  - Calculated field). Several pre built functions like excel on RHS - arrow. Uses VIZQL language
+
