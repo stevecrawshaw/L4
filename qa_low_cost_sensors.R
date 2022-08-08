@@ -9,8 +9,8 @@ p <-
       "janitor",
       "fs",
       "padr")
-library(xfun)
-pkg_attach2(p)
+library(pacman)
+p_load(char = p)
 rm(p)
 
 source("../airquality_GIT/ods-import-httr2.R")
@@ -208,35 +208,8 @@ model_data_tbl <- combined_long_tbl %>%
                     names_from = type,
                     values_from = starts_with("pm")
                 ) 
-            # %>%
-            #     group_by(date = as.Date(date)) %>%
-            #     summarise(
-            #         reference = mean(reference,
-            #                          na.rm = TRUE),
-            #         low_cost = mean(low_cost,
-            #                         na.rm = TRUE)
-            #     )
         )
     )
-
-time_series_plot   <- combined_long_tbl %>%
-    pivot_longer(cols = starts_with("pm"),
-                 names_to = "pollutant",
-                 values_to = "concentration") %>%
-    filter(siteid == 215 & pollutant == "pm2.5" |
-               siteid == 500 & pollutant == "pm10") %>%
-    group_by(siteid, type, pollutant, date = as.Date(date)) %>%
-    add_count() %>% filter(n >= 18) %>% select(-n) %>% # filter < 75% DC
-    summarise(concentration = mean(concentration, na.rm = TRUE)) %>%
-    pad(interval = "day") %>%
-    ggplot(aes(x = date,
-               y = concentration,
-               colour = type)) +
-    geom_line() +
-    facet_wrap( ~ siteid, ncol = 1, scales = "free_y")
-
-# daily
-time_series_plot
 
 plot_drift <- function(model_data_tbl, siteid = 215) {
     model_data_tbl %>%
