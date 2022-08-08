@@ -56,17 +56,6 @@ plot_model <- function(lm_fit) {
              col = '#006EA1')
 }
 
-# use tidymodels to fit a linear model to the data
-
-# Simpler to just use lm(). also enables model_dashboard
-# fit_lm <- function(model_data) {
-#     lm_model <- linear_reg() %>%
-#         set_engine('lm') %>% # adds lm implementation of linear regression
-#         set_mode('regression')
-#     
-#     lm_fit <- lm_model %>%
-#         fit(low_cost ~ reference, data = model_data)
-# }
 
 get_title <- function(siteid) {
     title <- case_when(
