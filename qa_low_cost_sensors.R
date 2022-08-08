@@ -164,7 +164,7 @@ write_rds(
 )
 
 temple_way_hr_tbl <-
-    read_rds("../air quality analysis/data/esp8266-6496445_2022-07-28_raw.rds")
+    read_rds("../air quality analysis/data/esp8266-6496445_2022-08-08_raw.rds")
 
 parson_st_hr_tbl <-
     get_parson_st_data(start_date) # parson st low cost
@@ -207,14 +207,15 @@ model_data_tbl <- combined_long_tbl %>%
                     id_cols = date,
                     names_from = type,
                     values_from = starts_with("pm")
-                ) %>%
-                group_by(date = as.Date(date)) %>%
-                summarise(
-                    reference = mean(reference,
-                                     na.rm = TRUE),
-                    low_cost = mean(low_cost,
-                                    na.rm = TRUE)
-                )
+                ) 
+            # %>%
+            #     group_by(date = as.Date(date)) %>%
+            #     summarise(
+            #         reference = mean(reference,
+            #                          na.rm = TRUE),
+            #         low_cost = mean(low_cost,
+            #                         na.rm = TRUE)
+            #     )
         )
     )
 
@@ -234,6 +235,7 @@ time_series_plot   <- combined_long_tbl %>%
     geom_line() +
     facet_wrap( ~ siteid, ncol = 1, scales = "free_y")
 
+# daily
 time_series_plot
 
 plot_drift <- function(model_data_tbl, siteid = 215) {
@@ -259,7 +261,7 @@ plot_drift <- function(model_data_tbl, siteid = 215) {
         theme_bw()
 }
 
-plot_drift(model_data_tbl, siteid = 500)
+plot_drift(model_data_tbl, siteid = 215)
 
 
 #

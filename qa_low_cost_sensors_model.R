@@ -1,3 +1,5 @@
+
+# Libraries, Variables, Sourced Functions ----
 p <-
     c(
         "tidyverse",
@@ -7,7 +9,7 @@ p <-
         "fs",
         "collapse",
         "tidymodels",
-        "parsnip",
+        # "parsnip",
         "ggside",
         # side plots of density
         "ggpubr",
@@ -23,9 +25,9 @@ rm(p)
 model_data_tbl <-
     read_rds("data/model_data_tbl.rds") # from qa_low_cost_sensors.r
 
-test_tbl <- model_data_tbl$md_wide[2][[1]]
-
 source("../airquality_GIT/gg_themes.R") # for nice gg themes
+
+# Plotting Functions ----
 
 # function to generate scatter and density plots from the model data
 plot_scatter <- function(model_data) {
@@ -58,14 +60,16 @@ plot_model <- function(lm_fit) {
 }
 
 # use tidymodels to fit a linear model to the data
-fit_lm <- function(model_data) {
-    lm_model <- linear_reg() %>%
-        set_engine('lm') %>% # adds lm implementation of linear regression
-        set_mode('regression')
-    
-    lm_fit <- lm_model %>%
-        fit(low_cost ~ reference, data = model_data)
-}
+
+# Simpler to just use lm(). also enables model_dashboard
+# fit_lm <- function(model_data) {
+#     lm_model <- linear_reg() %>%
+#         set_engine('lm') %>% # adds lm implementation of linear regression
+#         set_mode('regression')
+#     
+#     lm_fit <- lm_model %>%
+#         fit(low_cost ~ reference, data = model_data)
+# }
 
 get_title <- function(siteid) {
     title <- case_when(
@@ -117,11 +121,13 @@ plot_time_series <- function(time_plot_data, interval = "hour") {
     }
     
     plot_data %>% 
+        mutate(sitepoll = glue("{site}_{pollutant}")) %>% 
         ggplot(aes(x = date,
                    y = concentration,
-                   colour = type)) +
+                   colour = type,
+                   group = type)) +
         geom_line() +
-        facet_wrap(~ glue("{site} {pollutant}"),
+        facet_wrap(~ sitepoll,
                    ncol = 1,
                    scales = "free_y") +
         scale_color_manual(
@@ -137,16 +143,38 @@ plot_time_series <- function(time_plot_data, interval = "hour") {
 }
 
 
+# Dashboard Function ----
+# need to install from install.packages("easystats", repos = "https://easystats.r-universe.dev")
+
+make_dashboard <- function(model_output_tbl){
+    # pre fill the model_dashboard function
+    dash <- partial(.f = model_dashboard,
+                    parameters_args = NULL,
+                    performance_args = NULL,
+                    output_dir = here::here(),
+                    rmd_dir = system.file("templates/easydashboard.Rmd", package = "easystats")
+    )
+    
+    # iteratively generate the dashboards from the table of model objects
+    model_output_tbl %>% 
+        ungroup() %>% 
+        transmute(model = model_obj,
+                  output_file = glue("{siteid}_{pollutant}_dashboard.html")
+        ) %>% 
+        pwalk(dash)
+    
+}
+
+# Model output table pipeline ----
+
 # pipeline to run model and add artefacts to an output tbl
 model_output_tbl <- model_data_tbl %>%
     mutate(
         model_obj = map(md_wide, ~pluck(.x) %>% 
                             lm(low_cost ~ reference, data = .)),
-        coefs = map(md_wide, ~ pluck(.x) %>%
-                        fit_lm() %>%
+        coefs = map(model_obj, ~ pluck(.x) %>%
                         tidy()),
-        perf = map(md_wide, ~ pluck(.x) %>%
-                       fit_lm() %>%
+        perf = map(model_obj, ~ pluck(.x) %>%
                        glance()),
         cor_test = map(md_wide,
                        ~ cor_test(.x,
@@ -160,33 +188,9 @@ model_output_tbl <- model_data_tbl %>%
                     glue("Scatter plot of {get_title(siteid)} (ugm-3)")
                 ),
                 subtitle = "Reference Instrument (BAM 1020) vs. Low Cost Sensor (SDS011)")
-        )
+        ),
+        pollutant = if_else(siteid == 215L, "PM2.5", "PM10")
     )
-
-model_output_tbl$plot[2]
-# 
-# need to install from install.packages("easystats", repos = "https://easystats.r-universe.dev")
-model_output_tbl$model_obj[[2]] %>% 
-easystats::model_dashboard(
-    parameters_args = NULL,
-  performance_args = NULL,
-  output_file = "easydashboard.html",
-  output_dir = here::here(),
-  rmd_dir = system.file("templates/easydashboard.Rmd", package = "easystats")
-)
-
-if (FALSE) {
-  mod <- lm(wt ~ mpg, mtcars)
-
-  # with default options
-  model_dashboard(mod)
-
-  # customizing {parameters} output: standardize coefficients
-  model_dashboard(mod, parameters_args = list(standardize = "refit"))
-
-  # customizing {performance} output: only show selected performance metrics
-  model_dashboard(mod, performance_args = list(metrics = c("AIC", "RMSE")))
-}
 
 
 
@@ -195,3 +199,7 @@ if (FALSE) {
 time_plot_data <- prep_timeplot(model_data_tbl)
 
 plot_time_series(time_plot_data, interval = "day")
+
+# Dashboards ----
+
+make_dashboard(model_output_tbl)

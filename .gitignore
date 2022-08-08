@@ -46,3 +46,10 @@ Thumbs.db
 
 #pdfs - too bulky
 /pdf
+
+
+# dashboards - big
+
+215_PM2.5_dashboard.html
+500_PM10_dashboard.html
+easydashboard.html
