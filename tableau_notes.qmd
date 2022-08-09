@@ -1,6 +1,6 @@
 ---
 title: "Tableau Notes"
-format: html
+format: pdf
 ---
 
 ## Video
@@ -14,9 +14,74 @@ Chairs the Public sector tableau user group.
 - Intermediate
 - Advanced
 
+## Introduction 1
+
 Double click on source table to change behaviour so that the data can be JOINED. Specify join types and fields in the dialog.
 
 Relationships are the new paradigm - delayed evaluation and dynamic.
 
-Calculated fields - right click on field to bring up dialog (CREATE  - Calculated field). Several pre built functions like excel on RHS - arrow. Uses VIZQL language
+Calculated fields - right click on field (or white space) to bring up dialog (CREATE  - Calculated field). Several pre built functions like excel on RHS - arrow. Uses VIZQL language.
+
+On canvas drag fields onto rows or columns. Tableau will try to make the appropriate chart.
+
+**Dimensions** - discrete (like factors or strings)
+**Measures** - continuous variables to be summarised.
+
+Can drag multiple fields onto rows and cols for facets - small multiples.
+
+## Introduction 2
+
+- Bar Chart - Dimension vs Measure
+- Line chart - e.g. time series
+- Scatterplot - measure vs measure - split by dimension
+    can exclude outliers with right click exclude (applies filter visually)
+- Maps - Tableau recognises geo data. double click on the geodata field then drag measure to colour to make thematic map.
+- Heat map dimensions on row and column, measure goes to colour. often, dimensions = month & day
+- Dual Axis: add measure to row or col, right click and set as dual axis. Then can change chart type in Marks card. May need to synchronise axes (right click on axis) to make them on the same scale. Like adding a geom to a plot in ggplot.
+
+## Practical 3
+
+### Q1
+- Can right click as you drag a date time field to the view to set the date part
+- A count field is automatically created by Tableau (bottom left)
+- Or just select the count of incident numbers
+- Bar (or line) chart, add labels, Min Max to identify extremes
+
+
+### Q2
+
+- Can use Aliases or describe to examine content of field
+- Filter on shooting (Null) and plot bar chart, then label
+- Or just plot shooting dimension and separate by offence group code
+
+
+## Interaction in Tableau
+
+### Filters
+
+- Filters. Note order of operations
+- Can right click and show filter for easy access to selectors on RHS
+- Filter offered will depend on whether filtered data is measure or dimension. A measure will offer dialog with options for numerical filtering, range, min, max, null etc
+- Similarly for dates there are multiple options for date parts, relative dates, specific dates etc.
+- There is an option in date filter dialog to show the latest date when the workbook opened - current most recent.
+    
+### Parameters
+
+- Parameters == Variables (one value per parameter)
+- Can reference in a calculated field expression  to change values
+- Right click on field - create parameter
+- Filter - Top, By Field, Top N (the parameter)
+
+## Practical 4
+
+- Create parameter of 2 possible string values
+- Use parameter in calculated field
+- Plot calculated field
+- Change parameter value by selecting values from RHS (after Show Parameter)
+- If for example Hour is a data type Measure, you may need to change to Dimension to split it by hour. Right click and change to Dimension
+
+
+
+
+
 
