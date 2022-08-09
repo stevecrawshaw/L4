@@ -9,17 +9,14 @@ p <-
         "fs",
         "collapse",
         "tidymodels",
-        # "parsnip",
-        "ggside",
-        # side plots of density
-        "ggpubr",
-        # easy labelling of equations on the plot
+        "ggside",        # side plots of density
+        "ggpubr",        # easy labelling of equations on the plot
         "openair",
         "easystats",
         "padr"
     )
-library(xfun)
-pkg_attach2(p)
+library(pacman)
+p_load(char = p)
 rm(p)
 
 model_data_tbl <-
@@ -59,17 +56,6 @@ plot_model <- function(lm_fit) {
              col = '#006EA1')
 }
 
-# use tidymodels to fit a linear model to the data
-
-# Simpler to just use lm(). also enables model_dashboard
-# fit_lm <- function(model_data) {
-#     lm_model <- linear_reg() %>%
-#         set_engine('lm') %>% # adds lm implementation of linear regression
-#         set_mode('regression')
-#     
-#     lm_fit <- lm_model %>%
-#         fit(low_cost ~ reference, data = model_data)
-# }
 
 get_title <- function(siteid) {
     title <- case_when(
@@ -116,12 +102,14 @@ plot_time_series <- function(time_plot_data, interval = "hour") {
                      site,
                      type,
                      date = as.Date(date)) %>% 
-            summarise(concentration = mean(concentration, na.rm = TRUE))
+            add_count() %>% filter(n >= 18) %>% select(-n) %>% # filter < 75% DC
+    summarise(concentration = mean(concentration, na.rm = TRUE)) %>%
+    pad(interval = "day")
         title_interval = "daily"
     }
     
     plot_data %>% 
-        mutate(sitepoll = glue("{site}_{pollutant}")) %>% 
+        mutate(sitepoll = glue("{site} {pollutant}")) %>% 
         ggplot(aes(x = date,
                    y = concentration,
                    colour = type,
@@ -198,7 +186,7 @@ model_output_tbl <- model_data_tbl %>%
 
 time_plot_data <- prep_timeplot(model_data_tbl)
 
-plot_time_series(time_plot_data, interval = "day")
+plot_time_series(time_plot_data, interval = "hour")
 
 # Dashboards ----
 
