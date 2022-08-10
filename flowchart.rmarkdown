@@ -10,7 +10,7 @@ use_condaenv("graphs")
 ```
 
 ```{python}
-
+# Flowchart_1.ipynb in c:\users\BRPLSEC
 import schemdraw
 from schemdraw.flow import *
 with schemdraw.Drawing() as d:
@@ -47,7 +47,7 @@ with schemdraw.Drawing() as d:
     d+= Arrow(l = 9).up()
     d+= Arrow(l = 1).down().at(decision.S)
     d+= Process(w = 10).label("Publish as open data")
-    d.save("images/ratification_flowchart.jpeg", dpi = 90)
+    # d.save("images/ratification_flowchart.jpeg", dpi = 90)
 
 ```
 

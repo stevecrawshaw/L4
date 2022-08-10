@@ -5,14 +5,17 @@ format: html
 
 ```{r}
 library("reticulate")
-use_condaenv("graphs")
+use_condaenv("graphs_tk")
 
 ```
 
 ```{python}
 # Flowchart_1.ipynb in c:\users\BRPLSEC
 import schemdraw
+import tkinter
+import matplotlib as plt
 from schemdraw.flow import *
+plt.use( 'tkagg' )
 with schemdraw.Drawing() as d:
     d+= Start(w = 10).label("Inspect Time Series Chart")
     d+= Arrow(l = 1).down()
@@ -20,9 +23,7 @@ with schemdraw.Drawing() as d:
     d+= Arrow(l = 1).down()
     d+= Process(w = 10).label("Derive NO2 from NOx - NO")
     d+= Arrow(l = 1).down()
-    d+= (decision := Decision(w = 5, h= 5,
-                       S = "Pass",
-                        E = "Fail").label("Visual Inspection"))
+    d+= (decision := Decision(w = 5, h= 5, S = "Pass", E = "Fail").label("Visual Inspection"))
     d+= Arrow(l = 2).right(d.unit).at(decision.E)
     d+= (process1 := Process(w = 10, N = "back").label("Edit data or factors"))
     d+= Arrow(l = 6.6).up().at(process1.N)
@@ -38,7 +39,7 @@ with schemdraw.Drawing() as d:
     d+= Arrow(l = 4).right().at(decision.E)
     d+= Arrow(l = 12).up()
     d+= Arrow(l = 1).down().at(decision.S)
-    d+= Process(w = 10).label("Remove Anomalous Data (spikes \ missing)")
+    d+= Process(w = 10).label("Remove Anomalous Data spikes and missing")
     d+= Arrow(l = 1).down()
     d+= (decision := Decision(w = 5, h= 5,
                        S = "Pass",
@@ -47,7 +48,12 @@ with schemdraw.Drawing() as d:
     d+= Arrow(l = 9).up()
     d+= Arrow(l = 1).down().at(decision.S)
     d+= Process(w = 10).label("Publish as open data")
-    d.save("images/ratification_flowchart.jpeg", dpi = 90)
+    # d.save("images/ratification_flowchart.jpeg", dpi = 90)
+    plt.show()
+    d.show()
 
 ```
+
+
+
 
