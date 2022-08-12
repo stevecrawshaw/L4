@@ -81,7 +81,134 @@ Can drag multiple fields onto rows and cols for facets - small multiples.
 - If for example Hour is a data type Measure, you may need to change to Dimension to split it by hour. Right click and change to Dimension
 
 
+# Intermediate Tableau
 
+## Pivoting
+
+- Select cols, right click and select pivot - rename pivoted cols
+- Do this in data source tab
+
+## Data Interpreter
+
+- Use for cleaning, reshaping dirty data
+- only works with Excel (in data connection)
+
+
+## Meta data 
+- Part of the lower screen in data source tab
+
+## Groups
+
+- right click on data in ws - Create Group
+- creates additional data field Category(group)
+- can create sub groups in this dialog
+- changes icon to paperclip
+
+## Hierarchies
+
+- Create structure allowing drill down
+- Often dates Year - Quarter - Month etc (automatically created)
+- Could also be management tiers etc.
+- When dates added you can click + to expand hierarchy
+- Create by clicking and dragging onto another field. Tableau will review data and create the right hierarchy
+
+## Sets
+
+- Similar to groups but can do calcs on sets easily
+- Data in set TRUE
+- right click create set
+- select items
+- makes a venn diagram icon
+- can create a set to include Top N
+
+## Practical 2
+
+- Use TRansform - Split to split out columns with data separated by e.g. comma
+- need to set geographic role of e.g. county name to Map it
+- change from centroids to shapes using the Marks Card
+- Sets 
+- can select the chart bars to get quick summary stats for the selected items
+
+## Chart Types
+
+### Histograms
+
+- First create bins (right click on numeric field)
+- drag to columns and plot counts of rows to Rows shelf
+- change binned data *(bin) to continuous type to get rid of spaces
+
+### Reference lines
+
+- Use **Analytics** Tab (LHS)
+- Could use Constant Line
+- Or Average Line
+- Add reference line gives all options in one dialog
+- Can also add in models (lm, polynomial etc)
+
+### Forecast
+- Set up line chart, with time unit (date part) as continuous
+- Drag forecast to chart
+
+### Box and Whisker Plot
+
+- Plot bar chart, change to circle in Marks Card
+- Analysis (menu), remove aggregated measures - this shows all data points
+- Analytics - drag box plot from custom menu onto cell
+
+## Interactions
+
+Dashboard Actions (dynamic interaction between visualisations)
+
+- Set up bar chart and line chart from same dataset
+- Add both to dashboard
+- Set Bar chart as filter, line chart will be filtered based on selected bar
+
+In more detail
+
+- From dashboard - dashboard actions
+- can do on hover or select
+
+Highlighting Actions
+
+- Select highlight from dashboard actions to identfy single line in busy multiple line chart
+
+URL actions
+
+- Select element of a viz to open URL or web resource or network folder
+- Dashboard - actions
+
+Set Actions
+
+- Dynamically add or remove set items
+- changes data viz based on set
+- Add action - change set values
+
+Parameter Actions
+
+- Change value of parameter using dashboard actions
+- Parameter can be applied to multiple data sources
+- Parameters could be string, date, number, not just discrete like sets
+
+
+# Advanced Tableau
+
+## Sheet Swaps
+
+- Swap between charts on a dashboard
+- Use a parameter to switch
+- Create calculated field to hold its value
+- drag calc field to filter card
+
+## Viz in tooltip
+
+- Hover over data item in viz to display another viz
+- Tooltip - insert sheet from another sheet
+
+## Level of Detail Expressions
+
+- A calculated field with specific syntax
+- Essentially a grouping and summarising expression for aggregation
+- `{FIXED: MAX({FIXED[Country \ Region]:SUM([SALES])})}`
 
 
 

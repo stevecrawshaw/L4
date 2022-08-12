@@ -1,0 +1,15 @@
+name: graphs
+
+dependencies:
+- matplotlib
+- tk
+- networkx>=2.6.3
+- numpy
+- pandas>=1.3.4
+- plotly
+- pip
+- pip:
+  - graphviz
+  - Ipython
+  - pydot
+  - schemdraw
