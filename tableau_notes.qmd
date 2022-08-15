@@ -210,5 +210,16 @@ Parameter Actions
 - Essentially a grouping and summarising expression for aggregation
 - `{FIXED: MAX({FIXED[Country \ Region]:SUM([SALES])})}`
 
+## Table Calculation
 
+- Calcs on the virtual table created when you add data to a view
+- Once data added to row or col, right click and do quick table calculation
+
+## Chart types
+
+- bump chart and make lines (join points on the globe)
+- Make lines - create lat and long fields with LOD IF statement for country
+- Use makepoint function in calculated field for source and destination points
+- then wrap the two makepoints in a makeline function
+- can calculate distance between makepoints using distance function in calculated field
 
