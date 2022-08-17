@@ -1,0 +1,84 @@
+---
+title: "Power BI Notes"
+format: pdf
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+# Power BI
+
+Jonathan Goodwin
+
+## Part 1
+
+Business analytics solution (Windows only)
+
+-   Get data
+-   Analyse
+-   Visualise
+-   Publish
+-   Collaborate (self service analytics)
+
+Power BI Service (Pro) is a web service, requires login. Publishing to
+web service enables collaboration.
+
+Wide range of data sources.
+
+### Get data
+
+Use the query editor (transform data) to pre process data prior to load.
+Once in the main screen (not query editor) its useful to categorise
+certain datasets, i.e. country so that PBI know how to represent (e.g.
+Map). Use column tools - data category
+
+-   Set data types specifically to maximise options for visualisations
+
+-   Applied steps tracks the transformation operations used in data
+    import
+
+-   Can use Transform - Replace Values to correct invalid data during
+    import Duplicate  Reference to copy or refer to an extant query
+    (right click on query)
+
+-   Merge queries for database - like joins
+
+-   Split out the DIM and FACT data into seperate queries - becomes data
+    model. Like relational DB diagram
+
+-   Need to build the relationships in the data model (flow chart icon
+    LHS)
+
+-   Add conditional column for if - else (case when) to create new col
+    based on another DAX and M query languages in PBI to create queries
+
+-   DAX - works in query editor - functional programming similar to
+    excel - also in add columns
+
+-   M query is mainly for report development - this is used in the
+    advanced editor - similar to a dplyr pipeline to wrange data
+
+-   Can build in filters in DAX query to create specific measure (shows
+    as calculator icon field)
+
+-   Use mobile layout for mobile apps
+
+-   grid lines to click align add buttons for interactivity
+
+-   Add Image to make dashboard stand out and corporate identity
+
+-   Customise current theme
+
+-   Format - Edit interactions to set  config filters for multiple
+    charts
+
+-   If two fields on an axis, you can switch between with the hierarchy
+    arrows on top of chart Slicer to select e.g. years or sites to
+    filter data
+
+-   Get visualisations, play axis for animation, e.g. by years
+
+-   Analytics - magnifying glass next to formatting to do lm, constant
+    lines etc to viz
+
+-   Key Influencers Chart - provides some insight for correlations etc
