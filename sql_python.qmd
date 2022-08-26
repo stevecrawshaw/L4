@@ -1,0 +1,44 @@
+---
+title: "sql_python_trial"
+format: html
+---
+
+```{r}
+library("pacman")
+p <- c("reticulate", "tidyverse", "DBI", "dbplyr", "duckdb")
+p_load(char = p)
+use_condaenv("sql_env")
+```
+
+```{python}
+import pandas as pd
+import sqlalchemy as sql
+import pyodbc as odbc
+import duckdb
+```
+
+```{python}
+
+con = duckdb.connect()
+results = con.execute("SELECT 42").df()
+
+aq = pd.read_csv("https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/download/?format=csv&disjunctive.location=true&refine.date_time=2022%2F08&timezone=GMT&lang=en&use_labels_for_header=false&csv_separator=%3B", sep = ";")
+aq.describe()
+
+con.execute("CREATE TABLE aq_tbl AS SELECT * FROM aq")
+
+high_no2 = con.execute("SELECT date_time, siteid, nox, no2, no FROM aq_tbl WHERE no2 > 20").df()
+
+high_no2.info
+high_no2.describe()
+
+con.execute("EXPORT DATABASE 'data/aq_duckdb_parquet' (FORMAT PARQUET)");
+
+con.close()
+
+del aq, high_no2
+```
+
+
+
+
