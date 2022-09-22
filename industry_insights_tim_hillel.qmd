@@ -1,0 +1,88 @@
+---
+title: "Industry Insights: Tim Hillel"
+author: "Steve Crawshaw"
+format: pdf
+editor: visual
+date: "2022-09-15"
+---
+
+# Summary
+
+Lecturer in analytics at UCL also head of faculty at CS. Describe the current research at UCL and Tim's role.
+
+# Machine Learning for Cities a Research Perspective
+
+## Context (mainly London)
+
+- Air Quality
+- Climate Change
+- Social and Environmental Issues
+- Aging Infrastructure
+- Lifestyle Changes - COVID, home working etc.
+
+## Technology
+
+- Smart Infrastructure (e.g. smart motorways, smart meters)
+- Interconnected Systems (CAV, drone delivery)
+- Digital Twins (representations of infrastructure)
+
+
+How do we feed data into the digital twin? (Tim's research).
+Human centric modelling lab - Based on behavioural understandings.
+Investigate counterfactual scenarios - e.g. CAV, last mile. How would that affect e.g. property prices.
+
+Use the counterfactual insights to support data driven strategic planning for energy and transport networks. How will this affect QoL, not just economics?
+
+UCL PEARL research lab in Dagenham - simulate and investigate transport behaviour in controlled environment.
+
+## Dynamic Digital Twins Project
+
+- representation of existing infrastructure
+- combine with RT monitoring and actuation of infrastructure
+- control transport system based on events
+- dynamic aspect is using counterfactual scenarios
+
+Arup - defining a meaningful framework for digital twins. Need to move towards full simulation of cities.
+
+- model complex interactions on the whole connected system
+- predict impacts of new tech on lifestyles
+- understand impacts of smart infrastructure
+
+## Dynamic Dimensions
+
+- understand people's behaviours and interactions with infrastructure
+- flows of the system - energy, goods, water, waste
+- predict physical response of infrastructure
+
+## ATI Project DDT-IET
+
+- Develop framework and prototype for simulation - energy and transport
+- EV ownership
+- Flexible working policies
+- Daily scheduling model for an individual
+- Agent based simulation to scale up
+- Synthetic population to group households
+
+### DATGAN
+
+- A generalised adversarial network used to generate synthetic populations
+- parameters can be adjusted to reflect the key attributes of a population to more closely simulate real populations.
+
+### Daily activity scheduling
+
+- used to provide insight into activities
+- scale up to inform synthetic population activity
+
+### Joint transport and energy demand modelling
+
+- daily schedules
+- activities in and out of home (travel demand)
+- in - home activity to understand energy demand
+
+## Questions
+
+- Limited use of agent based modelling so far, but will happen
+- Census data is used to validate the modelled data but it's limited
+- Likely to see mobility as a service rather than car ownership
+- Different models for CAV - regulated vs. free market
+
