@@ -14,7 +14,7 @@ p <- c("tidyverse",
 library("xfun")
 pkg_attach2(p)
 
-learning_date <- "2022-08-01"
+learning_date <- "2022-10-01"
 
 # Functions ----
 get_googlesheet <- function() {
@@ -135,8 +135,6 @@ get_gt_table <- function(learning_date, OTJ_only = TRUE) {
         )
     return(month_gt)
 }
-
-
 
 get_gt_table(learning_date, OTJ_only = FALSE) %>%
     gtsave(

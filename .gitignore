@@ -38,7 +38,7 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 
-# Google sheet path
+# Google sheet path and database credentials
 config.yml
 
 # Thumbs
@@ -55,3 +55,7 @@ Thumbs.db
 easydashboard.html
 learning*.png
 renv/
+
+# big data files
+
+diag_tbl.rds
