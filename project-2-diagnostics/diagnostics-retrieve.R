@@ -2,10 +2,9 @@ library(pacman)
 p <- c("odbc", "dplyr", "DBI", "config", "lubridate")
 p_load(char = p)
 
-
 connect.envista <- function(){
-    con_params <- get() # credentials
-    
+    con_params <- get(config = "envista") # credentials
+    con_params$driver
     #make connection to Envista using details in the config file
     dbConnect(odbc(),
                      Driver = con_params$driver,
