@@ -1,7 +1,8 @@
-libs <- c("httr2", "jsonlite", "tidyverse")
-library("xfun")
-pkg_attach2(libs)
-pat <- config.yml
+p <- c("httr2", "jsonlite", "tidyverse", "config")
+library("pacman")
+p_load(char = p)
+
+pat <- get(config = "teltonika")$pat
 
 url <- "https://rms.teltonika-networks.com/api/devices?limit=10&status=online&model=RUT950"
 shorturl <- "https://rms.teltonika-networks.com/api/devices"

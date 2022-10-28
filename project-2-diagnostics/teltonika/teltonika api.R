@@ -1,10 +1,10 @@
-libs <- c("httr2", "jsonlite", "tidyverse", "rlist", "fastverse", "janitor", "lubridate")
-library("xfun")
-pkg_attach2(libs)
+p <- c("httr2", "jsonlite", "tidyverse", "rlist", "fastverse", "janitor", "config", "lubridate")
+library("pacman")
+p_load(char = p)
 
 # use the teltonika API to extract useful info about the routers
 
-pat <- config.yml
+pat <- get(config = "teltonika")$pat
 
 # Device info from json  - long winded ----
 
