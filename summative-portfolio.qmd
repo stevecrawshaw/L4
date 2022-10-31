@@ -226,7 +226,62 @@ for(i in 1:4){
 
 I am able to work on these projects concurrently and I believe they are all achievable by the end of the apprenticeship.
 
-## Project 4:Comparing performance of low – cost sensors with reference method instruments
+## Project 1: A data processing pipeline for the statutory reporting of air quality data
+
+### Introduction
+
+Bristol City Council monitors air quality across the city and reports data to government under the Local Air Quality Management (LAQM) regime. This is a statutory duty under the Environment Act (1995) for councils to manage air quality to ensure the quality of the air meets legal limits for regulated pollutants.
+
+In addition to this duty, there is also a requirement to provide monitoring and evaluation of the operation of a Clean Air Zone (CAZ) in Bristol. The CAZ is the main mechanism by which traffic pollution (nitrogen dioxide or NO~2~) will be reduced to comply with the legal limits.
+
+The two reporting regimes are similar, but different in some respects. For LAQM, the reporting is directly to the government and takes the form of an Annual Status Report (ASR) to be submitted by June 30th of each year. In this ASR are summary tables of air quality data from all our monitoring which are required in a format determined by a template document. For CAZ reporting BCC is required to submit a spreadsheet of summary data in a set format to the Institute for Transport Studies at Leeds, who are the body that is conducting research on all the CAZs in England on behalf of the government.
+
+The aim of this project is to develop a process for reporting for both of these purposes that limits the need for manual data entry.
+
+### The LAQM regime
+
+Local authorities are required to review and assess air quality in their areas and report to government annually. Where concentrations of regulated pollutants exceed legal limits "Air Quality Objectives" (AQO), councils must declare an air quality management area (AQMA) and publish a plan for dealing with the breaches of the AQOs.
+
+Several urban local authorities experience breaches in the AQO for nitrogen dioxide, a traffic pollutant. The AQO is set at 40 $\mu$gm^-3^ measured as annual mean. In Bristol, this is the only pollutant for which exceedences are measured.
+
+The relevant guidance for LAQM, [LAQM.TG(22)](https://laqm.defra.gov.uk/wp-content/uploads/2022/08/LAQM-TG22-August-22-v1.0.pdf) prescribes the monitoring regime that must be followed for each pollutant, including how data is monitored, processed and reported. The process used in this project will adhere to the requirements of LAQM.TG(22).
+
+Further prescriptive guidance is provided by Defra for air quality reporting in the form of templates for the [report](https://laqm.defra.gov.uk/wp-content/uploads/2022/05/ASR_Template_England_2022_v1.0.docx) itself and for the [tables](https://laqm.defra.gov.uk/wp-content/uploads/2022/05/ASR_Table_Template_England_2022_v1.0.xlsb) that should be included in the report.
+
+For this project, the data process will focus only on tables prefixed "A". These are the tables that contain monitoring data. Other tables in the report require manual data entry as they need data that is sourced from other officers and departments in the council.
+
+In addition to these tables, there is a requirement to include thematic maps in the report which show concentrations of pollutants at monitoring sites. The process will also produce spatial datasets which can be used in a GIS to plot the maps or will produce graphical output directly for inclusion in the report as image files. 
+
+### CAZ Reporting
+
+The purpose of the CAZ is to reduce concentrations of one pollutant (NO~2~) to legal levels in the shortest time possible. Therefore the reporting limited to only one pollutant. However, the reporting on this single pollutant requires greater granularity than the LAQM reporting. This is partly because advanced techniques for analysing changes in time series air quality data will be used to assess the impact of a specific policy intervention (the CAZ) and therefore the hourly time series data need to be reported, not just the summary statistics. This analysis will be done by ITS using the [`AQEval' R package](https://cran.r-project.org/web/packages/AQEval/index.html) and the data for Bristol will be supplied by providing access to the open data portal [dataset for continuous air quality data](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location).
+
+The reporting for diffusion tube data consists of providing data in a pre - formatted template quarterly. The data is a combination of meta - data for the measurement site, e.g. location, height, distance from a road and the "raw" monthly concentrations from the diffusion tube. The measurement technique for diffusion tubes and continuous analysers is described later on.
+
+### Proposed analysis and processing techniques
+
+#### Summary 
+
+The overall process will be controlled using the [`targets` R package](https://books.ropensci.org/targets/). This is a "Make" - like  pipeline tool for Statistics and data science in R to help maintain a reproducible workflow. Targets learns how the pipeline fits together, skips costly runtime for tasks that are already up to date, runs only the necessary computation, supports implicit parallel computing, abstracts files as R objects, and shows tangible evidence that the results match the underlying code and data.
+
+Each operation will be assigned to a function. Targets will ensure that the functions run in the right order, and only when all pre - conditions are satisfied.
+
+#### Data Sources
+
+The data needed for the analysis are in four separate repositories:
+
+1. A corporate Azure SQL server database hosting BCC's continuous air quality data
+2. A Microsoft Access database for the diffusion tube data and monitoring site meta data
+3. The council's [open data portal](https://opendata.bristol.gov.uk/explore/?sort=modified)
+4. UK Government's [Air Information Resource](https://uk-air.defra.gov.uk/data/) which holds data for the air monitoring sites run by government as part of the Automated Urban and Rural Network (AURN). There are two of these sites in Bristol.
+
+Three of these repositories will be used in the analysis. The open data portal will not be used as it is planned to cease operation of the contract with the provider in 2022. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented API.
+
+
+
+## Project 2: To develop a process for monthly diagnostics and QA reporting from air monitors and telemetry devices
+
+## Project 4: Comparing performance of low – cost sensors with reference method instruments
 
 ### Introduction
 
