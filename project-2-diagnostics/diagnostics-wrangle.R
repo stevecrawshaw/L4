@@ -12,7 +12,8 @@ source("diagnostics-retrieve.R")
 # Variables ----
 dateon <-  "2022-09-01"
 dateoff <-  "2022-10-01"
-month <- month(dateon, label = TRUE,
+month <- month(dateon,
+               label = TRUE,
                abbr = FALSE) %>%
     as.character()
 year <- year(dateon)
@@ -72,7 +73,7 @@ lengthen.diag <- function(diagnostics_tbl){
 
 clean.plot <- function(data, site, month, year){
 # takes the nested df, strips out conc data (not interesting)
-    # and produced ggplot with facets
+    # and produces ggplot with facets
         p <- data %>% 
         filter(!str_detect(parameter, "Conc")) %>% 
         ggplot(aes(x = DIG_DateTime, y = value)) +
@@ -114,8 +115,16 @@ all_sites_plots_tbl <- clean_combined_tbl %>%
 # 
 # plot_tbl <- all_sites_tbl %>% 
 
-
 plot_tbl$plot[3]
+
+# Next step ---
+
+# create a range for each parameter in a tbl
+# ensure all possible names are included.
+# join tbl to the diag_tbl
+# filter for sites \ parameters where out of bounds.
+# display in formatted gt::table to identify excursions
+
 
 
 
