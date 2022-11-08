@@ -12,6 +12,7 @@ p <-
       "janitor",
       "timetk",
       "glue",
+      "rvest",
       "lubridate")
 p_load(char = p)
 
@@ -20,10 +21,94 @@ endDate <- "2021-12-31"
 
 # Functions ----
 
+# Functions to scrape the DT calendar dates
+
+get.cal.content <- function(){
+    url <- "https://laqm.defra.gov.uk/air-quality/air-quality-assessment/diffusion-tube-monitoring-calendar/"
+    
+    return(read_html(url))
+}
+
+get.html.tables <- function(content){
+    # return a named list of the html tables holding the DT calendar dates
+    get.cal.tbl <- function(tbl){
+        if(dim(tbl)[1] == 12){
+            return(tbl)
+        } else {
+            return(NULL)
+        }   
+    }
+    
+    tables <- content %>% 
+        html_table(fill = TRUE)
+    
+    table_tbls <- map(tables, .f = ~get.cal.tbl(.x))
+    table_list <- table_tbls[!sapply(table_tbls, is.null)]
+    
+    table_years_names <- html_elements(content, "caption") %>% 
+        html_text() %>% 
+        str_extract("[0-9]{1,4}") %>% 
+        paste0("tbl_", .)
+    
+    names(table_list) <- table_years_names
+    
+    return(table_list)
+    
+}
+
+get.calendar.dates <- function(table_list, year, start_end = "start"){
+    # parse the dates in the calendar table for the year
+    # return a named vector of start and end dates for the year
+    
+    table_name <- paste0("tbl_", year)
+    
+    p.date <- function(string, year, end = FALSE){
+        string <- glue("{string} {year}")
+        as.Date(string, format = "%e %B %Y") %>% 
+            return()
+    }
+    
+    dates_table <- table_list[names(table_list) == table_name][[1]] %>% 
+        clean_names() %>% 
+        mutate(sd = p.date(start_date, {{year}}),
+               ed = if_else(month(as.Date(end_date, format = "%e %B")) == 1,
+                            p.date(end_date, ({{year}} + 1)),
+                            p.date(end_date, {{year}})),
+               mth = month(sd + ((ed - sd) / 2)))
+    
+    cal_start_date <- dates_table$sd[dates_table$mth == 1]
+    cal_end_date <- dates_table$ed[dates_table$mth == 12]
+    
+    calendar_dates <- c(cal_start_date, cal_end_date) 
+    names(calendar_dates) <- c("cal_start", "cal_end")
+    
+    if (start_end == "start"){
+        return(calendar_dates[1])
+    } else if (start_end == "end") {
+        return(calendar_dates[2])
+    }
+    
+    
+}
+
+# Utility functions 
+
+toMidday <- function(date) {
+    with_tz(as.POSIXct(paste0(date, " 12:00:00")), 'UTC')
+}
+
+toEleven <- function(date) {
+    with_tz(as.POSIXct(paste0(date, " 11:00:00")), 'UTC')
+}
+
+renameTube <- function(x) {
+    paste0("Tube", str_sub(x, -1, -1))
+}
+
 # Load data ----
 
 connect.envista <- function() {
-    con_params <- get(config = "envista") # credentials
+    con_params <- get(file = "config.yml", config = "envista") # credentials
     con_params$driver
     #make connection to Envista using details in the config file
     dbConnect(
@@ -378,11 +463,31 @@ pivot.tubes.monthly <- function(no2_data){
         return()
 }
 
-pivoted_tubes <- pivot.tubes.monthly(out_df)
+pivoted_tubes_tbl <- pivot.tubes.monthly(out_df)
+con %>% dbDisconnect()
+con <- connect.envista()
 
-aq_monitors <- get.aqms(con)
+get.lastyears.sites <- function(con, startDate){
+lastyear = year(startDate) - 1
 
-step_2_table <- get.aqms(con) %>% 
+tbl(con, "tbl_final_ba_annual") %>% 
+    filter(dYear == lastyear) %>% 
+    select(siteid = LocID) %>% 
+    collect() %>% 
+    mutate(exist_last_year = TRUE) %>% 
+    return()
+}
+
+last_years_sites_tbl <- get.lastyears.sites(con, startDate)
+
+aqms_tbl <- get.aqms(con)
+
+
+make.step.2.table <- function(aqms_tbl,
+                             pivoted_tubes_tbl,
+                             last_years_sites_tbl){
+
+step_2_table <- aqms_tbl %>% 
     filter(instrumenttype == "Diffusion Tube") %>% 
     transmute(siteid,
               location,
@@ -391,13 +496,14 @@ step_2_table <- get.aqms(con) %>%
                                  NA_character_),
               easting, northing, laqm_locationclass,
               dist_exposure = if_else(exposure,
-                                      rec_kerb_distance_m - tube_kerb_distance_m,
+                                      rec_kerb - tube_kerb,
                                       0),
               # if there's no exposure make distances 0 so that the
               # spreadsheet doesn't run a fall off distance calc
-              tube_kerb_distance = tube_kerb_distance_m) %>% 
-    right_join(       , by = c("siteid" = "siteid")) %>% 
-    left_join(last_years_sites, by = c("siteid" = "siteid")) %>% 
+              tube_kerb_distance = tube_kerb) %>% 
+    right_join(pivoted_tubes_tbl,
+               by = c("siteid" = "siteid")) %>% 
+    left_join(last_years_sites_tbl, by = c("siteid" = "siteid")) %>% 
     mutate(new_existing = if_else(is.na(exist_last_year), "New", "Existing")) %>%
     group_by(siteid, dup_trip) %>%
     mutate(row_id = row_number()) %>%
@@ -412,18 +518,10 @@ step_2_table <- get.aqms(con) %>%
            -exist_last_year,
            -siteid,
            -row_id)
-
-
-connect.access() %>% 
-    get.no2.data.db(startDate, endDate) %>% 
-    pivot.tubes.monthly()
+return(step_2_table)
+}
 
 dbDisconnect(con)
-
-make.step2.table <- function(aqms_tbl){
-    
-    
-}
 
 
 
