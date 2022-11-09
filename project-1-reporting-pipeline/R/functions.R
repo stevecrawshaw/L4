@@ -21,7 +21,7 @@ endDate <- "2021-12-31"
 
 # Functions ----
 
-# Functions to scrape the DT calendar dates
+# Functions to scrape the DT calendar dates ----
 
 get.cal.content <- function(){
     url <- "https://laqm.defra.gov.uk/air-quality/air-quality-assessment/diffusion-tube-monitoring-calendar/"
@@ -91,7 +91,7 @@ get.calendar.dates <- function(table_list, year, start_end = "start"){
     
 }
 
-# Utility functions 
+# Utility functions ---- 
 
 toMidday <- function(date) {
     with_tz(as.POSIXct(paste0(date, " 12:00:00")), 'UTC')
@@ -105,7 +105,9 @@ renameTube <- function(x) {
     paste0("Tube", str_sub(x, -1, -1))
 }
 
-# Load data ----
+
+
+# Database connections ----
 
 connect.envista <- function() {
     con_params <- get(file = "config.yml", config = "envista") # credentials
@@ -124,6 +126,13 @@ connect.envista <- function() {
     
 }
 
+connect.access <- function(){
+    con <- dbConnect(odbc::odbc(), .connection_string = "Driver={Microsoft Access Driver (*.mdb, *.accdb)}; Dbq=S:\\SUSTAIN\\Sustain-Common\\SCCCS\\write_gis_r\\tube_database\\access_2010_versions\\no2_data.accdb;")
+    return(con)
+    
+}
+
+# Load data ----
 get.final.tbl <- function() {
     #read the table which holds contin meta data for the envista database
     read_delim(file = "S:/SUSTAIN/Sustain-Common/SCCCS/write_gis_r/R Projects/air_quality_data_management/data/finalContinTablerhtemp.csv",
@@ -236,7 +245,8 @@ get.aq.data.db <-
                         .by = padby) %>%
             # padr::pad(interval = padby) %>%
             rename(date = Date_Time) %>%
-            mutate(siteid = as.integer(siteid))
+            mutate(siteid = as.integer(siteid)) %>% 
+            ungroup()
         
         long %>% return()
         
@@ -352,12 +362,7 @@ get.aurn.openair <- function(sites = c("BRS8", "BR11"),
     
 }
 
-connect.access <- function(){
-    con <- dbConnect(odbc::odbc(), .connection_string = "Driver={Microsoft Access Driver (*.mdb, *.accdb)}; Dbq=S:\\SUSTAIN\\Sustain-Common\\SCCCS\\write_gis_r\\tube_database\\access_2010_versions\\no2_data.accdb;")
-    return(con)
-    
-}
-con <- connect.access()
+
 get.no2.data.db <- function(con, startDate, endDate){
     # get the raw no2 data for the year
     safe_start <- as.Date(startDate) - weeks(6)
@@ -381,13 +386,12 @@ get.no2.data.db <- function(con, startDate, endDate){
     
 }
 
-out_df <- get.no2.data.db(con, startDate, endDate)
-
 get.background.data <- function(no2_data){
-
+# return the hourly NO2 data in wide format from 4 background sites
     year <- year(no2_data$mid_date %>% median(na.rm = TRUE))
-    mindate = no2_data$dateOn %>% min(na.rm = TRUE)
-    maxdate = no2_data$dateOff %>% max(na.rm = TRUE)
+    mindate <-  no2_data$dateon %>% min(na.rm = TRUE)
+    maxdate <-  no2_data$dateoff %>% max(na.rm = TRUE)
+    
 contin_back_sites <- importMeta(all = T)  %>% 
     filter(between(latitude, 50.70, 52.24), 
            between(longitude, -3.79, -1.42),
@@ -409,7 +413,11 @@ annual_back_data <- importAURN(site = back_sites,
     with_tz(tzone = 'UTC') %>%
     filter(date %>%
                between(with_tz(as.POSIXct(mindate), 'UTC'),
-                       with_tz(as.POSIXct(maxdate + 1), 'UTC')))
+                       with_tz(as.POSIXct(maxdate + 1), 'UTC'))) %>% 
+    select(-code) %>% 
+    pivot_wider(id_cols = date, names_from = site, values_from  = no2) %>% 
+    arrange(date)
+
 return(annual_back_data)
 
 }
@@ -442,6 +450,16 @@ get.aqms <- function(con){
     return(aqms_tbl)
 }
 
+get.lastyears.sites <- function(con, startDate){
+    lastyear = year(startDate) - 1
+    
+    tbl(con, "tbl_final_ba_annual") %>% 
+        filter(dYear == lastyear) %>% 
+        select(siteid = LocID) %>% 
+        collect() %>% 
+        mutate(exist_last_year = TRUE) %>% 
+        return()
+}
 # Wrangle data ----
 
 pivot.tubes.monthly <- function(no2_data){
@@ -463,63 +481,163 @@ pivot.tubes.monthly <- function(no2_data){
         return()
 }
 
-pivoted_tubes_tbl <- pivot.tubes.monthly(out_df)
-con %>% dbDisconnect()
-con <- connect.envista()
-
-get.lastyears.sites <- function(con, startDate){
-lastyear = year(startDate) - 1
-
-tbl(con, "tbl_final_ba_annual") %>% 
-    filter(dYear == lastyear) %>% 
-    select(siteid = LocID) %>% 
-    collect() %>% 
-    mutate(exist_last_year = TRUE) %>% 
-    return()
+make.step.2.table <- function(aqms_tbl,
+                              pivoted_tubes_tbl,
+                              last_years_sites_tbl){
+    
+    step_2_table <- aqms_tbl %>% 
+        filter(instrumenttype == "Diffusion Tube") %>% 
+        transmute(siteid,
+                  location,
+                  dup_trip = if_else(!is.na(duplicate_triplicate),
+                                     glue("{siteid}_{duplicate_triplicate}"),
+                                     NA_character_),
+                  easting, northing, laqm_locationclass,
+                  dist_exposure = if_else(exposure,
+                                          rec_kerb - tube_kerb,
+                                          0),
+                  # if there's no exposure make distances 0 so that the
+                  # spreadsheet doesn't run a fall off distance calc
+                  tube_kerb_distance = tube_kerb) %>% 
+        right_join(pivoted_tubes_tbl,
+                   by = c("siteid" = "siteid")) %>% 
+        left_join(last_years_sites_tbl, by = c("siteid" = "siteid")) %>% 
+        mutate(new_existing = if_else(is.na(exist_last_year), "New", "Existing")) %>%
+        group_by(siteid, dup_trip) %>%
+        mutate(row_id = row_number()) %>%
+        ungroup() %>%
+        mutate(newsiteid = if_else(!is.na(dup_trip),
+                                   glue("{as.character(siteid)}_{row_id}"),
+                                   glue("{siteid}")),
+               .before = siteid) %>%
+        arrange(siteid) %>% 
+        select(newsiteid:dup_trip, new_existing,
+               everything(),
+               -exist_last_year,
+               -siteid,
+               -row_id)
+    return(step_2_table)
 }
+
+make.bias.data.tbl <- function(aqms_tbl, no2_data){
+#subset monitor data to colocated sites
+    
+    renameTube <- function(x) {
+        paste0("Tube", str_sub(x, -1, -1))
+    }
+    
+join_table <- aqms_tbl %>% 
+    filter(!is.na(colocated)) %>% 
+    select(siteid, contin_siteid = colocated) %>% 
+    inner_join(aqms_tbl, by = c("contin_siteid" = "siteid")) %>% 
+    select(site = location, contin_siteid, siteid)
+
+# just colocated tube data
+
+colocated_tbl <- no2_data %>% 
+    inner_join(join_table, by ="siteid") %>% 
+    arrange(siteid, mid_date)
+
+year <- year(median(no2_data$mid_date, na.rm = TRUE))
+
+# colocated_tbl %>% 
+#     write_csv(glue("data/{year}_colocated_tube_data.csv"))
+#make the table
+tubes_report <- 
+    no2_data %>% 
+    filter(siteid %in% join_table$siteid) %>%
+    inner_join(join_table, by = "siteid") %>% 
+    transmute(site, month = month(mid_date), concentration) %>%
+    group_by(site, month) %>% 
+    nest() %>% 
+    unnest_wider(data) %>%
+    unnest_wider(concentration) %>% 
+    rename_with(renameTube, starts_with("..")) %>%
+    arrange(site, month) %>% 
+    ungroup() %>% 
+    nest_by(site) %>% 
+    mutate(path = glue("{here::here('data')}/{site}_tubes.csv")) %>% 
+    ungroup() %>% 
+    select(x = data, path) 
+
+# use pwalk to iteratively save the csvs
+
+return(tubes_report)
+}
+
+get.contin_data <- function(con, no2_data, final_tbl){
+    mindate <- min(no2_data$dateon)
+    maxdate <- max(no2_data$dateoff)
+    
+    get.aq.data.db(con = con, final_tbl = get.final.tbl(),
+                   startDate = mindate,
+                   endDate = maxdate, timebase = 60)
+}
+
+make.contin.no2.nested <- function(contin_data, aqms_tbl){
+
+    year <- year(median(contin_data$date))
+    
+contin_data %>% 
+    inner_join(aqms_tbl %>% 
+                   select(siteid, location),
+               by = c("siteid" = "siteid")) %>% 
+    select(location, date, no2) %>% 
+    arrange(date) %>% 
+    nest_by(location) %>% 
+    mutate(file = glue("{here::here('data')}/{location}_{year}_continuous.csv")) %>%
+        ungroup() %>% 
+        select(x = data, file) %>% 
+        return()
+# write with pwalk write_csv
+#pwalk(fwrite, na = "", dateTimeAs = "write.csv"
+}
+
+
+
+
+
+
+# Testing ----
+pivoted_tubes_tbl <- pivot.tubes.monthly(out_df)
 
 last_years_sites_tbl <- get.lastyears.sites(con, startDate)
 
 aqms_tbl <- get.aqms(con)
 
+no2_data <- get.no2.data.db(con, startDate, endDate)
 
-make.step.2.table <- function(aqms_tbl,
-                             pivoted_tubes_tbl,
-                             last_years_sites_tbl){
+step_2_tbl <- make.step.2.table(aqms_tbl, pivoted_tubes_tbl, last_years_sites_tbl)
 
-step_2_table <- aqms_tbl %>% 
-    filter(instrumenttype == "Diffusion Tube") %>% 
-    transmute(siteid,
-              location,
-              dup_trip = if_else(!is.na(duplicate_triplicate),
-                                 glue("{siteid}_{duplicate_triplicate}"),
-                                 NA_character_),
-              easting, northing, laqm_locationclass,
-              dist_exposure = if_else(exposure,
-                                      rec_kerb - tube_kerb,
-                                      0),
-              # if there's no exposure make distances 0 so that the
-              # spreadsheet doesn't run a fall off distance calc
-              tube_kerb_distance = tube_kerb) %>% 
-    right_join(pivoted_tubes_tbl,
-               by = c("siteid" = "siteid")) %>% 
-    left_join(last_years_sites_tbl, by = c("siteid" = "siteid")) %>% 
-    mutate(new_existing = if_else(is.na(exist_last_year), "New", "Existing")) %>%
-    group_by(siteid, dup_trip) %>%
-    mutate(row_id = row_number()) %>%
-    ungroup() %>%
-    mutate(newsiteid = if_else(!is.na(dup_trip),
-                               glue("{as.character(siteid)}_{row_id}"),
-                               glue("{siteid}")),
-           .before = siteid) %>%
-    arrange(siteid) %>% 
-    select(newsiteid:dup_trip, new_existing,
-           everything(),
-           -exist_last_year,
-           -siteid,
-           -row_id)
-return(step_2_table)
-}
+back_tbl <- get.background.data(no2_data)
+
+tuberep <- make.bias.data.tbl(aqms_tbl, no2_data)
+
+aqms_tbl %>% 
+    filter(current,
+           exposure,
+           rec_kerb > tube_kerb) %>% 
+    select(siteid, grid_id)
+
+
+con <- connect.access()
+
+grid_concs_tbl <- tbl(con, "tbl_background_grids_2018_base") %>% 
+    select(id, starts_with("no2")) %>% 
+    collect()
+
+grid_id_tbl <- tbl(con, "tbl_grid_id") %>% 
+    collect()
+
+grid_concs_tbl %>% 
+    pivot_longer(cols = -id,
+                 names_to = "year",
+                 names_prefix = "no2_",
+                 values_to = "conc") %>%
+    mutate(year = as.integer(year)) %>% 
+    filter(year == {{year}}) %>% 
+    inner_join(grid_id_tbl, by = c("id" = "id"))
+
 
 dbDisconnect(con)
 

@@ -11,7 +11,7 @@ pacman::p_load(char = packages)
 source("diagnostics-retrieve.R")
 # Variables ----
 dateon <-  "2022-09-01"
-dateoff <-  "2022-10-01"
+dateoff <-  "2022-11-09"
 month <- month(dateon,
                label = TRUE,
                abbr = FALSE) %>%
@@ -115,7 +115,19 @@ all_sites_plots_tbl <- clean_combined_tbl %>%
 # 
 # plot_tbl <- all_sites_tbl %>% 
 
-plot_tbl$plot[3]
+all_sites_plots_tbl[all_sites_plots_tbl$siteid == 270, "data"]$data[[1]] %>% view()
+    transmute(DIG_DateTime,
+              param_unit = glue("{parameter}_{unit}"),
+              value) %>% 
+    pivot_wider(id_cols = DIG_DateTime,
+                names_from = param_unit,
+                values_from = value)
+    
+    
+    write_csv(file = "wells_road_diagnostics.csv")
+
+    
+    all_sites_plots_tbl[all_sites_plots_tbl$siteid == 270, "plot"][[1]]
 
 # Next step ---
 
@@ -124,6 +136,8 @@ plot_tbl$plot[3]
 # join tbl to the diag_tbl
 # filter for sites \ parameters where out of bounds.
 # display in formatted gt::table to identify excursions
+
+# develop function to extract and plot single site diagnostics for sending to ESU
 
 
 
