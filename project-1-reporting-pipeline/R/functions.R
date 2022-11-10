@@ -13,11 +13,15 @@ p <-
       "timetk",
       "glue",
       "rvest",
-      "lubridate")
+      "lubridate",
+      "readxl")
 p_load(char = p)
+
+# Variables ----
 
 startDate <- "2021-01-01"
 endDate <- "2021-12-31"
+
 
 # Functions ----
 
@@ -104,6 +108,16 @@ toEleven <- function(date) {
 renameTube <- function(x) {
     paste0("Tube", str_sub(x, -1, -1))
 }
+
+units.in.year <- function(year, unit = "hour"){
+    
+    if(leap_year(as.integer(year))){
+        366
+    } else {
+        365
+    }
+}  
+
 
 
 
@@ -593,50 +607,309 @@ contin_data %>%
 #pwalk(fwrite, na = "", dateTimeAs = "write.csv"
 }
 
+get.gridconcs.da.tubes <- function(con, startDate, siteids){
+    year <- year(as.Date(startDate))
+    # tbl of sites that need adjusting with grid id's
+    distance_adjust_sites_tbl <- aqms_tbl %>% 
+        filter(current,
+               exposure,
+               rec_kerb > tube_kerb,
+               siteid %in% siteids) %>% 
+        select(siteid, grid_id)
+    
+    # the no2 backfground grid data
+    grid_concs_tbl <- tbl(con, "tbl_background_grids_2018_base") %>% 
+        select(id, starts_with("no2")) %>% 
+        collect()
+    # reference table linking grid ids
+    grid_id_tbl <- tbl(con, "tbl_grid_id") %>% 
+        rename(grid_id = gridid) %>% 
+        collect()
+    # join these two
+    grid_joined_tbl <- grid_concs_tbl %>% 
+        pivot_longer(cols = -id,
+                     names_to = "year",
+                     names_prefix = "no2_",
+                     values_to = "back_conc") %>%
+        mutate(year = as.integer(year)) %>% 
+        filter(year == {{year}}) %>% 
+        inner_join(grid_id_tbl, by = c("id" = "id"))
+    #join the tubes tbl to return the final tbl of background concs for the tubes in sitids
+    sites_gridconcs_tbl <- grid_joined_tbl %>% 
+        inner_join(distance_adjust_sites_tbl,
+                   by = c("grid_id" = "grid_id")) %>% 
+        select(siteid, back_conc) 
+    
+    return(sites_gridconcs_tbl)
+}
 
+make.table.a2 <- function(aqms_tbl){
+    aqms_tbl %>% 
+        filter(current,
+               instrumenttype == "Diffusion Tube") %>% 
+        transmute(siteid, aqma = if_else(aqma, "Yes", "No"),
+                  colocated = if_else(is.na(colocated), "No", "Yes"),
+                  sample_height) %>% 
+        arrange(siteid)
+}
 
+make.coloc.divisor.tbl <- function(aqms_tbl){
+    aqms_tbl %>% 
+        filter(current,
+               instrumenttype == "Diffusion Tube") %>% 
+        select(siteid, duplicate_triplicate) %>% 
+        mutate(div = case_when(
+            is.na(duplicate_triplicate) ~ 1L,
+            duplicate_triplicate == "T" ~ 3L,
+            TRUE ~ 2L
+        )) %>% 
+        return()
+}
 
+make.data.cap.period.tbl <- function(coloc_divisor_tbl, no2_data){
+    
+    no2_data %>%
+        mutate(days_measuredin_month = dateoff - dateon) %>% #view()
+        group_by(siteid) %>%
+        summarise(
+            starts = min(dateon),
+            ends = max(dateoff),
+            period = (ends - starts) %>% as.numeric(),
+            sumdays = sum(days_measuredin_month) %>%
+                as.numeric(),
+            .groups = "keep"
+        ) %>%
+        inner_join(coloc_divisor_tbl,
+                   by = c("siteid" = "siteid")) %>%
+        mutate(dc_monitoring_period = ((sumdays / period) / div) * 100)
+}
 
+get.annual.tube.data.4yrs.tbl <- function(con, startDate){
+    year <- year(as.Date(startDate))
+    
+    annual_tube_data_4years_tbl <-
+        tbl(con, "tbl_final_ba_annual") %>% 
+        filter(between(dYear,
+                       {{year}} - 4,
+                       {{year}} - 1)) %>% 
+        select(siteid = LocID,
+               year = dYear,
+               conc = final_adjusted_conc) %>% 
+        pivot_wider(id_cols = siteid,
+                    names_from = year,
+                    values_from = conc) %>%
+        collect()
+
+    return(annual_tube_data_4years_tbl)
+}
+
+make.table.a4 <- function(annual_tube_data_4years_tbl,
+                          data_cap_period_tbl){
+    
+    annual_tube_data_4years_tbl %>% 
+        right_join(data_cap_period_tbl %>%
+                       select(siteid, dc_monitoring_period),
+                   by = "siteid") %>% 
+        mutate(across(where(is.numeric), round, 1)) %>% 
+        relocate(siteid, dc_monitoring_period)
+}
+
+get.count.tubes.tbl <- function(con){
+    tbl(con, "data") %>% 
+        mutate(mid_date = dateOn + ((dateOff - dateOn) / 2L)) %>% 
+        filter(mid_date >= as.Date("2010-01-01")) %>% 
+        select(mid_date, siteid = LocID) %>% 
+        collect() %>% 
+        group_by(year = year(mid_date), siteid) %>% 
+        summarise(count = n(), .groups = "drop") %>% 
+        return()
+}
+
+make.ods.upload.tube.tbl <- function(con,
+                                     count_tubes_tbl,
+                                     path,
+                                     startDate){
+    # the path 
+    # references the a copy of the data calculated as
+    # final concs in Table A4 as readxl won't open .xlsb. bah!
+    
+    year <- year(startDate)
+    
+    annual_tube_data_all_tbl <- tbl(con, "tbl_final_ba_annual") %>% 
+        filter(dYear >= 2010) %>% 
+        select(year = dYear,
+               siteid = LocID,
+               conc_ugm3 = final_adjusted_conc) %>% 
+        collect()
+    
+    re_siteid <- function(siteid_dirty){
+        if(str_detect(siteid_dirty, "_")){
+            return(str_sub(siteid_dirty, 1, 3))
+        } else {
+            return(siteid_dirty)
+        }
+    }
+    
+    from_a4_tbl <- read_xlsx(path = path,
+                             sheet = "Sheet1",
+                             range = "A1:B500") %>% 
+        drop_na() %>% 
+        filter(!conc_ugm3 == "-") %>% # filter out sites with low DC
+        mutate(siteid = siteid %>%
+                   map_chr( ~re_siteid(.x)) %>%
+                   as.integer(),
+               conc_ugm3 = as.double(conc_ugm3))
+    
+    ods_tube_upload_tbl <- from_a4_tbl %>%
+        mutate(year = !!year %>% as.integer()) %>% 
+                relocate(year, siteid, conc_ugm3) %>% 
+        bind_rows(annual_tube_data_all_tbl) %>%
+                      inner_join(count_tubes_tbl,
+                                 by = c("siteid" = "siteid",
+                                        "year" = "year")) %>% 
+        arrange(desc(year), siteid)
+    
+    return(ods_tube_upload_tbl)
+    
+    
+}
+
+make.table.a1 <- function(aqms_tbl){
+
+monitor_tech <- function(pollutants){
+    # return the monitoring technique given a string of pollutants
+    # this will need amending to account for the new CAV monitors
+    pm <- str_detect(pollutants, "PM")
+    nox <- str_detect(pollutants, "NOx|NOX")
+    if (pm & nox){
+        out = "Chemiluminescent (NOx) and Beta Attentuation (PM)"
+    } else if( nox & !pm) {
+        out = "Chemiluminescent"
+    } else if (!nox & pm){
+        out = "Beta Attentuation"
+    }
+    return(out)
+}
+
+table_a1 <- aqms_tbl %>% 
+    filter(instrumenttype == "Continuous (Reference)", current) %>% 
+    transmute(siteid,
+              location,
+              laqm_locationclass,
+              easting, northing, pollutants,
+              aqma = if_else(aqma, "Yes", "No"),
+              monitoring_tech = map_chr(pollutants, monitor_tech),
+              dist_exposure = ifelse(exposure,
+                                     rec_kerb - tube_kerb,
+                                     NA), 
+              tube_kerb,
+              sample_height)
+return(table_a1)
+}
+
+make.no2.datacap.tbl <-  function(contin_4yrs_tbl, startDate){
+    year <- year(startDate)
+    no2_data_cap_tbl <- contin_4yrs_tbl %>% 
+    select(siteid, date, no2) %>% 
+    filter(year(date) == {{year}}) %>% 
+    group_by(siteid, year = year(date)) %>% 
+    summarise(dcp = (sum(!is.na(no2)) / hrs.in.year({{startDate}})) * 100,
+              dcy = (sum(!is.na(no2)) / difftime(max(date), min(date), units = "hours") %>% as.integer()) * 100, .groups = "drop") %>% 
+    select(-year)
+}
+
+make.table.a3 <- function(contin_4yrs_tbl, startDate, aqms_tbl, no2_data_cap_tbl){
+    
+    contin_annual_no2_wide_tbl <- contin_4yrs_tbl %>% 
+        select(siteid, date, no2) %>% 
+        filter(year(date) <= year(startDate)) %>% 
+        group_by(siteid, year = year(date)) %>% 
+        summarise(ann_mean_no2 = mean(no2, na.rm = TRUE)) %>% 
+        pivot_wider(id_cols = siteid,
+                    names_from = year,
+                    values_from = ann_mean_no2)
+    
+    hrs.in.year <- function(startDate){
+        if(leap_year(startDate)){
+            8784
+        } else {
+            8760
+        }
+    }
+    
+    table_a3_tbl <- aqms_tbl %>% 
+        select(siteid, easting, northing, laqm_locationclass) %>% 
+        inner_join(no2_data_cap_tbl, by = "siteid") %>% 
+        inner_join(contin_annual_no2_wide_tbl, by = "siteid")
+    
+    return(table_a3_tbl)
+    
+}
+
+make.table.a5 <- function(contin_4yrs_tbl,
+                          startDate,
+                          aqms_tbl,
+                          no2_data_cap_tbl){
+    
+    perc_exc_no2_tbl <- contin_4yrs_tbl %>% 
+        select(siteid, date, no2) %>% 
+        filter(year(date) <= year(startDate)) %>% 
+        group_by(siteid, year = year(date)) %>% 
+        summarise(exc_no2 = sum(no2 > 200, na.rm = TRUE),
+                  perc_no2 = quantile(no2,
+                                      probs = 0.998,
+                                      na.rm = TRUE),
+                  .groups = "drop") %>% 
+        left_join(no2_data_cap_tbl, by = "siteid") %>%
+        rowwise() %>% 
+        mutate(cell = if_else(dcp < 85,
+                              glue("{exc_no2}({perc_no2})"),
+                              glue("{exc_no2}"))) %>% 
+        pivot_wider(id_cols = siteid,
+                    names_from = year,
+                    values_from = cell)
+    
+    a5_table_tbl <- aqms_tbl %>% 
+        select(siteid, easting, northing, laqm_locationclass) %>% 
+        inner_join(no2_data_cap_tbl, by = "siteid") %>% 
+        inner_join(perc_exc_no2_tbl, by = "siteid")
+    
+    return(a5_table_tbl)
+}
 
 # Testing ----
-pivoted_tubes_tbl <- pivot.tubes.monthly(out_df)
-
-last_years_sites_tbl <- get.lastyears.sites(con, startDate)
-
-aqms_tbl <- get.aqms(con)
-
-no2_data <- get.no2.data.db(con, startDate, endDate)
-
-step_2_tbl <- make.step.2.table(aqms_tbl, pivoted_tubes_tbl, last_years_sites_tbl)
-
-back_tbl <- get.background.data(no2_data)
-
-tuberep <- make.bias.data.tbl(aqms_tbl, no2_data)
-
-aqms_tbl %>% 
-    filter(current,
-           exposure,
-           rec_kerb > tube_kerb) %>% 
-    select(siteid, grid_id)
-
 
 con <- connect.access()
+last_years_sites_tbl <- get.lastyears.sites(con, startDate)
+aqms_tbl <- get.aqms(con)
+no2_data <- get.no2.data.db(con, startDate, endDate)
+pivoted_tubes_tbl <- pivot.tubes.monthly(no2_data)
+step_2_tbl <- make.step.2.table(aqms_tbl, pivoted_tubes_tbl, last_years_sites_tbl)
+back_tbl <- get.background.data(no2_data)
+tuberep <- make.bias.data.tbl(aqms_tbl, no2_data)
+coloc_divisor_tbl <- make.coloc.divisor.tbl(aqms_tbl)
+data_cap_period_tbl <- make.data.cap.period.tbl(coloc_divisor_tbl,
+                                                no2_data)
+annual_tube_data_4years_tbl <- get.annual.tube.data.4yrs.tbl(con, startDate)
+count_tubes_tbl <- get.count.tubes.tbl(con)
 
-grid_concs_tbl <- tbl(con, "tbl_background_grids_2018_base") %>% 
-    select(id, starts_with("no2")) %>% 
-    collect()
+ods_tubes_upload_tbl <- make.ods.upload.tube.tbl(con,
+                                                 count_tubes_tbl,
+                                                 path = "../../tubes/data/read_dt_data.xlsx", startDate = startDate)
 
-grid_id_tbl <- tbl(con, "tbl_grid_id") %>% 
-    collect()
+# con <- connect.envista()
+# dbDisconnect(con)
+contin_4yrs_tbl <- get.aq.data.db(con,
+                                  final_tbl = get.final.tbl(),
+                                  startDate = as.Date(startDate) - years(4), endDate = endDate)
 
-grid_concs_tbl %>% 
-    pivot_longer(cols = -id,
-                 names_to = "year",
-                 names_prefix = "no2_",
-                 values_to = "conc") %>%
-    mutate(year = as.integer(year)) %>% 
-    filter(year == {{year}}) %>% 
-    inner_join(grid_id_tbl, by = c("id" = "id"))
+no2_data_cap_tbl <- make.no2.datacap.tbl(contin_4yrs_tbl, startDate = startDate)
+
+# sites needing distance correction (needs to come frokm DTDP spreadsheet)
+
+siteids <- c(175L, 239L, 405L, 502L, 567L)
+
+
 
 
 dbDisconnect(con)
