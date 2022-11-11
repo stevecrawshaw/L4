@@ -109,17 +109,13 @@ renameTube <- function(x) {
     paste0("Tube", str_sub(x, -1, -1))
 }
 
-units.in.year <- function(year, unit = "hour"){
-    
-    if(leap_year(as.integer(year))){
-        366
+hrs.in.year <- function(startDate){
+    if(leap_year(startDate)){
+        8784
     } else {
-        365
+        8760
     }
-}  
-
-
-
+}
 
 # Database connections ----
 
@@ -266,13 +262,13 @@ get.aq.data.db <-
         
     }
 
-test.import.aurn <- function() {
+get.aq.data.aurn <- function(sites = c("BRS8", "BR11"), startDate, endDate){
+
+    test.import.aurn <- function() {
     #returns TRUE if import AURN OK
-    importAURN(site = "BRS8", year = 2020) %>%
-        !is.null %>%
+    !is.null(importMeta(source = "aurn", all = FALSE)) %>% 
         return()
-    
-}
+    }
 
 get.hourly.aurn.csv.DT.year <- function(site, year) {
     base_url <- "https://uk-air.defra.gov.uk/data_files/site_data/"
@@ -333,7 +329,7 @@ multi.site.year.import <- function(sites, years) {
         return()
 }
 
-import.aurn.uk.air <- function(sites, startDate, endDate){
+import.aurn.uk.air <- function(sites = c("BRS8", "BR11"), startDate, endDate){
 
     years <- unique(year(c(as.Date(startDate), as.Date(endDate))))
 
@@ -343,7 +339,8 @@ aurndata <- multi.site.year.import(sites, years) %>%
                             end_date = endDate)) %>%
     mutate(siteid = if_else(site == "BRS8", 452L, 500L)) %>%
     select(date, siteid,
-           nox, no2, no, pm10, pm2.5, o3, -site)
+           nox, no2, no, pm10, pm2.5, o3, -site) %>% 
+    as_tibble()
 }
 
 get.aurn.openair <- function(sites = c("BRS8", "BR11"),
@@ -376,6 +373,29 @@ get.aurn.openair <- function(sites = c("BRS8", "BR11"),
     
 }
 
+if(test.import.aurn()) {
+    aurn_tbl <- get.aurn.openair(startDate = startDate,
+                                 endDate = endDate)    
+} else {
+    aurn_tbl <- import.aurn.uk.air(startDate = startDate,
+                                   endDate = endDate)
+}
+return(aurn_tbl)
+}
+
+get.aq.data.all <- function(startDate = startDate,
+                            endDate = endDate){
+
+bcc_data_tbl <- get.aq.data.db(con = connect.envista(),
+                               final_tbl = get.final.tbl(),
+                               startDate = startDate,
+                               endDate = endDate)
+aurn_data_tbl <- get.aq.data.aurn(startDate = startDate,
+                             endDate = endDate)
+
+all_data_tbl <- bind_rows(bcc_data_tbl, aurn_data_tbl)
+return(all_data_tbl)
+}
 
 get.no2.data.db <- function(con, startDate, endDate){
     # get the raw no2 data for the year
@@ -807,16 +827,22 @@ table_a1 <- aqms_tbl %>%
 return(table_a1)
 }
 
-make.no2.datacap.tbl <-  function(contin_4yrs_tbl, startDate){
+make.datacap.tbl <-  function(contin_4yrs_tbl, startDate, pollutant){
+    pollutant <- enquo(pollutant)
     year <- year(startDate)
-    no2_data_cap_tbl <- contin_4yrs_tbl %>% 
-    select(siteid, date, no2) %>% 
+    # pollutant <- "no2"
+    data_cap_tbl <- contin_4yrs_tbl %>% 
+    select(siteid, date, !!pollutant) %>% 
     filter(year(date) == {{year}}) %>% 
     group_by(siteid, year = year(date)) %>% 
-    summarise(dcp = (sum(!is.na(no2)) / hrs.in.year({{startDate}})) * 100,
-              dcy = (sum(!is.na(no2)) / difftime(max(date), min(date), units = "hours") %>% as.integer()) * 100, .groups = "drop") %>% 
+    summarise(dcp = (sum(!is.na(!!pollutant))) / hrs.in.year({{startDate}}) * 100,
+              dcy = (sum(!is.na(!!pollutant)) / difftime(max(date), min(date), units = "hours") %>% as.integer()) * 100, .groups = "drop") %>% 
     select(-year)
 }
+
+no2_data_cap_tbl <- make.datacap.tbl(contin_4yrs_tbl, startDate = startDate, pollutant = no2)
+
+pm10_data_cap_tbl <- make.datacap.tbl(contin_4yrs_tbl, startDate = startDate, pollutant = pm10)
 
 make.table.a3 <- function(contin_4yrs_tbl, startDate, aqms_tbl, no2_data_cap_tbl){
     
@@ -824,18 +850,11 @@ make.table.a3 <- function(contin_4yrs_tbl, startDate, aqms_tbl, no2_data_cap_tbl
         select(siteid, date, no2) %>% 
         filter(year(date) <= year(startDate)) %>% 
         group_by(siteid, year = year(date)) %>% 
-        summarise(ann_mean_no2 = mean(no2, na.rm = TRUE)) %>% 
+        summarise(ann_mean_no2 = mean(no2, na.rm = TRUE),
+                  .groups = "drop") %>% 
         pivot_wider(id_cols = siteid,
                     names_from = year,
                     values_from = ann_mean_no2)
-    
-    hrs.in.year <- function(startDate){
-        if(leap_year(startDate)){
-            8784
-        } else {
-            8760
-        }
-    }
     
     table_a3_tbl <- aqms_tbl %>% 
         select(siteid, easting, northing, laqm_locationclass) %>% 
@@ -877,6 +896,94 @@ make.table.a5 <- function(contin_4yrs_tbl,
     return(a5_table_tbl)
 }
 
+make.table.a6 <- function(contin_4yrs_tbl,
+                          startDate,
+                          aqms_tbl,
+                          pm10_data_cap_tbl){
+    pm10_mean_tbl <- contin_4yrs_tbl %>% 
+        select(siteid, date, pm10) %>% 
+        filter(year(date) <= year(startDate)) %>% 
+        group_by(siteid, year = year(date)) %>% 
+        summarise(mean_pm10 = mean(pm10, na.rm = TRUE),
+                  .groups = "drop") %>% 
+        left_join(pm10_data_cap_tbl, by = "siteid") %>% 
+        na.omit() %>% 
+        pivot_wider(id_cols = siteid,
+                    names_from = year,
+                    values_from = mean_pm10) 
+    
+    table_a6_tbl <- aqms_tbl %>% 
+        select(siteid, easting, northing, laqm_locationclass) %>% 
+        inner_join(pm10_data_cap_tbl, by = "siteid") %>% 
+        inner_join(pm10_mean_tbl, by = "siteid")
+return(table_a6_tbl)    
+    
+}
+
+make.table.a7 <- function(contin_4yrs_tbl,
+                          startDate,
+                          aqms_tbl,
+                          pm10_data_cap_tbl){
+
+pm10_exc_tbl <- contin_4yrs_tbl %>% 
+    select(siteid, date, pm10) %>% 
+    filter(year(date) <= year(startDate)) %>%
+    mutate(siteid = as_factor(siteid)) %>% 
+    timeAverage(avg.time = "day",
+                data.thresh = 0.75,
+                type = "siteid") %>% 
+    mutate(siteid = as.integer(as.character(siteid))) %>% 
+    group_by(siteid, year = year(date)) %>% 
+    summarise(exc_pm10 = sum(pm10 > 50, na.rm = TRUE),
+              perc_pm10 = quantile(pm10,
+                                  probs = 0.904,
+                                  na.rm = TRUE) %>% 
+                  round(1),
+              .groups = "drop") %>% 
+    left_join(pm10_data_cap_tbl, by = "siteid") %>%
+    rowwise() %>% 
+    mutate(cell = if_else(dcp < 85,
+                          glue("{exc_pm10}({perc_pm10})"),
+                          glue("{exc_pm10}"))) %>% 
+    na.omit(perc_pm10) %>% 
+    pivot_wider(id_cols = siteid,
+                names_from = year,
+                values_from = cell)
+
+table_a7_tbl <- aqms_tbl %>% 
+    select(siteid, easting, northing, laqm_locationclass) %>% 
+    inner_join(pm10_data_cap_tbl, by = "siteid") %>% 
+    inner_join(pm10_exc_tbl, by = "siteid")
+return(table_a7_tbl)    
+
+}
+
+make.table.a8 <- function(contin_4yrs_tbl,
+         startDate,
+         aqms_tbl,
+         pm10_data_cap_tbl){
+    pm2.5_mean_tbl <- contin_4yrs_tbl %>% 
+        select(siteid, date, pm2.5) %>% 
+        filter(year(date) <= year(startDate)) %>% 
+        group_by(siteid, year = year(date)) %>% 
+        summarise(mean_pm2.5 = mean(pm2.5, na.rm = TRUE),
+                  .groups = "drop") %>% 
+        left_join(pm2.5_data_cap_tbl, by = "siteid") %>% 
+        na.omit() %>% 
+        arrange(year) %>% 
+        pivot_wider(id_cols = siteid,
+                    names_from = year,
+                    values_from = mean_pm2.5) 
+    
+    table_a8_tbl <- aqms_tbl %>% 
+        select(siteid, easting, northing, laqm_locationclass) %>% 
+        inner_join(pm2.5_data_cap_tbl, by = "siteid") %>% 
+        inner_join(pm2.5_mean_tbl, by = "siteid")
+    
+    return(table_a8_tbl)    
+}
+
+
 # Testing ----
 
 con <- connect.access()
@@ -886,7 +993,7 @@ no2_data <- get.no2.data.db(con, startDate, endDate)
 pivoted_tubes_tbl <- pivot.tubes.monthly(no2_data)
 step_2_tbl <- make.step.2.table(aqms_tbl, pivoted_tubes_tbl, last_years_sites_tbl)
 back_tbl <- get.background.data(no2_data)
-tuberep <- make.bias.data.tbl(aqms_tbl, no2_data)
+bias_tbl <- make.bias.data.tbl(aqms_tbl, no2_data)
 coloc_divisor_tbl <- make.coloc.divisor.tbl(aqms_tbl)
 data_cap_period_tbl <- make.data.cap.period.tbl(coloc_divisor_tbl,
                                                 no2_data)
@@ -896,14 +1003,29 @@ count_tubes_tbl <- get.count.tubes.tbl(con)
 ods_tubes_upload_tbl <- make.ods.upload.tube.tbl(con,
                                                  count_tubes_tbl,
                                                  path = "../../tubes/data/read_dt_data.xlsx", startDate = startDate)
+dbDisconnect(con)
+con <- connect.envista()
 
-# con <- connect.envista()
-# dbDisconnect(con)
-contin_4yrs_tbl <- get.aq.data.db(con,
-                                  final_tbl = get.final.tbl(),
-                                  startDate = as.Date(startDate) - years(4), endDate = endDate)
+contin_4yrs_tbl <- get.aq.data.all(startDate = as.Date(startDate) - years(4), endDate = endDate)
 
-no2_data_cap_tbl <- make.no2.datacap.tbl(contin_4yrs_tbl, startDate = startDate)
+no2_data_cap_tbl <- make.datacap.tbl(contin_4yrs_tbl, startDate = startDate, pollutant = no2)
+pm2.5_data_cap_tbl <- make.datacap.tbl(contin_4yrs_tbl, startDate = startDate, pollutant = pm2.5)
+
+table_a1 <- make.table.a1(aqms_tbl)
+table_a2 <- make.table.a2(aqms_tbl)
+table_a4 <- make.table.a4(annual_tube_data_4years_tbl, data_cap_period_tbl)
+table_a3 <- make.table.a3(contin_4yrs_tbl,
+                          startDate, aqms_tbl, no2_data_cap_tbl)
+table_a5 <- make.table.a5(contin_4yrs_tbl, startDate,
+                          aqms_tbl, no2_data_cap_tbl)
+table_a6 <- make.table.a6(contin_4yrs_tbl,
+                          aqms_tbl = aqms_tbl,
+                          startDate = startDate,
+                          pm10_data_cap_tbl = pm10_data_cap_tbl)
+
+
+
+
 
 # sites needing distance correction (needs to come frokm DTDP spreadsheet)
 
