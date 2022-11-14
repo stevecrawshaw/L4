@@ -428,5 +428,8 @@ For the Temple Way sensor, it was not possible to register this on the sensor.co
 
 Pseudo - code for the pre - modelling pipeline is shown below.
 
+##### Summary Plots
+
+
 
 
