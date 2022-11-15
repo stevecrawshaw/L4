@@ -55,8 +55,8 @@ Thumbs.db
 easydashboard.html
 learning*.png
 renv/
-project-4-colocation-study/plots/*.png
-project-4-colocation-study/data/*.rds
+plots/*.png
+data/*.rds
 
 # big data files
 
