@@ -1,0 +1,71 @@
+title: "Air Quality Data for Bristol: UK"
+description_html: |-
+    <b>"Live and historic air quality data collected by Bristol City Council and Defra"</b>
+license: "Open Government Licence V 3.0"
+license_url: "https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/"
+source: "Bristol City Council"
+source_url: "http://example.com/"
+databases:
+    aq_data:
+        tables:
+            air-quality-data-continuous:
+                title: "Air Quality Data: Hourly Continuous"
+                sort_desc: date_time
+                description_html: |-
+                    <p>Historic and live continuous air quality data from Bristol City Council and Defra.</p>
+                    <ul><li>NOx data are from chemiluminescent NOx analysers (API T200).</li>
+                    <li>Colston Avenue PM<sub>10</sub> data are from a BAM 1020 instrument and are corrected to gravimetric.</li>
+                    <li>PM<sub>2.5</sub> at Parson Street School is from a heated inlet BAM and given as equivalent to gravimetric</li>
+                    <li>PM<sub>10</sub> and PM<sub>2.5</sub> data from the Bristol St. Pauls site are from a TEOM instrument.</li>
+                    <li>PM<sub>10</sub> data from Temple Way are from a BAM instrument.</li>
+                    <li>Hourly observations are shown.</li>
+                    <li>BCC data older than the current month have been ratified and corrected in accordance with UK air quality guidance 
+                    <a href="https://laqm.defra.gov.uk/documents/LAQM-TG16-February-18-v1.pdf"> LAQM TG.16.</a></li>
+                    <li>For the ratifaction of Defra data, please refer to the <a href="https://uk-air.defra.gov.uk/">UK-AIR website</a>.</li>
+                    <li>Data from the Defra sites are reproduced under&nbsp;© Crown 2019 copyright Defra via uk-air.defra.gov.uk, 
+                    licenced under the <a href="http://www.nationalarchives.gov.uk/doc/open-government-licence/version/2/">Open Government Licence</a>
+                    (OGL).</li></ul>
+            air-quality-monitoring-sites:
+                label_column: location
+                title: "Air Quality Monitoring Sites"
+                description: Site details for current and historic air quality monitoring sites
+            no2-diffusion-tube-data:
+                title: "NO2 Diffusion Tube Data"
+                description_html: |-
+                    <p>Data from Bristol City Council operated passive air quality monitoring devices.
+                    Diffusion tubes measure concentrations of a traffic pollutant (nitrogen dioxide or NO<sub>2</sub>).
+                    This is separate from the 
+                    <a href="https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location">
+                    air-quality-data-continuous</a> dataset because these data are reported annually, not hourly.</p>
+                    <div> Data displayed is <strong>annual</strong>&nbsp;<a href="https://en.wikipedia.org/wiki/Nitrogen_dioxide">
+                    nitrogen dioxide</a> (NO<sub>2</sub>) from diffusion tubes. Data from 2010 onwards are shown.</div><div>
+                    Data are bias adjusted and annualised where required but not distance adjusted.
+                    This change in the data occurred 2019-07-31.&nbsp;
+                    Full details of air quality monitoring results are reported to Defra on an annual basis.
+                    The most recent reports on air quality in Bristol are available from the council's&nbsp;
+                    <a href="https://www.bristol.gov.uk/pests-pollution-noise-food/air-quality">web site.</a></div>
+            no2_diffusion_tube_locations_vw:
+                title: "Recent annual mean NO2 data and locations"
+                description: Annual mean NO2 data with location data
+            annual_mean_continuous_vw:
+                title: "Annual means of continuous data"
+            annual_mean_locations_vw:
+                title: "Annual mean data for continuous sites with locations"
+            
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
