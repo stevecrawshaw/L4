@@ -21,7 +21,8 @@ tar_option_set(
                "glue",
                "rvest",
                "lubridate",
-               "readxl"), # packages that your targets need to run
+               "readxl",
+               "openxlsx2"), # packages that your targets need to run
   format = "rds",
   memory = "transient",
   garbage_collection = TRUE # default storage format
@@ -71,8 +72,8 @@ list(
       command = get.background.data(no2_data)
   ),
   tar_target(
-      name = bias_tbl,
-      command = make.bias.data.tbl(aqms_tbl, no2_data)
+      name = bias_site_list,
+      command = make.bias.list(aqms_tbl, no2_data)
   ),
   tar_target(
       name = coloc_divisor_tbl,

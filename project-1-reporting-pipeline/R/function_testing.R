@@ -44,7 +44,31 @@ table_a7 <- make.table.a7(contin_4yrs_tbl, startDate, aqms_tbl, pm10_data_cap_tb
 
 table_a8 <- make.table.a8(contin_4yrs_tbl, startDate, aqms_tbl, pm2.5_data_cap_tbl)
 
-ods_tubes_upload_tbl
+table_list <- enlist.clean(table_a1,
+                           table_a2,
+                           table_a3,
+                           table_a4,
+                           table_a5,
+                           table_a6,
+                           table_a7,
+                           table_a8,
+                           ods_tubes_upload_tbl)
+
+
+bias_site_list <- make.bias.site.list(aqms_tbl, no2_data)
+names(bias_site_list) <- make_clean_names(names(bias_site_list))
+
+write_xlsx(table_list, file = "data/asr_tables.xlsx")
+write_xlsx(bias_site_list, file = "data/bias_input_tables.xlsx")
+
+
+
+# to do
+# add to targets
+# write background data add to tables_list
+# write bias list
+# write out shapefiles of >36, >40 etc
+# maps?
 
 
 # sites needing distance correction (needs to come from DTDP spreadsheet)

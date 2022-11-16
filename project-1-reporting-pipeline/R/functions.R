@@ -553,50 +553,63 @@ make.step.2.table <- function(aqms_tbl,
     return(step_2_table)
 }
 
-make.bias.data.tbl <- function(aqms_tbl, no2_data){
+make.bias.site.list <- function(aqms_tbl, no2_data){
 #subset monitor data to colocated sites
     
     renameTube <- function(x) {
         paste0("Tube", str_sub(x, -1, -1))
     }
-    
-join_table <- aqms_tbl %>% 
-    filter(!is.na(colocated)) %>% 
-    select(siteid, contin_siteid = colocated) %>% 
-    inner_join(aqms_tbl, by = c("contin_siteid" = "siteid")) %>% 
+
+join_table <- aqms_tbl %>%
+    filter(!is.na(colocated)) %>%
+    select(siteid, contin_siteid = colocated) %>%
+    inner_join(aqms_tbl, by = c("contin_siteid" = "siteid")) %>%
     select(site = location, contin_siteid, siteid)
 
 # just colocated tube data
 
-colocated_tbl <- no2_data %>% 
-    inner_join(join_table, by ="siteid") %>% 
+colocated_tbl <- no2_data %>%
+    inner_join(join_table, by ="siteid") %>%
     arrange(siteid, mid_date)
 
 year <- year(median(no2_data$mid_date, na.rm = TRUE))
-
-# colocated_tbl %>% 
-#     write_csv(glue("data/{year}_colocated_tube_data.csv"))
-#make the table
-tubes_report <- 
-    no2_data %>% 
-    filter(siteid %in% join_table$siteid) %>%
-    inner_join(join_table, by = "siteid") %>% 
-    transmute(site, month = month(mid_date), concentration) %>%
-    group_by(site, month) %>% 
-    nest() %>% 
-    unnest_wider(data) %>%
-    unnest_wider(concentration) %>% 
-    rename_with(renameTube, starts_with("..")) %>%
-    arrange(site, month) %>% 
-    ungroup() %>% 
-    nest_by(site) %>% 
-    mutate(path = glue("{here::here('data')}/{site}_tubes.csv")) %>% 
-    ungroup() %>% 
-    select(x = data, path) 
+# 
+# # colocated_tbl %>% 
+# #     write_csv(glue("data/{year}_colocated_tube_data.csv"))
+# #make the table
+# tubes_report <- 
+#     no2_data %>% 
+#     filter(siteid %in% join_table$siteid) %>%
+#     inner_join(join_table, by = "siteid") %>% 
+#     transmute(site, month = month(mid_date), concentration) %>%
+#     group_by(site, month) %>% 
+#     nest() %>% 
+#     unnest_wider(data) %>%
+#     unnest_wider(concentration) %>% 
+#     rename_with(renameTube, starts_with("..")) %>%
+#     arrange(site, month) %>% 
+#     ungroup() %>% 
+#     nest_by(site) %>% 
+#     mutate(path = glue("{here::here('data')}/{site}_tubes.csv")) %>% 
+#     ungroup() %>% 
+#     select(x = data, path) 
+bias_site_list <- no2_data %>% 
+        filter(siteid %in% join_table$siteid) %>%
+        inner_join(join_table, by = "siteid") %>% 
+        transmute(site, month = month(mid_date),
+                  concentration) %>%
+        group_by(site, month) %>% 
+        nest() %>% 
+        unnest_wider(data) %>%
+        unnest_wider(concentration) %>% 
+        rename_with(renameTube, starts_with("..")) %>%
+        arrange(site, month) %>% 
+        ungroup() %>% 
+        split(as_factor(.$site))
 
 # use pwalk to iteratively save the csvs
 
-return(tubes_report)
+return(bias_site_list)
 }
 
 get.contin_data <- function(con, no2_data, final_tbl){
@@ -837,8 +850,9 @@ make.datacap.tbl <-  function(contin_4yrs_tbl, startDate, pollutant){
     select(siteid, date, !!pollutant) %>% 
     filter(year(date) == {{year}}) %>% 
     group_by(siteid, year = year(date)) %>% 
-    summarise(dcp = (sum(!is.na(!!pollutant))) / hrs.in.year({{startDate}}) * 100,
-              dcy = (sum(!is.na(!!pollutant)) / difftime(max(date), min(date), units = "hours") %>% as.integer()) * 100, .groups = "drop") %>% 
+    summarise(dcp = ((sum(!is.na(!!pollutant))) / hrs.in.year({{startDate}}) * 100) %>% round(1),
+              dcy = ((sum(!is.na(!!pollutant)) / difftime(max(date), min(date), units = "hours") %>% as.integer()) * 100) %>% round(1),
+              .groups = "drop") %>% 
     select(-year)
 }
 
@@ -875,7 +889,8 @@ make.table.a5 <- function(contin_4yrs_tbl,
         summarise(exc_no2 = sum(no2 > 200, na.rm = TRUE),
                   perc_no2 = quantile(no2,
                                       probs = 0.998,
-                                      na.rm = TRUE),
+                                      na.rm = TRUE) %>%
+                      round(1),
                   .groups = "drop") %>% 
         left_join(no2_data_cap_tbl, by = "siteid") %>%
         rowwise() %>% 
@@ -902,7 +917,7 @@ make.table.a6 <- function(contin_4yrs_tbl,
         select(siteid, date, pm10) %>% 
         filter(year(date) <= year(startDate)) %>% 
         group_by(siteid, year = year(date)) %>% 
-        summarise(mean_pm10 = mean(pm10, na.rm = TRUE),
+        summarise(mean_pm10 = mean(pm10, na.rm = TRUE) %>% round(1),
                   .groups = "drop") %>% 
         left_join(pm10_data_cap_tbl, by = "siteid") %>% 
         na.omit() %>% 
@@ -964,7 +979,7 @@ make.table.a8 <- function(contin_4yrs_tbl,
         select(siteid, date, pm2.5) %>% 
         filter(year(date) <= year(startDate)) %>% 
         group_by(siteid, year = year(date)) %>% 
-        summarise(mean_pm2.5 = mean(pm2.5, na.rm = TRUE),
+        summarise(mean_pm2.5 = mean(pm2.5, na.rm = TRUE) %>% round(1),
                   .groups = "drop") %>% 
         left_join(pm2.5_data_cap_tbl, by = "siteid") %>% 
         na.omit() %>% 
@@ -993,17 +1008,17 @@ write.background.data <- function(annual_background_data){
 }
 
 
-save_tables <- function(...){
-     nms <- enquos(...)
-    tables <- list(...)
-    table_names <- map_chr(nms, as_name)
-    file_names <- paste0("data/", table_names, ".csv")
-    names(tables) <- table_names
-    enframe(tables) %>% 
-        transmute(file = glue("data/{name}.csv"),
-                  x = value)
+enlist.clean <- function(...){
+    # take dataframes and turn all contents to character
+    # making empty strings for all NA's for nice spreadsheet
+    # formatting
+    tables <- lst(...)
+    t <- map(tables,
+             ~mutate(.x, across(everything(),
+                                .f = ~as.character(.x) %>%
+                                    replace_na(""))))
+    return(t)
 }
 
 
-save_tables(table_a1, table_a3) %>% 
-    pwalk(write_csv)
+
