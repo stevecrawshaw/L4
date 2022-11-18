@@ -6,8 +6,7 @@ aqms_tbl <- get.aqms(con)
 no2_data <- get.no2.data.db(con, startDate, endDate)
 pivoted_tubes_tbl <- pivot.tubes.monthly(no2_data)
 step_2_tbl <- make.step.2.table(aqms_tbl, pivoted_tubes_tbl, last_years_sites_tbl)
-back_tbl <- get.background.data(no2_data)
-bias_tbl <- make.bias.data.tbl(aqms_tbl, no2_data)
+step_2a_tbl <- get.background.data(no2_data)
 coloc_divisor_tbl <- make.coloc.divisor.tbl(aqms_tbl)
 data_cap_period_tbl <- make.data.cap.period.tbl(coloc_divisor_tbl,
                                                 no2_data)
@@ -44,29 +43,21 @@ table_a7 <- make.table.a7(contin_4yrs_tbl, startDate, aqms_tbl, pm10_data_cap_tb
 
 table_a8 <- make.table.a8(contin_4yrs_tbl, startDate, aqms_tbl, pm2.5_data_cap_tbl)
 
-table_list <- enlist.clean(table_a1,
-                           table_a2,
-                           table_a3,
-                           table_a4,
-                           table_a5,
-                           table_a6,
-                           table_a7,
-                           table_a8,
-                           ods_tubes_upload_tbl)
+write_spreadsheets <- write.spreadsheets()
 
+plotareas_tbl <- make.plotareas_tbl()
 
-bias_site_list <- make.bias.site.list(aqms_tbl, no2_data)
-names(bias_site_list) <- make_clean_names(names(bias_site_list))
+no2_trend_chart_tbl <- make.no2.trend.chart.tbl(startDate,
+                                                ods_tubes_upload_tbl,
+                                                plotareas_tbl,
+                                                aqms_tbl)
 
-write_xlsx(table_list, file = "data/asr_tables.xlsx")
-write_xlsx(bias_site_list, file = "data/bias_input_tables.xlsx")
+pm25_trend_chart <- make.pm25.trend.chart(startDate)
 
 
 
 # to do
 # add to targets
-# write background data add to tables_list
-# write bias list
 # write out shapefiles of >36, >40 etc
 # maps?
 

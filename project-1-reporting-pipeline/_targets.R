@@ -22,7 +22,9 @@ tar_option_set(
                "rvest",
                "lubridate",
                "readxl",
-               "openxlsx2"), # packages that your targets need to run
+               "openxlsx2",
+               "scales",
+               "ggtext"), # packages that your targets need to run
   format = "rds",
   memory = "transient",
   garbage_collection = TRUE # default storage format
@@ -68,7 +70,7 @@ list(
                                   last_years_sites_tbl)
   ),
   tar_target(
-      name = back_tbl,
+      name = step_2a_tbl,
       command = get.background.data(no2_data)
   ),
   tar_target(
@@ -168,6 +170,42 @@ list(
                               startDate,
                               aqms_tbl,
                               pm2.5_data_cap_tbl)
+  ),
+  tar_target(
+      name = write_spreadsheets,
+      command = write.spreadsheets()
+  ),
+  tar_target(
+      name = plotareas_tbl,
+      command = make.plotareas_tbl()
+  ),
+  tar_target(
+      name = no2_trend_chart_tbl,
+      command = make.no2.trend.chart.tbl(startDate,
+                                         ods_tubes_upload_tbl,
+                                         plotareas_tbl,
+                                         aqms_tbl)
+  ),
+  tar_target(
+      name = pm25_trend_chart,
+      command = make.pm25.trend.chart(startDate)
+  ),
+  tar_target(
+      name = write_no2_trend_charts,
+      command = write.no2.trend.charts(no2_trend_chart_tbl)
+  ),
+  tar_target(
+      name = write_pm25_trend_chart,
+      command = write.pm25.trend.chart(pm25_trend_chart)
   )
     
 )
+
+plotareas_tbl <- make.plotareas_tbl()
+
+no2_trend_chart_tbl <- make.no2.trend.chart.tbl(startDate,
+                                                ods_tubes_upload_tbl,
+                                                plotareas_tbl,
+                                                aqms_tbl)
+
+pm25_trend_chart <- make.pm25.trend.chart(startDate)
