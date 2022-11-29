@@ -3,6 +3,7 @@
 library(pacman)
 p <-
     c("odbc",
+      "here",
       "dplyr",
       "DBI",
       "config",
@@ -100,6 +101,25 @@ get.calendar.dates <- function(table_list, year, start_end = "start"){
 }
 
 # Utility functions ---- 
+
+# ggtheme
+
+theme_web_bw <- function() {
+    theme_bw() + # note ggplot2 theme is used as a basis
+        theme(plot.title = element_text(size = 16, face = "bold",
+                                        hjust = 0,
+                                        margin = margin(t = 5, b = 25)),
+              plot.caption = element_text(size = 12, hjust = 0, 
+                                          margin = margin(t = 15)),
+              panel.grid.major = element_line(colour = "grey88"),
+              panel.grid.minor = element_blank(),
+              legend.title = element_text(size = 14, face = "bold"),
+              legend.text = element_text(size = 14),
+              strip.text = element_text(size = 14, face = "bold"),
+              axis.text = element_text(size = 14),
+              axis.title.x = element_text(margin = margin(t = 10), size = 15),
+              axis.title.y = element_text(margin = margin(r = 10), size = 15))
+}
 
 toMidday <- function(date) {
     with_tz(as.POSIXct(paste0(date, " 12:00:00")), 'UTC')
@@ -1000,7 +1020,7 @@ make.table.a8 <- function(contin_4yrs_tbl,
     return(table_a8_tbl)    
 }
 
-enlist.clean <- function(...){
+make.table.list <- function(...){
     # take dataframes and turn all contents to character
     # making empty strings for all NA's for nice spreadsheet
     # formatting
@@ -1012,30 +1032,23 @@ enlist.clean <- function(...){
     return(t)
 }
 
-write.spreadsheets <- function(){
-    
-    table_list <- enlist.clean(step_2_tbl,
-                               step_2a_tbl,
-                               table_a1,
-                               table_a2,
-                               table_a3,
-                               table_a4,
-                               table_a5,
-                               table_a6,
-                               table_a7,
-                               table_a8,
-                               ods_tubes_upload_tbl)
-    
-    
-    bias_site_list <- make.bias.site.list(aqms_tbl, no2_data)
-    
-    asr_dtpt_file = "data/asr_tables.xlsx"
-    bias_tube_file = "data/bias_input_tables.xlsx"
+write.spreadsheets <- function(table_list,
+                               bias_site_list,
+                               ods_tubes_upload_tbl,
+                               startDate){
+    year <- year(startDate)
+    asr_dtpt_file = glue("data/asr_tables_{year}.xlsx")
+    bias_tube_file = glue("data/bias_input_tables_{year}.xlsx")
+    ods_tubes_upload_tbl_file = glue("data/ods_tubes_upload_{year}.csv")
     
     write_xlsx(table_list, file = asr_dtpt_file)
     write_xlsx(bias_site_list, file = bias_tube_file)
+    write.csv2(ods_tubes_upload_tbl, ods_tubes_upload_tbl_file)
     
-    print(glue("files are saved {bias_tube_file} and {asr_dtpt_file}")) %>% 
+    print(glue("  files are saved /n
+               {bias_tube_file} /n
+               {asr_dtpt_file} /n
+               {ods_tubes_upload_tbl_file}")) %>% 
         return()
     
 }
@@ -1063,7 +1076,8 @@ make.no2.trend.chart.tbl <- function(startDate,
                                      ods_tubes_upload_tbl,
                                      plotareas_tbl,
                                      aqms_tbl){
-    year = year(startDate)
+    
+       year = year(startDate)
     xyear = year -8 #for location of the AQ objective annotation
     
     tube_chart_data <- 

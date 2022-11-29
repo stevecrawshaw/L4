@@ -10,6 +10,7 @@ library(targets)
 # Set target options:
 tar_option_set(
   packages = c("odbc",
+               "here",
                "dplyr",
                "DBI",
                "config",
@@ -64,7 +65,7 @@ list(
       command = pivot.tubes.monthly(no2_data)
   ),
   tar_target(
-      name = step_2_table,
+      name = step_2_tbl,
       command = make.step.2.table(aqms_tbl,
                                   pivoted_tubes_tbl,
                                   last_years_sites_tbl)
@@ -75,7 +76,7 @@ list(
   ),
   tar_target(
       name = bias_site_list,
-      command = make.bias.list(aqms_tbl, no2_data)
+      command = make.bias.site.list(aqms_tbl, no2_data)
   ),
   tar_target(
       name = coloc_divisor_tbl,
@@ -172,8 +173,24 @@ list(
                               pm2.5_data_cap_tbl)
   ),
   tar_target(
+    name = table_list,
+    command = make.table.list(step_2_tbl,
+                           step_2a_tbl,
+                           table_a1,
+                           table_a2,
+                           table_a3,
+                           table_a4,
+                           table_a5,
+                           table_a6,
+                           table_a7,
+                           table_a8)
+  ),
+  tar_target(
       name = write_spreadsheets,
-      command = write.spreadsheets()
+      command = write.spreadsheets(table_list,
+                                   bias_site_list,
+                                   ods_tubes_upload_tbl,
+                                   startDate)
   ),
   tar_target(
       name = plotareas_tbl,
@@ -200,12 +217,3 @@ list(
   )
     
 )
-
-plotareas_tbl <- make.plotareas_tbl()
-
-no2_trend_chart_tbl <- make.no2.trend.chart.tbl(startDate,
-                                                ods_tubes_upload_tbl,
-                                                plotareas_tbl,
-                                                aqms_tbl)
-
-pm25_trend_chart <- make.pm25.trend.chart(startDate)

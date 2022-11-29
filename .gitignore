@@ -57,6 +57,9 @@ learning*.png
 renv/
 project-4-colocation-study/plots/*.png
 project-4-colocation-study/data/*.rds
+project-1-reporting-pipeline/plots/*.png
+project-1-reporting-pipeline/data/*.xlsx
+project-1-reporting-pipeline/data/*.csv
 
 # big data files
 
