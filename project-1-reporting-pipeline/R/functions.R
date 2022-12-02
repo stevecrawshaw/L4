@@ -459,11 +459,13 @@ contin_back_sites <- importMeta(all = T)  %>%
 
 years_vec <- seq(from = as.integer(year) - 1, to = as.integer(year) + 1, by = 1)
 #get the data
-back_sites <- c("BRS8", "BORN", "NPT3", "SWHO") # MANUAL
+back_sites <- contin_back_sites$code
+    # c("BRS8", "BORN", "NPT3", "SWHO") # MANUAL
 
-back_site_names <- contin_back_sites %>% 
-    filter(code %in% back_sites) %>% 
-    select(site)
+back_site_names <- contin_back_sites$site
+    # contin_back_sites %>% 
+    # filter(code %in% back_sites) %>% 
+    # select(site)
 
 annual_back_data <- importAURN(site = back_sites,
                                pollutant = "no2",
@@ -474,7 +476,8 @@ annual_back_data <- importAURN(site = back_sites,
                        with_tz(as.POSIXct(maxdate + 1), 'UTC'))) %>% 
     select(-code) %>% 
     pivot_wider(id_cols = date, names_from = site, values_from  = no2) %>% 
-    arrange(date)
+    arrange(date) %>% 
+    relocate(date, `Bristol St Paul's`, Bournemouth, Newport, `Swindon Walcot`, everything())
 
 return(annual_back_data)
 

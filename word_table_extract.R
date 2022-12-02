@@ -27,3 +27,24 @@ make_gt <- . %>%
 # create list of formatted gt tables
 gt_list <- doc_table_list %>% 
     map(make_gt)
+
+
+
+
+for(i in 1:4){
+    # print(objs[i])
+    # print(gt_list[[i]])
+    gt_list[[i]] %>% 
+        tab_header(title = objs[i]) %>% 
+        tab_style(style = cell_text(weight = "bold"),
+                  locations = cells_column_labels(
+                      columns = everything())) %>%
+        cols_width(
+            SMART ~ px(100),
+            Description ~ px(300),
+            Notes ~ px(300)
+        ) %>% 
+        gtsave(
+            filename = glue("images/{str_sub(objs[i], 1, 11)}.png")
+        )
+}

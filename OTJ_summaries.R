@@ -14,7 +14,7 @@ p <- c("tidyverse",
 library("xfun")
 pkg_attach2(p)
 
-learning_date <- "2022-10-01"
+learning_date <- "2022-11-01"
 
 # Functions ----
 get_googlesheet <- function() {

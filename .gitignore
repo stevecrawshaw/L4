@@ -46,7 +46,10 @@ Thumbs.db
 
 #pdfs - too bulky
 /pdf
+summative-portfolio.pdf
 
+# images
+/images/Objective*.png
 
 # dashboards - big
 

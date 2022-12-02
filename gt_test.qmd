@@ -1,0 +1,21 @@
+---
+title: "gt_test"
+format: docx
+---
+```{r}
+library(gt)
+library(tidyverse)
+footnote <- "Lorem ipsum dolor sit amet, consectetur adipiscing elit, ..."
+head(mtcars) %>% 
+	group_by(cyl) %>% 
+	gt() %>% 
+	tab_footnote(footnote=footnote)
+```
+
+
+
+<!-- #| tbl-cap: "A caption" -->
+<!-- head(mtcars) %>%  -->
+<!-- 	group_by(cyl) %>%  -->
+<!-- 	gt() %>%  -->
+<!-- 	tab_footnote(footnote=footnote) -->

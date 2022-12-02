@@ -1,7 +1,7 @@
 ---
 title: "Summative Portfolio: L4"
 author: "Steve Crawshaw"
-format: html
+format: docx
 date: "`r Sys.Date()`"
 toc: true
 toc-title: "Table of Contents"
@@ -203,26 +203,18 @@ The key skills and knowledge for my role are as follows:
 
 I have identified four projects which align with business and apprenticeship progress review objectives. They are focussed on creating data products which will enhance business processes and increase confidence in our data and analysis. They are summarised below.
 
-```{r, results='asis'}
+```{r}
 source("word_table_extract.R")
-# iterate over the list of objective tables printing each one
-for(i in 1:4){
-    # print(objs[i])
-    # print(gt_list[[i]])
-    gt_list[[i]] %>% 
-        tab_header(title = objs[i]) %>% 
-        tab_style(style = cell_text(weight = "bold"),
-                  locations = cells_column_labels(
-                      columns = everything())) %>% 
-        print()
-    # line breaks
-    cat("\\ ")
-    cat("\\linebreak")
-    cat("\\linebreak")
-    cat("\\linebreak")
-}
+# create the table pngs to add as images
 
 ```
+
+![Objective 1](images/Objective 1.png)
+![Objective 2](images/Objective 2.png)
+
+![Objective 3](images/Objective 3.png)
+![Objective 4](images/Objective 4.png)
+
 
 I am able to work on these projects concurrently and I believe they are all achievable by the end of the apprenticeship.
 
@@ -352,6 +344,7 @@ The equipment used in this colocation study is the Met One BAM 1020 Continuous P
 The [Temple Way site](https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:500) is affiliated to the national monitoring network. This means that the site is owned by Bristol City Council, but the management of the data and the oversight of the QA regime is done by the Environment Agency's contractors. PM~10~ and NOx are measured at this site and summary metadata are provided below.
 
 ```{r}
+#| eval = FALSE
 pm_meta <- import_ods("air-quality-monitoring-sites",
                        where = "siteid=500 OR siteid=215", select = "*")
 
@@ -404,6 +397,7 @@ site_details(pm_meta %>% filter(siteid == 500))
 Oxides of Nitrogen (NOx) have been measured at [Parson Street School](https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:215) for many years. The enclosure is close to the roadside of a busy, queuing road and represents exposure of schoolchildren and school staff. In recognition of the need to understand exposure to PM~2.5~ at a roadside site the monitoring station was updated with a BAM 1020 in 2021. The BAM 1020 when configured for monitoring PM~2.5~ includes an additional particle size cut off filter and also incorporates a heated inlet to drive off volatile compounds from the sampled air. The summary metadata for the site is shown below.
 
 ```{r}
+#| eval = FALSE
 site_details(pm_meta %>% filter(siteid == 215))
 ```
 
@@ -422,13 +416,45 @@ Co - located instruments
 
 #### Data Processing Pipeline
 
-Data from one low cost sensor and from both reference instruments are published in near real time on the council's open data portal. The BAM 1020 data are available through the [`air-quality-data-continuous`](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location) dataset and the Parson Street data are available through the [`luftdaten_pm_bristol`](https://opendata.bristol.gov.uk/explore/dataset/luftdaten_pm_bristol/table/?disjunctive.sensor_id&q=sensor_id+%3D+71552&sort=date&location=22,51.43267,-2.60496&basemap=jawg.streets) dataset. This is a dataset that is a geographical subset of the sensor.community [archive](https://archive.sensor.community/) focussed on Bristol. In addition, data are aggregated to give an hourly mean value for both PM~10~ and PM~2.5~. Data for these two BAM 1020 instruments and the Parson Street low cost sensor are retrieved using a purpose built R function which uses endpoints from the [Opendatasoft API](https://opendata.bristol.gov.uk/api/v2/console).
+Data from one low cost sensor and from both reference instruments are published in near real time on the council's open data portal. The BAM 1020 data are available through the [`air-quality-data-continuous`](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location) dataset and the Parson Street data are available through the [`luftdaten_pm_bristol`](https://opendata.bristol.gov.uk/explore/dataset/luftdaten_pm_bristol/table/?disjunctive.sensor_id&q=sensor_id+%3D+71552&sort=date&location=22,51.43267,-2.60496&basemap=jawg.streets) dataset. This is a dataset that is a geographical subset of the sensor.community [archive](https://archive.sensor.community/) focussed on Bristol. In addition, data are aggregated to give an hourly mean value for both PM~10~ and PM~2.5~. 
+Custom functions were written in R to access these files and import the data as data frames.
 
-For the Temple Way sensor, it was not possible to register this on the sensor.community website. A different approach was developed to retrieve the data, which is available through the [Madavi API](https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445) as a combination of csv and zip files. Custom functions were written in R to access these files and import the data as data frames.
+The data processing pipeline was split into three R scripts, one for retrieving and preparing the data, one for plotting, and one for modelling the data. In brief the functions in each script are described below.
 
-Pseudo - code for the pre - modelling pipeline is shown below.
+##### Retrieving and Preparing data for Modelling
 
-##### Summary Plots
+qa_low_cost_sensors_source.R
+
+Data for the two BAM 1020 instruments and the Parson Street low cost sensor are retrieved using a purpose built R function which uses endpoints from the [Opendatasoft API](https://opendata.bristol.gov.uk/api/v2/console).
+
+For the Temple Way sensor, it was not possible to register this on the sensor.community website. A different approach was developed to retrieve the data, which is available through the [Madavi API](https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445) as a combination of csv and zip files. This operation entails retrieving a number of files in different formats and joining the data into one dataframe.
+
+Once data are retrieved from the online repositories, they are combined into a nested dataframe (or tibble in the tidyverse vernacular) with functions from the purrr package such that columns are created that can be used in the subsequent modelling process. The resulting nested dataframe is a 2 row, four column tibble grouped by the site ID with list columns containing the raw hourly data, the prepared source data for the model, and a pivoted (wide) dataset used in the plotting and modelling functions.
+
+The approach of nesting the model data within a tibble enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a tibble with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.
+
+##### Plotting Functions
+qa_low_cost_sensors_plots.R
+
+This script contains functions to develop a range of visualisations of both the raw and processed data and model outputs.
+
+1. plot_drift() is a function based on the ggplot2 library which takes the prepared model data tibble and a site ID and returns a ggplot object (plot) showing how the pollutant concentrations from the low cost sensor diverge from the reference method measurements over time. The plot uses the geom_smooth() geom with the smoothing set to Loess in order to show a smoothed trace.
+2. plot_scatter() is another ggplot based function which generates a scatter plot for co - located instruments. It also incorporates functions from the ggside library (extension for ggplot2) which enables side - plots for the scatter plot showing the distribution of data points for each axis. Further it includes stat_cor() and stat_regline_equation() from the ggpubr library to show correlation statistics and the equation derived from the linear model on the chart. This function therefore provides much useful information about the relationship between the two datasets on a single chart.
+3. prep_timeplot() is a helper function that takes the prepared data for modelling and processes it for use in another function. The function subsets the data, renames columns, pivots longer and pads the time series such that the data is ready for the plot_time_series() function.
+4. plot_time_series() takes the data from step 3 above and a string representing an interval (e.g. "hour") and plots a time series chart using the ggplot2 library.
+5. Other helper functions which format and save plots.
+
+
+##### Modelling Functions
+
+qa_low_cost_sensors_model.R
+
+This script loads the model data tibble previously created and also sources a script to import custom themes for plots. The make.model.output.tbl() function takes the data tibble and creates a new output tibble with the following features:
+
+1. a list column (model_obj) which is the model object derived from the lm() function in R comparing the low - cost and reference device data for each site and pollutant
+2. a list column containing the linear coefficients (intercept and slope) from each model object using the tidymodels package.
+3. a list column, perf, which holds a tibble of performance metrics derived by the glance() function from the broom package. Glance accepts a model object and returns a tibble::tibble() with exactly one row of model summaries. The summaries are typically goodness of fit measures, p-values for hypothesis tests on residuals, or model convergence information.
+
 
 
 

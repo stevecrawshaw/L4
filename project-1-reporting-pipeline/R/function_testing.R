@@ -60,7 +60,7 @@ table_list <- make.table.list(step_2_tbl,
                               ods_tubes_upload_tbl)
 
 
-write.spreadsheets(table_list, bias_site_list)
+write.spreadsheets(table_list, bias_site_list, ods_tubes_upload_tbl, startDate)
 
 
 plotareas_tbl <- make.plotareas_tbl()

@@ -1,0 +1,44 @@
+---
+title: "Industry Insights: Eugenia Shynkevich"
+author: "Steve Crawshaw"
+format: pdf
+editor: visual
+---
+
+# Summary
+
+This talk was about building a data science team in a low risk financial institution. This was ClearStream (bank) in Deutsche Borse group. The vision is to build data as a driver of growth.
+
+# Data Science Team
+
+Located in London, Luxembourg, Frankfurt and Prague but the company is global. Clients are other financial institutions. Collaborate closely with IT - data engineers. DS team was a small group within Clearstream but problems mainstreaming their data products. So the team moved into the product group and expanded. The team is diverse.
+
+The DS team need tech skills, business skills and need to be creative and able to tell stories with the data. Data engineers and functional analysts provide access to data through pipelines and infrastructure. The delivery manager and scrum master manages projects and stakeholder expectations.
+
+Data stewards manage the quality of the data and compliance with regulations - new role, creating data catalogues and other meta data to enhance business understanding. Storytelling and ability to explain is important.
+
+## Architecture
+
+New system, problems with customer data in cloud. Had to work with regulators to implement. Now use Azure and Google cloud. AWS not as willing to comply. Ingests, manages and outputs data in a range of guises.
+
+## Data Management and Governance
+
+DMG is fundamental with the increase of data regulations and the need of BI and DS to have a quicker time to market for data products and supporting data driven decisions.
+
+## Workflow for new data products
+
+Ideation -\> Requirements -\> POC -\> Production \\ maintenance
+
+Hard to tightly specify requirements when developing new products. Iterative approach to improving.
+
+## Client Data Solutions - examples
+
+Settlement dashboard. Optimising settlement efficiency by benchmarking with other clients.
+
+Settlement Prediction. Predictive product to predict if trades will be settled. Helps traders to avoid trading platforms to identify partners without affecting price. Clearstream is AA rated but sometimes trades fail because parties don't have the resources. This can affect customer satisfaction and knock on failures. Now EU has a settlement discipline regime which incurs fees. Hence more pressure to avoid failed settlements. This data product tests the proposed trade prior to the trade increasing confidence by giving a probability of settlement. Uses a ML approach trained on prior settlements data.
+
+### Mainstreaming research
+
+Moved from an academic approach to implementing the models and processes in production. Need to demonstrate worth by showing business value from the data science. This could be internal through cost savings or external by creating new revenue from DS products - models. Applied approach might be to use a well understood, reliable and low cost model rather than the newest optimal but risky model. Also need to accommodate changing business requirements.
+
+### 
