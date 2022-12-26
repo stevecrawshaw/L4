@@ -121,7 +121,7 @@ plot_time_series <- function(time_plot_data, interval = "hour") {
                      date = as.Date(date)) %>% 
             add_count() %>% filter(n >= 18) %>% select(-n) %>% # filter < 75% DC
             summarise(concentration = mean(concentration, na.rm = TRUE)) %>%
-            pad(interval = "day")
+            padr::pad(interval = "day")
         title_interval = "daily"
     }
     

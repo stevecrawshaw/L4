@@ -84,6 +84,13 @@ model_output_tbl %>%
 
 # Dashboards ----
 
+
 make_dashboard(model_output_tbl)
+
+
+# try sjPlot
+
+library(sjPlot)
+
 
 
