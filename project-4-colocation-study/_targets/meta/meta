@@ -3,8 +3,8 @@ combined_long_tbl|stem|3562e0cabec3e989|4ee93c4b85f1714d|af79f4f0c66ea60d|161998
 daily_csv_urls|stem|0fa8eac87150a794|1f3bc26881b77a40|bb75196128f50f36|7468504||t19353.7540470435s|801cade07abe9db2|312|rds|local|vector|||0.002||
 daily_files_tbl|stem|8446625cd9696dc3|b0985a283c27babc|6a2b99ce1db61ac6|104738191||t19353.7574403239s|8c99d913752039ae|168974|rds|local|vector|||8.3|1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat|
 dashboard|stem||aab84428fd5d82f2|b6c6711411e2e03f|951390599||t19353.7613193736s||0|file|local|vector|||0.004||object siteid not found
-dashboard_215|stem|5d5716be2a3a4d6c|9952ce8d67feaaff|759e2600cd1f753f|-1758434356|site_215_PM2.5_dashboard.html|t19353.8058875387s|a3a7c58697343791|4358927|file|local|vector|||2.043||
-dashboard_500|stem|5d5716be2a3a4d6c|c40d6417704b114c|759e2600cd1f753f|1068591424|site_500_PM10_dashboard.html|t19353.8058990666s|a3a7c58697343791|4358927|file|local|vector|||1.202||
+dashboard_215|stem|21df77db049a7c59|9952ce8d67feaaff|8677846de5a97923|-1758434356|site_215_PM2.5_dashboard.html|t19353.8498984513s|3adbe79996a56f38|5676260|file|local|vector|||11.59||
+dashboard_500|stem|6b8664e38296b79e|c40d6417704b114c|8677846de5a97923|1068591424|site_500_PM10_dashboard.html|t19353.8500064618s|b73cacf7ecebd665|5680197|file|local|vector|||9.665||
 datehelper_fnc|function|64d36b2251e19e38|||||||||||||||
 get_col_types_fnc|function|4a04d33f20e09306|||||||||||||||
 get_fields_fnc|function|706d2ea63a89343f|||||||||||||||
@@ -20,7 +20,7 @@ get.zip.file.urls|function|ec4f54cd4ef98fcf|||||||||||||||
 has|object|909013909b1f03d4|||||||||||||||
 import_ods|function|439d8b6dbc895079|||||||||||||||
 make.combined.long.tbl|function|36501ee93c047a66|||||||||||||||
-make.dashboard|function|9f7e990c0fa10ae3|||||||||||||||
+make.dashboard|function|a4454de955f71d6b|||||||||||||||
 make.model.data.tbl|function|2fb90c846d0c07de|||||||||||||||
 make.model.output.tbl|function|9fbab40802fd512d|||||||||||||||
 make.temple.way.sds.hr.tbl|function|5a697aff83826f6e|||||||||||||||

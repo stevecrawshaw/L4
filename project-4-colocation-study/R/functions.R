@@ -457,7 +457,7 @@ make.dashboard <- function(model_output_tbl, siteid = 215){
     
     file_path <- glue("site_{siteid}_{dash_tbl$pollutant}_dashboard.html")
     
-    dash(model = dash_tbl$model_obj, output_file = file_path)
+    dash(model = dash_tbl$model_obj[[1]], output_file = file_path)
     
     return(file_path)
 }
