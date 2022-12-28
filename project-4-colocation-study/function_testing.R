@@ -41,19 +41,50 @@ model_data_tbl %>%
 
 # Plotting Tests ----
 
-plot.drift.site.gg(model_data_tbl, site = 215)
+model_data_tbl <- read_rds(file = "data/model_data_tbl.rds")
+
+plot.drift.site.gg(model_data_tbl, site = 500)
 
 plot.scatter.site.gg(model_data_tbl$md_wide[1][[1]])
 
 timeplot_tbl <- prep.timeplot.tbl(model_data_tbl)
 
-plot.time.series.gg(timeplot_tbl, interval = "day")
+tpgg <- plot.time.series.gg(timeplot_tbl, interval = "day")
 
 sp_plot_tbl <- prep.sp.plot.tbl(timeplot_tbl)
 
 save.png.summaryplot(sp_plot_tbl, pollutant = "pm10")
+
+scatter_gg_215 <- model_output_tbl[model_output_tbl$siteid == 215,]$plot[[1]]
+scatter_gg_500 <- model_output_tbl[model_output_tbl$siteid == 500,]$plot[[1]]
+
 # Model Tests ----
 
 model_data_tbl <- read_rds("data/model_data_tbl.rds")
 
 model_output_tbl <- make.model.output.tbl(model_data_tbl)
+
+# need to do performance table
+
+
+
+model_perf_tbl <- make.model.perf.tbl(model_output_tbl)
+# 
+# headings <- glue("{model_perf_tbl$siteid}_{model_perf_tbl$pollutant}")
+# rownms <- names(model_perf_tbl[-c(1:2)])
+# 
+# t_perf_tbl <- model_perf_tbl %>% 
+#     mutate(across(.cols = 2:last_col(), ~round(as.double(.x), 2))) %>% 
+#     data.table::transpose(.) %>% 
+#     data.table::setDT() %>% 
+#     .[-c(1:2), metric := rownms] %>% 
+#     na.omit()
+# 
+# 
+# t_perf_tbl
+# names(t_perf_tbl) <- headings
+# rownames(t_perf_tbl) <- rownms
+
+
+
+model_perf_tbl_gt <- make.model.perf.tbl.gt(model_output_tbl)

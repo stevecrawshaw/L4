@@ -229,7 +229,7 @@ make.model.data.tbl <- function(combined_long_tbl){
 }
 
 write.model.data.tbl <- function(model_data_tbl){
-    path <- "data/model_date_tbl.rds"
+    path <- "data/model_data_tbl.rds"
     write_rds(model_data_tbl, path)
     return(path)
     
@@ -271,8 +271,8 @@ plot.scatter.site.gg <- function(model_data_tbl) {
         ggplot(aes(x = reference, y = low_cost)) +
         geom_point2(alpha = 0.5) +
         geom_smooth(method = "lm") +
-        geom_xsidedensity(lwd = 1) +
-        geom_ysidedensity(lwd = 2) +
+        geom_xsidedensity(linewidth = 1) +
+        geom_ysidedensity(linewidth = 2) +
         scale_ysidex_continuous(guide = guide_axis(angle = 90),
                                 breaks = NULL) +
         scale_xsidey_continuous(guide = guide_axis(angle = 90),
@@ -280,7 +280,8 @@ plot.scatter.site.gg <- function(model_data_tbl) {
         labs(x = "Reference Instrument",
              y = "Low Cost Sensor") +
         stat_cor(label.y = 50,
-                 aes(label = paste(..rr.label.., ..p.label.., sep = "~`,`~"))) +
+                 label.x = 50,
+                 aes(label = paste(after_stat(rr.label), after_stat(p.label), sep = "~`,`~"))) +
         stat_regline_equation(label.y = 44) +
         theme_web_bw()
 }
@@ -398,10 +399,6 @@ save.png.summaryplot <- function(sp_plot_tbl, pollutant = "pm2.5"){
     return(path)
 }
 
-
-
-
-
 save.plot <- function(siteid, plot){
     ggsave(filename = glue("scatterplot_{siteid}.png"),
            plot = plot, device = "png",
@@ -409,8 +406,20 @@ save.plot <- function(siteid, plot){
            dpi = "print")
 }
 
-
-
+save.ggplot <- function(ggplot){
+    
+    plot_name <- 
+        deparse(substitute(ggplot))
+    
+    filename = glue("{plot_name}.png")
+    
+    ggsave(filename = filename,
+           plot = ggplot,
+           device = "png",
+           path = "plots",
+           dpi = "print")
+    return(glue("/plots/{filename}"))
+}
 
 # Model Functions -----
 
@@ -462,3 +471,25 @@ make.dashboard <- function(model_output_tbl, siteid = 215){
     return(file_path)
 }
 
+make.model.perf.tbl <- function(model_output_tbl){
+    
+    model_perf_tbl <- model_output_tbl %>% 
+        select(siteid, pollutant, perf) %>% 
+        unnest(perf) 
+    return(model_perf_tbl)
+    
+}
+
+make.model.perf.tbl.gt <- function(model_output_tbl){
+    
+    models <- model_output_tbl$model_obj
+    
+    regression_tbl_list <- models %>% 
+        map(~tbl_regression(.x) %>% 
+                add_glance_table())
+    
+    table_names <- glue("Site {model_output_tbl$siteid}: {model_output_tbl$pollutant}")
+    
+    tbl_merge(regression_tbl_list, tab_spanner = table_names)
+    
+}

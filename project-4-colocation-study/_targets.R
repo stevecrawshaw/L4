@@ -22,7 +22,8 @@ p_load(char = c(
        "ggside",   # side plots of density
        "ggpubr",   # easy labelling of equations on the plot
        "openair",
-       "easystats")
+       "easystats",
+       "gtsummary")
     )
 # Set target options:
 tar_option_set(
@@ -98,6 +99,14 @@ list(
     command = prep.timeplot.tbl(model_data_tbl)
   ),
   tar_target(
+      name = time_series_hour_gg,
+      command = plot.time.series.gg(timeplot_tbl, interval = "hour")
+  ),
+  tar_target(
+      name = time_series_day_gg,
+      command = plot.time.series.gg(timeplot_tbl, interval = "day")
+  ),
+  tar_target(
     name = sp_plot_tbl,
     command = prep.sp.plot.tbl(timeplot_tbl)
   ),
@@ -124,5 +133,53 @@ list(
     name = save_png_pm10,
     command = save.png.summaryplot(sp_plot_tbl, "pm10"),
     format = "file"
+  ),
+  tar_target(
+      name = drift_plot_500_gg,
+      command = plot.drift.site.gg(model_data_tbl, site = 500)
+  ),
+  tar_target(
+      name = drift_plot_215_gg,
+      command = plot.drift.site.gg(model_data_tbl, site = 215)
+  ),
+  tar_target(
+      name = save_gg_time_series_hour_gg,
+      command = save.ggplot(time_series_hour_gg)
+  ),
+  tar_target(
+      name = save_gg_time_series_day_gg,
+      command = save.ggplot(time_series_day_gg)
+  ),
+  tar_target(
+      name = save_drift_plot_500_gg,
+      command = save.ggplot(drift_plot_500_gg)
+  ),
+  tar_target(
+      name = save_drift_plot_215_gg,
+      command = save.ggplot(drift_plot_215_gg)
+  ),
+  tar_target(
+      name = scatter_gg_215,
+      command = model_output_tbl[model_output_tbl$siteid == 215,]$plot[[1]]
+  ),
+  tar_target(
+      name = scatter_gg_500,
+      command = model_output_tbl[model_output_tbl$siteid == 500,]$plot[[1]]
+  ),
+  tar_target(
+      name = save_scatter_gg_215,
+      command = save.ggplot(scatter_gg_215)
+  ),
+  tar_target(
+      name = save_scatter_gg_500,
+      command = save.ggplot(scatter_gg_500)
+  ),
+  tar_target(
+      name = model_perf_tbl,
+      command = make.model.perf.tbl(model_output_tbl)
+  ),
+  tar_target(
+      name = model_perf_tbl_gt,
+      command = make.model.perf.tbl.gt(model_output_tbl)
   )
 )
