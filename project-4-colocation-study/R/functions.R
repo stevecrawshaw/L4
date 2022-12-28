@@ -27,6 +27,7 @@
 # 
 # # Variables ----
 # start_date <- "2022-05-01" # BTW started operating
+# end_date <- "2022-12-31"
 
 # Functions ----
 

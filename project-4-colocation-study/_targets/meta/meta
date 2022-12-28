@@ -1,27 +1,27 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
-.Random.seed|object|09a3a7b81133bec5|||||||||||||||
-combined_long_tbl|stem|d87d899dca48c1c6|4ee93c4b85f1714d|e0a96edc24272c2e|1619989325||t19354.3915288093s|9bddadad02c90fe4|128247|rds|local|vector|||0.1||
-daily_csv_urls|stem|725fe0786c425235|1f3bc26881b77a40|bb75196128f50f36|7468504||t19354.3871941372s|44d8296aaebe8c60|317|rds|local|vector|||0.01||
-daily_files_tbl|stem|32760a8f807f06b8|b0985a283c27babc|67dfb5ddb7fafd2e|104738191||t19354.3914323322s|ecda1a12aa6ad3e7|172791|rds|local|vector|||10.76|1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat|
+.Random.seed|object|4aea7fd1b50454bf|||||||||||||||
+combined_long_tbl|stem|c299dd1644612d4c|4ee93c4b85f1714d|c288470e0409d6db|1619989325||t19354.6310422252s|82730274cc024e1a|133088|rds|local|vector|||0.018||
+daily_csv_urls|stem|646bd19803deb816|1f3bc26881b77a40|bb75196128f50f36|7468504||t19354.6308306237s|44d8296aaebe8c60|317|rds|local|vector|||0.004||
+daily_files_tbl|stem|8efa5cc2bbbb0ce8|b0985a283c27babc|213c7588c6f5ca12|104738191||t19354.6310400032s|c8871f9e3cc5e9de|174193|rds|local|vector|||7.84|1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat|
 dashboard|stem||aab84428fd5d82f2|b6c6711411e2e03f|951390599||t19353.7613193736s||0|file|local|vector|||0.004||object siteid not found
-dashboard_215|stem|eb45cf43a583a489|9952ce8d67feaaff|234412ab7f33fede|-1758434356|site_215_PM2.5_dashboard.html|t19354.6159649351s|8b78b2b1595afacd|5424828|file|local|vector|||78.89||
-dashboard_500|stem|e2533f7b39d9d1c5|c40d6417704b114c|234412ab7f33fede|1068591424|site_500_PM10_dashboard.html|t19354.6149479028s|ce55575669174860|5417102|file|local|vector|||95||
+dashboard_215|stem|e3211259e2b82471|9952ce8d67feaaff|0df40bfac5562cf0|-1758434356|site_215_PM2.5_dashboard.html|t19354.6314515916s|fa9023dd5b676bac|5674660|file|local|vector|||11.406||
+dashboard_500|stem|81586e370057ab29|c40d6417704b114c|0df40bfac5562cf0|1068591424|site_500_PM10_dashboard.html|t19354.6313198861s|db3aee265f879ee6|5678841|file|local|vector|||13.17||
 datehelper_fnc|function|64d36b2251e19e38|||||||||||||||
-drift_plot_215_gg|stem|e3eec7c1f83fa47c|cce87906ff207606|eec55630b463a673|-1985441761||t19354.6112287131s|3c269469cff29dfa|555184|rds|local|vector|||0.1||
-drift_plot_500_gg|stem|10bd662737f42c6b|61e2f158888ac51a|eec55630b463a673|196033960||t19354.6111475237s|049cb4f4789b761a|594564|rds|local|vector|||0.12||
+drift_plot_215_gg|stem|60a5d12409249401|cce87906ff207606|9e27aceae8976e1c|-1985441761||t19354.6310726384s|b473c4c3e16dc47b|570154|rds|local|vector|||0.08||
+drift_plot_500_gg|stem|b010e1f84c829a41|61e2f158888ac51a|9e27aceae8976e1c|196033960||t19354.6310698147s|fc3d2035b6b3f0bb|624199|rds|local|vector|||0.055||
+get_col_types_fnc|function|4a04d33f20e09306|||||||||||||||
+get_fields_fnc|function|706d2ea63a89343f|||||||||||||||
 get.daily.csv.urls|function|15f4410d4fc6db13|||||||||||||||
 get.daily.files.tbl|function|2c2c11e1bc082493|||||||||||||||
 get.monthly.files.tbl|function|f927a34a856f102a|||||||||||||||
-get.parson.st.sds.hr.tbl|function|604d044e8896a3f6|||||||||||||||
-get.ref.tbl|function|af3c942285e5a790|||||||||||||||
+get.parson.st.sds.hr.tbl|function|5ef578b75c86632d|||||||||||||||
+get.ref.tbl|function|acda775867d2ba64|||||||||||||||
 get.sds.csv.tbl|function|7e3362f269faa71a|||||||||||||||
 get.sds.zip.tbl|function|84f696c665c5ee2b|||||||||||||||
 get.title|function|3b04b72c42d7078a|||||||||||||||
 get.zip.file.urls|function|ec4f54cd4ef98fcf|||||||||||||||
-get_col_types_fnc|function|4a04d33f20e09306|||||||||||||||
-get_fields_fnc|function|6e9f29305a639417|||||||||||||||
 has|object|909013909b1f03d4|||||||||||||||
-import_ods|function|22f18d0fae7e2dd2|||||||||||||||
+import_ods|function|439d8b6dbc895079|||||||||||||||
 make.combined.long.tbl|function|36501ee93c047a66|||||||||||||||
 make.dashboard|function|a4454de955f71d6b|||||||||||||||
 make.model.data.tbl|function|2fb90c846d0c07de|||||||||||||||
@@ -29,46 +29,46 @@ make.model.output.tbl|function|105fde77ecc37bbf|||||||||||||||
 make.model.perf.tbl|function|36f168081f11ca6d|||||||||||||||
 make.model.perf.tbl.gt|function|2eb9c66218462b1d|||||||||||||||
 make.temple.way.sds.hr.tbl|function|5a697aff83826f6e|||||||||||||||
-model_data_tbl|stem|c58b5d8a1f802181|6c074ff6818890a8|12025f2dbdea0089|-430755439||t19354.391638646s|7321d288cd1da720|358049|rds|local|vector|||0.36||
-model_output_tbl|stem|6e35efa815e1a00c|9383e9a435bd5ef6|53ca0bda96982c67|1940538993||t19354.610820968s|f17b3e8bbc20784c|8449805|rds|local|vector|||1.17||
-model_perf_tbl|stem|97c8d83376f2f57b|dc0b484bfc5e6a57|199d1b99d49d2266|-1996897760||t19354.6162353025s|c0bcc022442a2701|569|rds|local|vector|||0.08||
-model_perf_tbl_gt|stem|505eac4a99074eea|677c52bfdab8bccf|27eb274d0a1463ec|114076331||t19354.6131895213s|5eccccfbfbfc1043|25133743|rds|local|vector|||12.34||
-monthly_files_tbl|stem|97f70fd1b4cd8553|217c211019507121|4aec63ec03102a23|1262767376||t19354.3911598336s|26bd3285168a23c1|1164495|rds|local|vector|||325.25|URL httpsapirrd.madavi.dedata_csv202205dataesp82666496445202205.zip cannot open destfile datazipstemp.zip, reason No such file or directory. download had nonzero exit status. error 1 in extracting from zip file. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat|
+model_data_tbl|stem|908d48bf5352f447|6c074ff6818890a8|3e576f22d491c2d8|-430755439||t19354.6310440305s|69f707690a20a6cc|373219|rds|local|vector|||0.077||
+model_output_tbl|stem|615ff8da293a198f|9383e9a435bd5ef6|6f82e6149e031b5a|1940538993||t19354.6310666206s|32858d1e2d450eb6|8784973|rds|local|vector|||0.285|1m22mIgnoring unknown parameters linewidth. 1m22mIgnoring unknown parameters linewidth. 1m22mIgnoring unknown parameters linewidth. 1m22mIgnoring unknown parameters linewidth|
+model_perf_tbl|stem|068b62fd5a1ed31b|dc0b484bfc5e6a57|618f19370447436b|-1996897760||t19354.6314599245s|63a9aa779fd9cd3d|570|rds|local|vector|||0.031||
+model_perf_tbl_gt|stem|c672a930cd44acff|677c52bfdab8bccf|d5fd3b97aa654738|114076331||t19354.6311661014s|385be01e60254bea|26134766|rds|local|vector|||3.771||
+monthly_files_tbl|stem|94886ea04a4492ad|217c211019507121|ed083f71b8bc467c|1262767376||t19354.6309485338s|1be84d50cba4dc0f|1344855|rds|local|vector|||9.839|1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat|
 packages|object|2c4b21f1a3a351c9|||||||||||||||
-parson_st_sds_hr_tbl|stem|788c694f0e554b7c|599c7708481407fd|5654e9f3c975a439|-1942118816||t19354.3872406231s|5d02da6facd22dd1|34069|rds|local|vector|||2.25||
+parson_st_sds_hr_tbl|stem|802448d1a5a4ef1b|599c7708481407fd|2f531a060bb697d5|-1942118816||t19354.6307703914s|5d02da6facd22dd1|34069|rds|local|vector|||3.859||
 plot.drift.site.gg|function|291322d5965f5cd0|||||||||||||||
 plot.model.base|function|8220277397365070|||||||||||||||
 plot.scatter.site.gg|function|c50018f1b2d106e5|||||||||||||||
 plot.time.series.gg|function|119924648fba336b|||||||||||||||
 prep.sp.plot.tbl|function|46f9bc1a121646dc|||||||||||||||
 prep.timeplot.tbl|function|7bece499c6ec9ab7|||||||||||||||
-ref_tbl|stem|3d6ecc8f6f60fc30|68ff805095f0c861|56fc0687e082c34b|-2130245924||t19354.3871112183s|e386a3fd934c530f|52089|rds|local|vector|||10.24||
+ref_tbl|stem|bc393da7b0cff0d2|68ff805095f0c861|5559049016c7f785|-2130245924||t19354.6308302533s|33c70d5bdc747883|52133|rds|local|vector|||5.135||
+save_drift_plot_215_gg|stem|927cfe499af399e2|f151d0e366fe1564|d38ee6a2d063e01a|-1897135981||t19354.6314737202s|758d7d51407f572d|117|rds|local|vector|||0.505||
+save_drift_plot_500_gg|stem|009b83b32babc6a5|5a60d32d651c6fb6|ecbc5bf082aaa296|-1115365591||t19354.6314677945s|758d7d51407f572d|117|rds|local|vector|||0.665||
+save_gg_time_series_day_gg|stem|391a385e4a97b8be|ad22de3fe6f82e48|205254af71794f75|-325668443||t19354.631519181s|045b07e719c4cc68|120|rds|local|vector|||0.485||
+save_gg_time_series_hour_gg|stem|dc27b71a77fcf1c7|6af75f046aabd427|8c5ebf0735b1e74d|1821442045||t19354.6315265881s|b0efa4f1e05eee68|121|rds|local|vector|||0.633|1m22mRemoved 4 rows containing missing values geom_line.|
+save_png_pm10|stem|25356e762e0b6f26|13e13e71015d911e|ee0bd515a1e3d745|-835137275|plots/summary_plot_pm10.png|t19354.6315087648s|8e5cb2f1616c7134|74882|file|local|vector|||0.513|More than one site detected, using pm10|
+save_png_pm25|stem|dfe4e64cdea94a97|0d915a0e2d8beb74|ee0bd515a1e3d745|1434329897|plots/summary_plot_pm2_5.png|t19354.6315134868s|ef4eb7c86f13ff82|66689|file|local|vector|||0.402|More than one site detected, using pm2.5|
+save_scatter_gg_215|stem|295b721b83686a73|6b52c386ba379389|e4b84e35ff6288a8|1240745199||t19354.6314929322s|e3871644244b3637|115|rds|local|vector|||0.932|1m22mRemoved 432 rows containing nonfinite values stat_smooth.. 1m22mRemoved 112 rows containing nonfinite values stat_density.. 1m22mRemoved 327 rows containing nonfinite values stat_density.. 1m22mRemoved 432 rows containing nonfinite values stat_cor.. 1m22mRemoved 432 rows containing nonfinite values stat_regline_equation.. 1m22mUsing the size aesthetic in this geom was deprecated in ggplot2 3.4.0.36mℹ39m Please use linewidth in the default_aes field and elsewhere instead.. 1m22mRemoved 432 rows containing missing values geom_point.|
+save_scatter_gg_500|stem|da1eb98623e7db7d|7e61ad9a8dce8efa|a3160baad339279f|-579276445||t19354.6315027466s|e3871644244b3637|115|rds|local|vector|||0.838|1m22mRemoved 363 rows containing nonfinite values stat_smooth.. 1m22mRemoved 316 rows containing nonfinite values stat_density.. 1m22mRemoved 56 rows containing nonfinite values stat_density.. 1m22mRemoved 363 rows containing nonfinite values stat_cor.. 1m22mRemoved 363 rows containing nonfinite values stat_regline_equation.. 1m22mRemoved 363 rows containing missing values geom_point.|
 save.ggplot|function|f931f8f2a7b43cdd|||||||||||||||
 save.plot|function|bd050dc1d7972c36|||||||||||||||
 save.png.summaryplot|function|8804bdc994646567|||||||||||||||
-save_drift_plot_215_gg|stem|2252781d0d930be6|f151d0e366fe1564|3b1ab31b87e83b24|-1897135981||t19354.6164244212s|758d7d51407f572d|117|rds|local|vector|||4.42||
-save_drift_plot_500_gg|stem|8713be40e5079f82|5a60d32d651c6fb6|a7ad2b67ff1b8ca9|-1115365591||t19354.616337387s|758d7d51407f572d|117|rds|local|vector|||5.08||
-save_gg_time_series_day_gg|stem|6f16f8503b6b0fb6|ad22de3fe6f82e48|08149f63c915c288|-325668443||t19354.6169858024s|045b07e719c4cc68|120|rds|local|vector|||8.09||
-save_gg_time_series_hour_gg|stem|05eee7093a0377b4|6af75f046aabd427|1c0ace5e0a5f3d6c|1821442045||t19354.6170979806s|b0efa4f1e05eee68|121|rds|local|vector|||6.86|1m22mRemoved 4 rows containing missing values geom_line.|
-save_png_pm10|stem|477a4608e113e0ff|13e13e71015d911e|29b48fa97371766e|-835137275|plots/summary_plot_pm10.png|t19354.3967479787s|b9b43a2d0176489e|16367|file|local|vector|||3.5|More than one site detected, using pm10|
-save_png_pm25|stem|4d47b901229746e2|0d915a0e2d8beb74|29b48fa97371766e|1434329897|plots/summary_plot_pm2_5.png|t19354.39679834s|4e2ba82ab73b24fc|15827|file|local|vector|||2.31|More than one site detected, using pm2.5|
-save_scatter_gg_215|stem|e2d916ab953609fc|6b52c386ba379389|5f11dee6cb3fb24c|1240745199||t19354.6167527365s|e3871644244b3637|115|rds|local|vector|||10.07|1m22mRemoved 427 rows containing nonfinite values stat_smooth.. 1m22mRemoved 112 rows containing nonfinite values stat_density.. 1m22mRemoved 322 rows containing nonfinite values stat_density.. 1m22mRemoved 427 rows containing nonfinite values stat_cor.. 1m22mRemoved 427 rows containing nonfinite values stat_regline_equation.. 1m22mRemoved 427 rows containing missing values geom_point.|
-save_scatter_gg_500|stem|9ec25991cc65e4e7|7e61ad9a8dce8efa|891d18a7972538cb|-579276445||t19354.6168641159s|e3871644244b3637|115|rds|local|vector|||6.91|1m22mRemoved 1092 rows containing nonfinite values stat_smooth.. 1m22mRemoved 312 rows containing nonfinite values stat_density.. 1m22mRemoved 792 rows containing nonfinite values stat_density.. 1m22mRemoved 1092 rows containing nonfinite values stat_cor.. 1m22mRemoved 1092 rows containing nonfinite values stat_regline_equation.. 1m22mRemoved 1092 rows containing missing values geom_point.|
-scatter_gg_215|stem|67228d8d6415d1ed|d19f46f93c3ed3c1|49a3beac7bda6709|90306194||t19354.6139572195s|2e8b881049f9dbc0|1671997|rds|local|vector|||0.26||
-scatter_gg_500|stem|3ff93228fc239c67|ec7515caa376370d|49a3beac7bda6709|1860356125||t19354.6152413645s|321b3f113e5a3cdd|2038378|rds|local|vector|||0||
+scatter_gg_215|stem|24a630aa14c9bf1b|d19f46f93c3ed3c1|8810f96caf003c7a|90306194||t19354.6311703603s|b826c1c93d3387be|1675633|rds|local|vector|||0.004||
+scatter_gg_500|stem|3e7f2fc7751a4ea2|ec7515caa376370d|8810f96caf003c7a|1860356125||t19354.6313273394s|3413de272b2b58fe|2151455|rds|local|vector|||0.007||
 sds_csv_tbl|stem||1f95704f4657089c|d386ecfd7b3d4ed1|1254489945||t19353.7459973863s||0|rds|local|vector|||0.003||object filename not found
-sp_plot_tbl|stem|761ba14b02cc32ec|d9e55d09644540c2|dad34f01f30a1c5a|2027666610||t19354.3966677522s|758db555d9104994|133771|rds|local|vector|||0.21||
+sp_plot_tbl|stem|1cee0049ba7ef4a4|d9e55d09644540c2|3e710ac858085b95|2027666610||t19354.6314747849s|3e14ce33499e7da3|137154|rds|local|vector|||0.045||
 start_date|object|790899fadde4c8a8|||||||||||||||
-temple_way_sds_hr_tbl|stem|206df3825a144c40|12bcb842f5f979a7|d9327683d9cbe0c9|-47938212||t19354.3914655877s|4b381a14474ff452|41053|rds|local|vector|||0.66||
+temple_way_sds_hr_tbl|stem|77c08a5294405d18|12bcb842f5f979a7|d800525dd41e250b|-47938212||t19354.6310415308s|66c148f15a430ca6|46631|rds|local|vector|||0.117||
 theme_ppt_single|function|b1c8953fe377d591|||||||||||||||
 theme_report_facet|function|a7d19ef517935dbb|||||||||||||||
 theme_web_bw|function|2967215ebd52193b|||||||||||||||
 theme_web_classic|function|99025b9e4b078dcc|||||||||||||||
 theme_web_void|function|cf385f698691e69e|||||||||||||||
-time_series_day_gg|stem|759f8f5a1a214bfc|6446ce8ca77beb21|49990b096732ce81|-2853685||t19354.6164914784s|d5f899789f1aed00|240083|rds|local|vector|||0.7||
-time_series_hour_gg|stem|ee9af2b9a295794e|f94087a8ea821275|49990b096732ce81|662578143||t19354.6165718608s|66811ee160267309|628504|rds|local|vector|||0.14||
-timeplot_tbl|stem|645c6821a7dd65f2|61bd83449c42e1c7|37d00883ed74d922|-1511535049||t19354.3929086216s|d66d6dcf967f0f3a|134879|rds|local|vector|||0.51||
+time_series_day_gg|stem|2b68cf0283e88600|6446ce8ca77beb21|d22cf7009518d4b4|-2853685||t19354.6314783033s|8ab610ae0366aac2|244458|rds|local|vector|||0.21||
+time_series_hour_gg|stem|43bd8efea0e58713|f94087a8ea821275|d22cf7009518d4b4|662578143||t19354.6314820531s|7e29926b5a9419bc|642012|rds|local|vector|||0.066||
+timeplot_tbl|stem|cf4c1cb9d83d86c9|61bd83449c42e1c7|98a92302a6cb74ce|-1511535049||t19354.6310748141s|b1cab5116e0760b6|138239|rds|local|vector|||0.125||
 wants|object|4b19678db23ebc60|||||||||||||||
+write_model_data_tbl|stem|97e34f9c807ce9c2|2edd6895394981e7|4d8d33c249fcb3b3|1396338786|data/model_data_tbl.rds|t19354.6310750919s|d3b546cd9b749554|1945875|file|local|vector|||0.019||
 write.model.data.tbl|function|1ee55b783fdb5491|||||||||||||||
-write_model_data_tbl|stem|7a5ee134d2a76bdc|2edd6895394981e7|0de6eec4198a03a6|1396338786|data/model_data_tbl.rds|t19354.611430662s|4f3d402732aa9146|1891134|file|local|vector|||12.8||
-zip_file_urls|stem|4e3185c0ca679db9|07673c76430f57b3|e070238f14024076|1253774699||t19354.3871745791s|3c187ffa31a31952|199|rds|local|vector|||0.03||
+zip_file_urls|stem|f47ad63ff55a1f29|07673c76430f57b3|e070238f14024076|1253774699||t19354.6308304385s|3c187ffa31a31952|199|rds|local|vector|||0.006||
