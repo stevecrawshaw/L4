@@ -414,16 +414,18 @@ The low cost sensors were co - located inside the cages of the monitoring sites.
 Co - located instruments
 :::
 
-#### Data Processing Pipeline
+#### Data Sources
 
 Data from one low cost sensor and from both reference instruments are published in near real time on the council's open data portal. The BAM 1020 data are available through the [`air-quality-data-continuous`](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location) dataset and the Parson Street data are available through the [`luftdaten_pm_bristol`](https://opendata.bristol.gov.uk/explore/dataset/luftdaten_pm_bristol/table/?disjunctive.sensor_id&q=sensor_id+%3D+71552&sort=date&location=22,51.43267,-2.60496&basemap=jawg.streets) dataset. This is a dataset that is a geographical subset of the sensor.community [archive](https://archive.sensor.community/) focussed on Bristol. In addition, data are aggregated to give an hourly mean value for both PM~10~ and PM~2.5~. 
 Custom functions were written in R to access these files and import the data as data frames.
+The data for the low cost sensor at Temple Way are not published on the council's open data portal. This is because the sensor did not register properly on the sensor.community portal. The data are however available through a [combination of online](https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445) .csv and .zip files.
 
-The data processing pipeline was split into three R scripts, one for retrieving and preparing the data, one for plotting, and one for modelling the data. In brief the functions in each script are described below.
+#### Data Processing Pipeline
+
+Initially the data processing pipeline was split into three R scripts, one for retrieving and preparing the data, one for plotting, and one for modelling the data. However, while developing this approach, it became apparent that there were significant problems with this method. Tracking the operations across three different scripts became confusing, and testing and debugging was sub - optimal and resulted in errors when running the scripts if they weren't called in order.
+Researching this issue identified a possible solution, which was eventually used for this project. The [`targets`](https://books.ropensci.org/targets/) R package by Will Landau is a "Make" - like pipeline tool for data science in R. It helps to maintain a reproducible workflow, minimising repetition, running only necessary code, and forces a functional approach to code and pipeline development.
 
 ##### Retrieving and Preparing data for Modelling
-
-qa_low_cost_sensors_source.R
 
 Data for the two BAM 1020 instruments and the Parson Street low cost sensor are retrieved using a purpose built R function which uses endpoints from the [Opendatasoft API](https://opendata.bristol.gov.uk/api/v2/console).
 
@@ -434,11 +436,10 @@ Once data are retrieved from the online repositories, they are combined into a n
 The approach of nesting the model data within a tibble enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a tibble with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.
 
 ##### Plotting Functions
-qa_low_cost_sensors_plots.R
 
-This script contains functions to develop a range of visualisations of both the raw and processed data and model outputs.
+Functions were developed to create a range of visualisations of both the raw and processed data and model outputs.
 
-1. plot_drift() is a function based on the ggplot2 library which takes the prepared model data tibble and a site ID and returns a ggplot object (plot) showing how the pollutant concentrations from the low cost sensor diverge from the reference method measurements over time. The plot uses the geom_smooth() geom with the smoothing set to Loess in order to show a smoothed trace.
+1. plot_drift() is a function based on the ggplot2 library which takes the prepared model data tibble and a site ID and returns a ggplot object (plot) showing how the pollutant concentrations from the low cost sensor diverge from the reference method measurements over time. The plot uses the geom_smooth() geom with the smoothing set to "gam" in order to show a smoothed trace.
 2. plot_scatter() is another ggplot based function which generates a scatter plot for co - located instruments. It also incorporates functions from the ggside library (extension for ggplot2) which enables side - plots for the scatter plot showing the distribution of data points for each axis. Further it includes stat_cor() and stat_regline_equation() from the ggpubr library to show correlation statistics and the equation derived from the linear model on the chart. This function therefore provides much useful information about the relationship between the two datasets on a single chart.
 3. prep_timeplot() is a helper function that takes the prepared data for modelling and processes it for use in another function. The function subsets the data, renames columns, pivots longer and pads the time series such that the data is ready for the plot_time_series() function.
 4. plot_time_series() takes the data from step 3 above and a string representing an interval (e.g. "hour") and plots a time series chart using the ggplot2 library.
@@ -447,13 +448,13 @@ This script contains functions to develop a range of visualisations of both the 
 
 ##### Modelling Functions
 
-qa_low_cost_sensors_model.R
+The model data tibble previously created is used as input to a function to run a linear model on the data for each site. A script to import custom themes for plots is imported at the top of the _targets.R file. The make.model.output.tbl() function takes the data tibble and creates a new output tibble with the following features:
 
-This script loads the model data tibble previously created and also sources a script to import custom themes for plots. The make.model.output.tbl() function takes the data tibble and creates a new output tibble with the following features:
-
-1. a list column (model_obj) which is the model object derived from the lm() function in R comparing the low - cost and reference device data for each site and pollutant
+1. a list column (model_obj) which is the model object derived from the lm() function comparing the low - cost (dependent variable) and reference (independent variable) device data for each site and pollutant
 2. a list column containing the linear coefficients (intercept and slope) from each model object using the tidymodels package.
-3. a list column, perf, which holds a tibble of performance metrics derived by the glance() function from the broom package. Glance accepts a model object and returns a tibble::tibble() with exactly one row of model summaries. The summaries are typically goodness of fit measures, p-values for hypothesis tests on residuals, or model convergence information.
+3. a list column, perf, which holds a tibble of performance metrics for each site derived by the glance() function from the broom package. Glance accepts a model object and returns a tibble with exactly one row of model summaries. The summaries are typically goodness of fit measures, p-values for hypothesis tests on residuals, or model convergence information.
+
+#### Summary Tables
 
 
 
