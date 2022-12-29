@@ -18,7 +18,7 @@ execute:
 
 ```{r 'libraries', echo = FALSE, include = FALSE}
 library(xfun)
-packages <- c("wikipediapreview", "tidyverse", "openair", "glue", "lubridate", "gt")
+packages <- c("wikipediapreview", "tidyverse", "openair", "glue", "lubridate", "gt", "flextable")
 pkg_attach2(packages)
 wikipediapreview::wp_init()
 source("../airquality_GIT/ods-import-httr2.R")
@@ -456,7 +456,14 @@ The model data tibble previously created is used as input to a function to run a
 
 #### Summary Tables
 
+The performance metrics for each model are extracted and tabulated into a range of formats for display. the `gtsummary` package produces a nicely formatted html table and the `performance` package from the `easystats` suite of statistical tools is used to generate a comprehensive html dashboard for each model showing the performance of the model including several plots.
 
+
+```{r}
+targets_tbl <- readRDS("project-4-colocation-study/data/tar_manifest.rds")
+qflextable(targets_tbl)
+
+```
 
 
 
