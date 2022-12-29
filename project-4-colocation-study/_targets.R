@@ -1,6 +1,3 @@
-# Created by use_targets().
-# Follow the comments below to fill in this target script.
-# Then follow the manual to check and run the pipeline:
 #   https://books.ropensci.org/targets/walkthrough.html#inspect-the-pipeline # nolint
 
 # Load packages required to define the pipeline:
@@ -23,12 +20,12 @@ p_load(char = c(
        "ggpubr",   # easy labelling of equations on the plot
        "openair",
        "easystats",
-       "gtsummary")
+       "gtsummary",
+       "webshot2")
     )
-# Set target options:
+
 tar_option_set(
   format = "rds" # default storage format
-  # Set other options as needed.
 )
 # Variables ----
 start_date <- "2022-05-01" # BTW started operating

@@ -18,7 +18,8 @@
 #        "ggpubr",   # easy labelling of equations on the plot
 #        "openair",
 #        "easystats",
-#        "gtsummary")
+#        "gtsummary",
+#        "webshot2")
 #     )
 # 
 # # Source other functions
@@ -516,13 +517,19 @@ make.model.perf.tbl.gt <- function(model_output_tbl){
 }
 
 save.model.perf.tbl.gt <- function(model_perf_tbl_gt){
-
-    filename = "plots/model_perf_tbl_gt.html"
     
+    filename = "plots/model_perf_tbl_gt."
+    fhtml <- glue("{filename}.html")
+    fpng <- glue("{filename}.png")
+        
     model_perf_tbl_gt %>% 
         tbl_butcher() %>% 
         as_gt() %>% 
-        gtsave(filename = filename)
+        gtsave(filename = fhtml)
+    # unduly convoluted as gtsave(*.png) results in error
+    # gt \ webshot  needs chromium installed to make png  - poor
+    webshot2::webshot(url = fhtml, file = fpng)
     
-    return(filename)
+    return(fpng)
 }
+
