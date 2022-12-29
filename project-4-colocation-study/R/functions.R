@@ -1,8 +1,10 @@
-# # Libraries - move to _targets ----
+# Libraries - move to _targets ----
 # 
 # library(pacman)
 # p_load(char = c(
+#        "data.table",
 #        "tidyverse",
+#        "gt",
 #        "lubridate",
 #        "httr2",
 #        "jsonlite",
@@ -11,12 +13,12 @@
 #        "fs",
 #        "padr",
 #        "fs",
-#        "collapse",
 #        "tidymodels",
 #        "ggside",   # side plots of density
 #        "ggpubr",   # easy labelling of equations on the plot
 #        "openair",
-#        "easystats")
+#        "easystats",
+#        "gtsummary")
 #     )
 # 
 # # Source other functions
@@ -24,10 +26,10 @@
 # source("../../airquality_GIT/ods-import-httr2.R")
 # source("../../airquality_GIT/gg_themes.R")
 # 
-# 
-# # Variables ----
-# start_date <- "2022-05-01" # BTW started operating
-# end_date <- "2022-12-31"
+
+# Variables ----
+start_date <- "2022-05-01" # BTW started operating
+end_date <- "2022-12-31"
 
 # Functions ----
 
@@ -272,8 +274,8 @@ plot.scatter.site.gg <- function(model_data_tbl) {
         ggplot(aes(x = reference, y = low_cost)) +
         geom_point2(alpha = 0.5) +
         geom_smooth(method = "lm") +
-        geom_xsidedensity(linewidth = 1) +
-        geom_ysidedensity(linewidth = 2) +
+        geom_xsidedensity(lwd = 1) +
+        geom_ysidedensity(lwd = 2) +
         scale_ysidex_continuous(guide = guide_axis(angle = 90),
                                 breaks = NULL) +
         scale_xsidey_continuous(guide = guide_axis(angle = 90),
@@ -481,6 +483,24 @@ make.model.perf.tbl <- function(model_output_tbl){
     
 }
 
+transpose.model.perf.tbl <- function(model_perf_tbl){
+
+    headings <- glue("Site {model_perf_tbl$siteid}: {model_perf_tbl$pollutant}")
+    rownms <- names(model_perf_tbl[-c(1:2)])
+    
+    t_perf_tbl <- model_perf_tbl %>%
+        mutate(across(.cols = 2:last_col(), ~round(as.double(.x), 2))) %>%
+        setDT() %>%
+        transpose(.) %>%
+        .[-c(1:2), metric := rownms] %>%
+        na.omit()
+    
+    setnames(t_perf_tbl, old = c("V1", "V2"), new = headings)
+    setcolorder(t_perf_tbl, neworder = c(3, 1, 2))
+    
+    return(t_perf_tbl)
+}
+
 make.model.perf.tbl.gt <- function(model_output_tbl){
     
     models <- model_output_tbl$model_obj
@@ -493,4 +513,16 @@ make.model.perf.tbl.gt <- function(model_output_tbl){
     
     tbl_merge(regression_tbl_list, tab_spanner = table_names)
     
+}
+
+save.model.perf.tbl.gt <- function(model_perf_tbl_gt){
+
+    filename = "plots/model_perf_tbl_gt.html"
+    
+    model_perf_tbl_gt %>% 
+        tbl_butcher() %>% 
+        as_gt() %>% 
+        gtsave(filename = filename)
+    
+    return(filename)
 }

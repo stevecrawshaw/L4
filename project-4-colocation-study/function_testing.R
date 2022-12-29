@@ -64,27 +64,10 @@ model_data_tbl <- read_rds("data/model_data_tbl.rds")
 
 model_output_tbl <- make.model.output.tbl(model_data_tbl)
 
-# need to do performance table
-
-
 
 model_perf_tbl <- make.model.perf.tbl(model_output_tbl)
-# 
-# headings <- glue("{model_perf_tbl$siteid}_{model_perf_tbl$pollutant}")
-# rownms <- names(model_perf_tbl[-c(1:2)])
-# 
-# t_perf_tbl <- model_perf_tbl %>% 
-#     mutate(across(.cols = 2:last_col(), ~round(as.double(.x), 2))) %>% 
-#     data.table::transpose(.) %>% 
-#     data.table::setDT() %>% 
-#     .[-c(1:2), metric := rownms] %>% 
-#     na.omit()
-# 
-# 
-# t_perf_tbl
-# names(t_perf_tbl) <- headings
-# rownames(t_perf_tbl) <- rownms
-
-
 
 model_perf_tbl_gt <- make.model.perf.tbl.gt(model_output_tbl)
+
+
+

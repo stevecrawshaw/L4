@@ -16,8 +16,8 @@ p_load(char = c(
        "janitor",
        "fs",
        "padr",
-       "fs",
-       "collapse",
+       "gt",
+       "data.table",
        "tidymodels",
        "ggside",   # side plots of density
        "ggpubr",   # easy labelling of equations on the plot
@@ -179,7 +179,16 @@ list(
       command = make.model.perf.tbl(model_output_tbl)
   ),
   tar_target(
+      name = transpose_model_perf_tbl,
+      command = transpose.model.perf.tbl(model_perf_tbl)
+  ),
+  tar_target(
       name = model_perf_tbl_gt,
       command = make.model.perf.tbl.gt(model_output_tbl)
+  ),
+  tar_target(
+      name = save_model_perf_tbl_gt,
+      command = save.model.perf.tbl.gt(model_perf_tbl_gt),
+      format = "file"
   )
 )
