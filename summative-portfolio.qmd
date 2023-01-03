@@ -460,10 +460,11 @@ The performance metrics for each model are extracted and tabulated into a range 
 
 
 ```{r}
-targets_tbl <- readRDS("project-4-colocation-study/data/tar_manifest.rds")
-qflextable(targets_tbl)
+# targets_tbl <- readRDS("project-4-colocation-study/data/tar_manifest.rds")
+# flextable(targets_tbl, )
 
 ```
 
+[](project-4-colocation-study/plots/model_perf_tbl_gt.html)
 
 
