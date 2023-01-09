@@ -267,7 +267,7 @@ The data needed for the analysis are in four separate repositories:
 3. The council's [open data portal](https://opendata.bristol.gov.uk/explore/?sort=modified)
 4. UK Government's [Air Information Resource](https://uk-air.defra.gov.uk/data/) which holds data for the air monitoring sites run by government as part of the Automated Urban and Rural Network (AURN). There are two of these sites in Bristol.
 
-Three of these repositories will be used in the analysis. The open data portal will not be used as it is planned to cease operation of the contract with the provider in 2022. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented API.
+Three of these repositories will be used in the analysis. The open data portal will not be used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.
 
 The data from databases will be accessed using a combination of the `DBI`, `dplyr` and `odbc` packages. For the data that is hosted on the government's website, the `openair` package provides a helpful function called `importAURN`. Once the data is available in the R session, they will be manipulated using base R and tools from the `tidyverse` metapackage to produce dataframes to populate the tables in the required format. The dataframes will be exported as csv files and also pasted directly into the spreadsheet template.
 
