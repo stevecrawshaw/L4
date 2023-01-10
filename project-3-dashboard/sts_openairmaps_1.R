@@ -210,8 +210,6 @@ pp_tbl <-  joined_tbl %>%
   
 high_dc_sensors <- sts_dc_tbl$sensor_id %>% as.character()
   
-  
-  
 nest_ppmaps <- function(data) {
     data %>%
     nest_by(year_month = as.Date(date) %>% strftime("%Y%m")) %>%
@@ -235,10 +233,10 @@ nest_ppmaps <- function(data) {
    test_tbl
    
    map_dfr(ld_all_met_tbl$data, ~pluck(.x))
+cls <- openColours(c( "darkgreen", "yellow", "red", "purple"), 10) 
    
 save.month.polarmaps <- function(year_month, data, filename){
 
-cls <- openColours(c( "darkgreen", "yellow", "red", "purple"), 10) 
 
 pmap <-   polarMap(data,
            alpha = 0.5,
@@ -279,16 +277,6 @@ return(glue("{prefix} {capstart}{therest}"))
 }
 
 
-ord.season("winter (DJF)")
-
-?switch
-
-ord.season(unnested_tbl$season[1])
-
-fct_rev(unnested_tbl$season[1])
-
-order(unnested_tbl$season)
-
 # a single map showing season and daytime period
 unnested_tbl <- ld_all_met_tbl %>% 
     unnest(cols = data) %>% 
@@ -310,9 +298,9 @@ unnested_tbl <- ld_all_met_tbl %>%
 
 pmap <-   polarMap(unnested_tbl,
                    alpha = 0.5,
-                   limits = c(0, 50),
+                   limits = c(0, 25),
                    draw.legend = TRUE,
-                   pollutant = "pm10",
+                   pollutant = "pm2.5",
                    control = "season_period",
                    x = "ws",
                    k = 100,
@@ -323,8 +311,9 @@ pmap <-   polarMap(unnested_tbl,
                    label = "sensor_id",
                    cols = cls)
 
-saveWidget(pmap, selfcontained = TRUE, file = "season_period_pm10.html")
+saveWidget(pmap,  file = "season_period_pm25.html")
 
+saveWidget()
 
   #-----------------------------------------
 
