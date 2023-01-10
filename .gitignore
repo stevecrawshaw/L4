@@ -63,6 +63,7 @@ project-4-colocation-study/data/*.rds
 project-1-reporting-pipeline/plots/*.png
 project-1-reporting-pipeline/data/*.xlsx
 project-1-reporting-pipeline/data/*.csv
+/project-3-dashboard/images
 
 # big data files
 
