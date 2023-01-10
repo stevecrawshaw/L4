@@ -1,0 +1,273 @@
+.dashboard {
+    margin: -10px;
+    margin-top: -20px;
+}                
+    .grey-block {
+    background-color: whitesmoke;
+}
+.white-block {
+    background-color: #fff;
+}
+
+@media only screen and (min-width: 992px) {
+    .grey-block {
+    padding: 15px 60px;
+}
+   .white-block {
+    padding: 15px 60px;
+}}
+
+.white-block-thin {
+    background-color: white;
+    padding: 15px 10px;
+    height: 20px;
+}
+.header-img {
+    text-align: center;
+}
+.header-img img {
+    width: 250px;
+    height: 250px;
+    padding: 25px;
+}
+.header-title {
+    text-align: center;
+    font-size: 4em;
+    font-weight: 300;
+    line-height: 2em;
+    margin: 10px 0;
+    color: darkred;
+}
+.header-subtitle {
+    text-align: center;
+    font-size: 2em;
+    margin-bottom: 30px;
+    color: darkred;
+}
+@media only screen and (max-width: 992px) {
+.header-title {
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: 300;
+    line-height: 1em;
+    margin: 30px 0;
+    color: darkred;
+}  
+.header-subtitle {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+    line-height: 1.5em;
+}
+    .odswidget-map {
+    padding: 50px 0;
+}
+}
+
+.header-subtitle h1 {
+    font-weight: 300;
+    color: darkred;
+}
+.header-subtitle h1:before, .header-subtitle h1:after {
+    width: 75px;
+    height: 1px;
+    background-color: darkred;
+    content: '';
+    display: block;
+    vertical-align: middle;
+    margin: 20px auto;
+}
+
+@media only screen and (max-width: 992px) {
+   .block-section {
+    margin: 20px 0 !important;
+}
+.block-section-text {
+    padding: 0 20px !important;
+}}
+
+.block-section {
+    margin: 50px 0px;
+}
+.block-title {
+    text-align: center;
+    font-weight: 500;
+    font-size: 3em;
+    margin-top: 35px !important;
+    color: darkred;
+}
+.block-subtitle {
+    text-align: center;
+    width: 70%;
+    margin: 10px auto;
+    color: darkred;
+    font-weight: 300;
+}
+.block-section-text {
+    padding: 0 35px;
+    text-align: justify;
+    font-size: 1.3em;
+    font-weight: 300;
+}
+.block-section-text-left {
+    border-right: 1px darkred solid;
+}
+.block-section-text a {
+    color: darkred;
+    font-weight: 500;
+}
+
+rect.highcharts-background {
+    fill: rgba(0, 0, 0, 0) !important;
+}
+
+.redstroke .odswidget-gauge__svg-filler {
+    stroke: red !important;
+}
+
+.greenstroke .odswidget-gauge__svg-filler {
+    stroke: green !important;
+}
+.orangestroke .odswidget-gauge__svg-filler {
+    stroke: orange !important;
+}
+
+.purplestroke .odswidget-gauge__svg-filler {
+    stroke: purple !important;
+}
+.odswidget-gauge--bar .odswidget-gauge__svg {
+    height: 30px;
+    width: 80%;
+    margin:20px 0;
+}
+.odswidget-gauge__svg-filler {
+        stroke-width: 100%;
+}
+.kpis {
+    display: inline-flex;
+}
+
+.kpi {
+    text-align: center;
+    padding: 15px 10px;
+    margin-bottom: 10px;
+    
+}
+
+.kpi-title {
+    font-size: 0.75em; /* bigger font */
+    font-weight: 500; /* thicker font */
+}
+
+.kpi-value {
+    font-size: 2em; /* bigger font */
+    font-weight: 500; /* thicker font */
+}
+
+.kpi-value-unit {
+    font-size: 0.7em; /* bigger font */
+    /* ... */
+}
+.good {
+    color: #55cd61;
+    border-color: #55cd61;
+}
+
+.medium {
+    color: #ff9c22;
+    border-color: #ff9c22;
+}
+
+.bad {
+    color: #e50000;
+    border-color: #e50000;
+}
+.reallybad {
+    color: #C117E3;
+    border-color: #C117E3;
+}
+.kpi-value-reference {
+    font-size: 1em; /* bigger font */
+    font-weight: 400; /* thicker font */
+}
+#sites {
+    margin: 20px auto;
+}
+
+#sites thead > tr {
+    background-color: darkred;
+    color: white;
+}
+
+#sites td {
+    min-width: 100px;
+    padding: 3px 10px;
+    text-align: left;
+}
+
+#sites tr:nth-child(even) {
+    background-color: #ededed;
+}
+
+#sites tr:hover{
+    background-color:#ccc;
+}
+.good {
+    color: #55cd61;
+    border-color: #55cd61;
+}
+.odswidget-timerange {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.input-holder, .odswidget-timerange__from, .odswidget-timerange__to {
+    border: 1px solid #e4e4e4;
+    padding: 10px;
+    border-radius: 3px;
+    box-shadow: 1px 1px 5px gainsboro;
+    background-color: white;
+    z-index: 2;
+    margin-bottom: 10px;
+    
+    display: flex;
+    align-items: center;
+    
+    margin: 3px;
+}
+.odswidget-timerange__from {
+    margin-right: 10px;
+}
+.input-holder input, .odswidget-timerange__from input, .odswidget-timerange__to input {
+    border: none;
+    width: 153px;
+    margin-left: 8px;
+}
+.input-holder input:focus, .odswidget-timerange__from input:focus, .odswidget-timerange__to input:focus {
+    outline: 0;
+}
+.photo img {
+    max-width: 100%;
+    max-height: 90%;
+}
+@media only screen and (min-width: 992px) {
+  .downloads {
+        margin: 0 auto;
+        width: 50%;
+        text-align: center;
+    }
+}
+@media only screen and (max-width: 991px) { 
+  .downloads {
+        margin: 0 auto;
+        width:90%;
+      text-align: center;
+    }
+}
+
+.download-buttons {
+    margin: 0 auto;
+    width: 90%;    
+}
+.odswidget-gauge__value {
+    visibility: hidden;
+}

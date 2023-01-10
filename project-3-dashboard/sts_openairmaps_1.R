@@ -7,22 +7,19 @@ pacman::p_load(
         viridis,
         ggExtra,
         openairmaps,
+        htmlwidgets,
         fs
     )
 # get the data with functions from this script
 source("../../airquality_GIT/ods-import-httr2.R")
-# install.packages("remotes")
-# remotes::install_github("davidcarslaw/openairmaps")
-#library("openairmaps")
 # define variables
 date_on <- "2021-11-10"
 date_off <- "2022-12-31 23:59:59"
 nicedate_fnc <- function(datestring){
-    paste(str_sub(datestring, 9, 10),
-    str_sub(datestring, 6, 7),
-    str_sub(datestring, 1, 4),
-    sep = "/")
-}
+    strftime(datestring, format = "%d/%m/%Y") %>% 
+        return()
+    }
+
 sensor_id <- "66963"
 
 my_format_fnc <- function(datestring){
@@ -137,12 +134,16 @@ maen_fnc <- function(dttm){
 }
 
 # join met data for single polar plot
-joined_tbl <- ld_all_raw_tbl %>% 
+joined_tbl <- ld_all_tbl %>% 
     left_join(met_proc_tbl, by = "date") %>% 
-    mutate(period = maen_fnc(date))
+    mutate(period = maen_fnc(date)) %>% 
+    filter(between(date, as_datetime(date_on), as_datetime(date_off)))
 
-hours <- difftime(as_datetime(date_off), as_datetime(date_on), units = "hours") %>% 
-  as.integer()
+hours <- difftime(as_datetime(date_off),
+                  as_datetime(date_on), 
+                  units = "hours") %>% 
+    as.integer()
+
 
 sts_dc_tbl <- joined_tbl %>% 
   group_by(sensor_id) %>% 
@@ -150,9 +151,14 @@ sts_dc_tbl <- joined_tbl %>%
   filter(dc >= 0.85) %>% 
   mutate(sts = if_else(
     sensor_id %in% sts_sensors_vec, "Slow the Smoke", "City"
-  ))
+  ),
+  sensor_id = sensor_id %>% fct_drop())
+
 
 plot_png_fnc <- function(data, sensor_id, date_day, filename){
+    # this function plots a polar plot for a given site and date
+    # and saves to file - used for making the polar plot individual files for the 
+    # creation of an animated GIF
 gc()
     pp <- polarPlot(data,
             pollutant = "pm2.5",
@@ -178,7 +184,7 @@ fs::dir_create(path = "images", sts_sensors_vec)
 
     # mutate(ws = ws / max(ws, na.rm = TRUE)) %>% 
 
-  nest_prep_fnc <- function(data){
+nest_prep_fnc <- function(data){
     data %>% 
     nest_by(sensor_id, date_day = as.Date(date)) %>% 
     # head(5) %>% 
@@ -195,32 +201,131 @@ fs::dir_create(path = "images", sts_sensors_vec)
 pp_tbl <-  joined_tbl %>% 
   select(-geo_point_2d, -rh, -temp) %>% 
   nest_prep_fnc()
-  
+  # this writes the plots to file below
   pp_tbl %>% 
   relocate(data, sensor_id, date_day, filename) %>% 
   pwalk(.f = plot_png_fnc)
   
   # Openair maps -----
   
-  ld_all_met_tbl <- ld_all_tbl %>% 
-    left_join(met_proc_tbl, by = "date") %>% 
+high_dc_sensors <- sts_dc_tbl$sensor_id %>% as.character()
+  
+  
+  
+nest_ppmaps <- function(data) {
+    data %>%
+    nest_by(year_month = as.Date(date) %>% strftime("%Y%m")) %>%
+    ungroup() %>%
+    arrange(year_month) %>%
+    mutate(filename = glue("images/ppmap/pmap_{year_month}.html")) %>%
+    rowwise()
+}
+
+# joined_tbl %>% 
+#     transmute(week_year = as.Date(date) %>% strftime("%W-%Y"))
+  
+  ld_all_met_tbl <- joined_tbl %>% 
     collapse::na_omit(cols = c("ws", "wd")) %>% 
     select(-c(rh, temp)) %>% 
-    nest_prep_fnc()
+      filter(sensor_id %in% high_dc_sensors) %>% 
+  mutate(sensor_id = fct_drop(sensor_id)) %>% 
+      nest_ppmaps()
   
-  ld_all_met_tbl[1, "data"] %>% pluck(1, 1)
-  
-  polarMap(ld_all_met_tbl,
-           dir_polar = "plots/polar",
+   test_tbl <- ld_all_met_tbl[1, "data"] %>% pluck(1, 1)
+   test_tbl
+   
+   map_dfr(ld_all_met_tbl$data, ~pluck(.x))
+   
+save.month.polarmaps <- function(year_month, data, filename){
+
+cls <- openColours(c( "darkgreen", "yellow", "red", "purple"), 10) 
+
+pmap <-   polarMap(data,
            alpha = 0.5,
-           pollutant = "pm10",
+           limits = c(0, 25),
+           draw.legend = TRUE,
+           pollutant = "pm2.5",
+           control = "period",
            x = "ws",
-           k = 20,
+           k = 100,
            latitude = "latitude",
            longitude = "longitude",
            provider = "OpenStreetMap",
+           popup = "sensor_id",
            label = "sensor_id",
            cols = cls)
+
+saveWidget(pmap, file=filename)
+
+}
+
+ld_all_met_tbl %>% 
+    pwalk(save.month.polarmaps)
+
+ord.season <- function(season){
+        
+prefix <- switch(season,
+       "autumn (SON)" = "4",
+       "winter (DJF)" = "1",
+       "spring (MAM)" = "2",
+       "summer (JJA)" = "3"
+       )
+
+capstart = toupper(str_sub(season, 1, 1))
+therest <- str_sub(season, 2)
+
+return(glue("{prefix} {capstart}{therest}"))
+    
+}
+
+
+ord.season("winter (DJF)")
+
+?switch
+
+ord.season(unnested_tbl$season[1])
+
+fct_rev(unnested_tbl$season[1])
+
+order(unnested_tbl$season)
+
+# a single map showing season and daytime period
+unnested_tbl <- ld_all_met_tbl %>% 
+    unnest(cols = data) %>% 
+    mutate(year_month = NULL,
+           filename = NULL
+           # season = cutData(date, type = "season"),
+           # season_period = glue("{season}_{period}")
+           ) %>% 
+    cutData(type = "season") %>% 
+    mutate(season_period = glue('{case_when(
+        season == "autumn (SON)" ~ "4",
+        season == "winter (DJF)" ~ "1",
+        season == "spring (MAM)" ~ "2",
+        season == "summer (JJA)" ~ "3"
+        )} {toupper(str_sub(season, 1, 1))}{str_sub(season, 2)} {period}'
+        )
+        )
+
+
+pmap <-   polarMap(unnested_tbl,
+                   alpha = 0.5,
+                   limits = c(0, 50),
+                   draw.legend = TRUE,
+                   pollutant = "pm10",
+                   control = "season_period",
+                   x = "ws",
+                   k = 100,
+                   latitude = "latitude",
+                   longitude = "longitude",
+                   provider = "OpenStreetMap",
+                   popup = "sensor_id",
+                   label = "sensor_id",
+                   cols = cls)
+
+saveWidget(pmap, selfcontained = TRUE, file = "season_period_pm10.html")
+
+
   #-----------------------------------------
 
 # now make the animated gif
@@ -332,7 +437,7 @@ scatterPlot(joined_tbl,
             key = TRUE,
             key.footer = "pm2.5\n (ugm-3)")
 
-cls <- openColours(c( "darkgreen", "yellow", "red", "purple"), 10)  
+ 
 # Trendlevel ----
 
 ld_time_tbl <- ld_raw %>% 

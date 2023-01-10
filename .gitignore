@@ -68,3 +68,5 @@ project-1-reporting-pipeline/data/*.csv
 # big data files
 
 diag_tbl.rds
+ld_all_raw_tbl.rds
+met_raw.rds

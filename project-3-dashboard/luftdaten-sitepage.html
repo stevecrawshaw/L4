@@ -1,0 +1,411 @@
+<div class="container-fluid">
+    <div>
+        <ods-dataset-context
+                             context="ldlocations, pm10, pm25, pm10index, pm25index, sitesmap"
+                             ldlocations-dataset="luftdaten_locations_bristol"
+                             pm10-dataset="luftdaten_pm_bristol"
+                             pm25-dataset="luftdaten_pm_bristol"
+                             pm10index-dataset="luftdaten_pm_bristol"
+                             pm25index-dataset="luftdaten_pm_bristol"
+                             ldlocation-parameters="{'sort':'sensor_id'}"
+                             ldlocations-urlsync="true"
+                             pm10-parameters="{'sort':'date'}"
+                             pm25-parameters="{'sort':'date'}"
+                             sitesmap-domain="bristol"
+                             sitesmap-dataset="luftdaten_pm_bristol" 
+                             sitesmap-parameters="{}"
+                             >
+
+            <div ng-if="!ldlocations.parameters['q']">
+                <div class="row white-block">
+                    <!--a href="https://opendata.bristol.gov.uk/pages/luftdaten-sitepage/?q=sensor_id:10491">10491</a --> 
+                    <div class="header-title">Click on a sensor's icon to see the data</div>
+                    <ods-map scroll-wheel-zoom="true" location="12,51.45768,-2.608" basemap="jawg.streets">
+                        <ods-map-layer 
+                                       context="ldlocations"
+                                       title="Luftdaten sensors"
+                                       color="#336179">
+                            <h3 class="header-subtitle">
+                                <a href="/pages/luftdaten-sitepage/?q=sensor_id:{{record.fields.sensor_id}}">
+                                    View data for sensor {{record.fields.sensor_id}} <i class="fa fa-external-link" aria-hidden="true"></i></a>
+                            </h3>
+                        </ods-map-layer>
+                        <!-- <div ng-if="sitesmap.parameters['refine.sensor_id']">
+                                    <div ods-results="sensors"
+                                         ods-results-context="sitesmap"
+                                         ods-results-max="1"
+                                         ng-repeat="sensor_id in sensors">
+
+                                            <a href="/pages/luftdaten-sitepage/?q=sensor_id:{{sensor_id.fields.sensor_id}}" 
+                                               target="_blank" >
+                                                Monitor page: data and charts <i class="fa fa-external-link" aria-hidden="true"></i></a>
+
+                                    </div>
+                                </div> 
+
+ refine-on-click-context="sitesmap"
+                                       refine-on-click-map-field="sensor_id"
+                                       refine-on-click-context-field="sensor_id"
+                                       refine-on-click-replace-refine="true"
+-->
+
+                    </ods-map>
+
+                </div>
+            </div>
+            <div ods-datetime="now" class="row white-block">
+                <div ng-if="ldlocations.parameters['q']"
+                     class="container-fluid dashboard">
+                    <div ods-results="sites"
+                         ods-results-context="ldlocations"
+                         ods-results-max="1"
+                         ng-repeat="site in sites">
+                        <div class="row">
+                            <div class="header-title">
+                                Sensor ID: {{site.fields.sensor_id}}
+                            </div>
+                            {{pm10.parameters['q']='sensor_id:' + (site.fields.sensor_id);""}}
+                            {{pm25.parameters['q']='sensor_id:' + (site.fields.sensor_id);""}}
+                            <!-- set noxwide paratemeters equal to the enumerated value of the site ID derived from the airqualitymonitoring sites linked URL --> 
+                            {{pm25index.parameters['q']='date>' + (now | momentadd : 'hours' : -24);""}}
+                            {{pm10index.parameters['q']='date>' + (now | momentadd : 'hours' : -24);""}}
+                            <!-- the parameters of a separate context specifically set up for the NO2 index are defined in terms of time (above), and in terms of the site below -->
+                            {{pm25index.parameters['refine.sensor_id']= (site.fields.sensor_id);""}}
+                            {{pm10index.parameters['refine.sensor_id']= (site.fields.sensor_id);""}}
+                            <!--  for debugging <ods-table context="no2index"></ods-table> -->
+                           </div>
+                        <div class="row">
+                            <!-- the aggregation below uses the separate context set up for the index and is parameterised above -->
+                            <div ods-aggregation="indexpm25"
+                                 ods-aggregation-context="pm25index"
+                                 ods-aggregation-expression="pm2_5"
+                                 ods-aggregation-function="AVG">
+                                <div ods-aggregation="indexpm10"
+                                     ods-aggregation-context="pm10index"
+                                     ods-aggregation-expression="pm10"
+                                     ods-aggregation-function="AVG">
+
+                                    <div class="row">
+                                        <div class="kpi">
+                                            <!-- get the last 2 hours data - aggregation function is max - so gets the highest. need the last 2 hrs as sometimes there isn't data if just 1hr selected -->
+                                            <div class="kpi-title" ng-if="indexpm25">
+                                                <!-- if valid data exists derive and display INdex categories, coloured with CSS classes by ng-if-->
+
+                                                <div class="kpi-value" >
+                                                    <div ng-if="indexpm25<=35">
+                                                        Air Quality Index (pollution) for PM<sub>2.5</sub> is <b class="good">LOW</b>
+                                                    </div>
+                                                    <div ng-if="indexpm25>=36 && indexpm25<=53">
+                                                        Air Quality Index (pollution) for PM<sub>2.5</sub>  is <b class="medium">MODERATE</b>
+                                                    </div>
+                                                    <div ng-if="indexpm25>=54 && indexpm25<=70">
+                                                        Air Quality Index (pollution) for PM<sub>2.5</sub>  is <b class="bad">HIGH</b>
+                                                    </div>
+                                                    <div ng-if="indexpm25>=71">
+                                                        Air Quality Index (pollution) for PM<sub>2.5</sub>  is <b class="reallybad">VERY HIGH</b>
+                                                    </div>
+                                                    <div ng-class="{'greenstroke':indexpm25<=35,
+                                                                   'orangestroke':indexpm25>=36 && indexpm25=<53,
+                                                                   'redstroke':indexpm25>=54 && indexpm25<=70,
+                                                                   'purplestroke':indexpm25>=71}">
+                                                        <ods-gauge display-mode="bar" value="indexpm25" max="100"></ods-gauge>
+                                                        <!-- would be good to remove the percentage display from the gauge - with CSS? -->
+                                                    </div>
+                                                    Daily Average PM<sub>2.5</sub> is {{ indexpm25 | number:0 }} &mu;gm<sup>-3</sup> at {{(now | momentadd : 'hours' : -1) | date: 'HH'}}:00 today
+                                                </div>
+                                            </div>
+                                            <br />
+                                            <hr />
+                                            <br />
+                                            <div class="kpi-title" ng-if="indexpm10">
+                                                <div class="kpi-value">
+                                                    <div ng-if="indexpm10<=50">
+                                                        Air Quality Index (pollution) for PM<sub>10</sub> is <b class="good">LOW</b>
+                                                    </div>
+                                                    <div ng-if="indexpm10>50 && indexpm10<=75">
+                                                        Air Quality Index (pollution) for PM<sub>10</sub> is <b class="medium">MODERATE</b>
+                                                    </div>
+                                                    <div ng-if="indexpm10>75 && indexpm10<=100">
+                                                        Air Quality Index (pollution) for PM<sub>10</sub> is <b class="bad">HIGH or site fault</b>
+                                                    </div>
+                                                    <div ng-if="indexpm10>100">
+                                                        Air Quality Index (pollution) for PM<sub>10</sub> is <b class="reallybad">VERY HIGH or site fault</b>
+                                                    </div>
+                                                    <div ng-class="{'greenstroke':indexpm10<=50,
+                                                                   'orangestroke':indexpm10>50 && indexpm10<=75,
+                                                                   'redstroke':indexpm10<=100 && indexpm10>75,
+                                                                   'purplestroke':indexpm10>100}">
+                                                        <ods-gauge display-mode="bar" value="indexpm10" max="100"></ods-gauge>
+                                                    </div>
+                                                    Daily Average PM<sub>10</sub> is {{ indexpm10 | number:0 }} &mu;gm<sup>-3</sup> at {{(now | momentadd : 'hours' : -1) | date: 'HH'}}:00 today
+                                                </div>
+                                            </div>
+                                            <p>
+                                                <br />You can get <a href="https://uk-air.defra.gov.uk/air-pollution/daqi" target="_blank">information about levels of air pollution and health advice</a> on the Defra website.
+                                            </p>
+                                        </div>
+                                    </div>  
+                                </div>   
+                            </div>
+                        </div>
+                        <div class="row" >
+                            <div class="row block-section">
+                                <!-- TEXT SECTION -->            
+                                <div class="col-xs-12 col-md-6 block-section-text">
+                                    <h2 class="block-subtitle">
+                                        Sensor and Pollution Information
+                                    </h2>
+                                    <!-- {{item.fields.description}}-->
+                                    <p>
+                                        The sensors are low - cost self - built devices that indicate levels of particulate pollution in the air and are operated by members of the public.
+                                    </p>
+                                    <p>
+                                        Two pollutants are measured. PM<sub>10</sub>  - particles smaller than 10 microns (a millionth of a metre) and PM<sub>2.5</sub> - particles less than 2.5 microns in diameter. 
+                                    </p>
+                                    <p>
+                                        PM<sub>10</sub> and PM<sub>2.5</sub> can come from burning wood and coal, either in fires in the home or outside. Another source is exhausts and dust from vehicles. there is more information on sources of pollution available from our <a href="https://www.cleanairforbristol.org/slow-the-smoke/faqs/">FAQ.<i class="fa fa-external-link" aria-hidden="true"></i></a>
+                                    </p>
+                                    <p>
+                                        The sensors are not as accurate as the instruments used by Bristol City Council or the Environment Agency but can provide an indication of pollution levels. For more information on the sensors visit <a href="https://sensor.community/en/" target="_blank">Sensor.Community.<i class="fa fa-external-link" aria-hidden="true"></i></a>
+                                    </p>
+                                    <p>
+                                        Data are uploaded to our <a href="/explore/dataset/luftdaten_pm_bristol" target="_blank">open data portal <i class="fa fa-external-link" aria-hidden="true"></i></a> every day.
+                                    </p>
+                                </div>
+                                <!-- MAP SECTION -->            
+                                <div class="col-xs-12 col-md-6">
+                                    <ods-map min-zoom="12"   max-zoom="18">
+                                        <ods-map-layer context="ldlocations"
+                                                       basemap="jawg.streets">
+                                        </ods-map-layer>
+                                    </ods-map>                                   
+                                </div>
+                            </div>
+                            <div class="row block-section">                     
+                                <!-- METADATA TABLE SECTION -->
+                                <div class="col-xs-12 col-md-6">
+                                    <table id="sites">
+                                        <h2 class="block-subtitle" >
+                                            <!-- do some string operations to derive latitude and longitude in nice formats -->
+                                            {{lat = site.fields.geo_point_2d[0].toString();""}}
+                                            {{long = site.fields.geo_point_2d[1].toString();""}}
+                                            {{lats = lat.substring(0,15);""}}
+                                            {{longs = long.substring(0,15);""}}
+                                            {{site.fields.sensor_id}} key facts
+                                        </h2>
+                                        <thead>
+                                            <tr>
+                                                <td>Parameter</td>
+                                                <td>Value</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    Latitude
+                                                </td>
+                                                <td>
+                                                    {{lats}}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    Longitude
+                                                </td>
+                                                <td>
+                                                    {{longs}}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!----------------------------------------- PHOTO SECTION ---------------------------------------------------------->
+                                <div class="col-xs-12 col-md-6 photo">
+                                    <img src="/assets/theme_image/sts_luftdaten_1000px.jpg" alt="A Luftdaten sensor inside its housing with Slow the Smoke branding"><img /> 
+                                </div>
+                            </div>
+                            <div class="row block-section" ng-init="obj = {}">
+                                <div class="ods-box">
+                                    <h2 class="block-subtitle">
+                                        Select dates with the sliders and view the charts
+                                    </h2>
+                                    <ods-date-range-slider context="pm10"
+                                                           date-format="YYYY-MM-DD"
+                                                           date-field="date"
+                                                           precision="day"
+                                                           initial-from="{{now | momentadd : 'months' : -3}}"
+                                                           initial-to="{{now}}"
+                                                           start-bound="now | momentadd : 'months' : -6"
+                                                           end-bound="now"
+                                                           from="obj.from"
+                                                           to="obj.to">
+                                    </ods-date-range-slider>
+                                </div>
+                                <!----------------------------------------- CHART SECTION ------------------------------------------------------------------>
+                                <ods-simple-tabs class="header-subtitle">
+                                    <ods-simple-tab label="Time Series Chart (Hour)">
+                                        <div class="col-md-12 block-section-chart">
+                                            <!--  {{noxwide.parameters.q}}  {{site.fields.siteid}} -->
+
+                                            <!---------------------------------------------------- HERE STARTS THE TIME SERIES CHART-------------------------------------- -->
+                                            <ods-chart single-y-axis="true" align-month="true" single-y-axis-label="ug/m3">
+                                                <ods-chart-query context="pm10" field-x="date" maxpoints="0" timescale="hour"> 
+                                                    <ods-chart-serie expression-y="pm10"
+                                                                     chart-type="line"
+                                                                     function-y="AVG"
+                                                                     color="#0B72B5"
+                                                                     scientific-display="false">
+                                                    </ods-chart-serie>
+                                                    <ods-chart-serie expression-y="pm2_5"
+                                                                     chart-type="line"
+                                                                     function-y="AVG"
+                                                                     color="#19630A"
+                                                                     scientific-display="false">
+                                                    </ods-chart-serie>
+                                                </ods-chart-query>
+                                            </ods-chart>
+                                        </div>
+                                    </ods-simple-tab>
+                                     <ods-simple-tab label="Time Series Chart (Day)">
+                                        <div class="col-md-12 block-section-chart">
+                                          <ods-chart single-y-axis="true" align-month="true" single-y-axis-label="ug/m3">
+                                                <ods-chart-query context="pm10" field-x="date" maxpoints="0" timescale="day"> 
+                                                    <ods-chart-serie expression-y="pm10"
+                                                                     chart-type="column"
+                                                                     function-y="AVG"
+                                                                     color="#0B72B5"
+                                                                     scientific-display="false">
+                                                    </ods-chart-serie>
+                                                     <ods-chart-serie expression-y="45"
+                                                                     chart-type="line"
+                                                                     function-y="CONSTANT"
+                                                                     label-y="WHO Guideline PM10"
+                                                                     color="#0B72B5"
+                                                                     scientific-display="true">
+                                                    </ods-chart-serie>
+                                                    <ods-chart-serie expression-y="pm2_5"
+                                                                     chart-type="column"
+                                                                     function-y="AVG"
+                                                                     color="#19630A"
+                                                                     scientific-display="false">
+                                                    </ods-chart-serie>
+                                                     <ods-chart-serie expression-y="15"
+                                                                     chart-type="line"
+                                                                     function-y="CONSTANT"
+                                                                     label-y="WHO Guideline PM2.5"
+                                                                     color="#19630A"
+                                                                     scientific-display="true">
+                                                    </ods-chart-serie>
+                                                    
+                                                </ods-chart-query>
+                                            </ods-chart>
+                                        </div>
+                                    </ods-simple-tab>
+                                    <ods-simple-tab label="Hour of the day" >
+                                        <div class="col-md-12 block-section-chart">
+                                            <!---------------------------------------------------- HERE STARTS THE DIURNAL CHART-------------------------------------- -->
+                                            <ods-chart single-y-axis="true" align-month="true" single-y-axis-label="ug/m3">
+                                                <ods-chart-query context="pm10" field-x="hour_of_day"> 
+                                                    <ods-chart-serie expression-y="pm10"
+                                                                     chart-type="line"
+                                                                     function-y="AVG"
+                                                                     color="#0B72B5"
+                                                                     scientific-display="false">
+                                                    </ods-chart-serie>
+                                                    <ods-chart-serie expression-y="pm2_5"
+                                                                     chart-type="line"
+                                                                     function-y="AVG"
+                                                                     color="#19630A"
+                                                                     scientific-display="false">
+                                                    </ods-chart-serie>
+                                                </ods-chart-query>
+                                            </ods-chart>
+                                            <h3 class="block-subtitle">
+                                                The X axis values represent the hour starting.
+                                            </h3>
+
+
+                                        </div>
+                                    </ods-simple-tab>
+                                    <ods-simple-tab label="Day of the week">
+                                        <div class="col-md-12 block-section-chart">
+                                            <!---------------------------------------------------- HERE STARTS THE WEEKLY CHART-------------------------------------- -->
+                                            <ods-chart single-y-axis="true"
+                                                       timescale="day weekday"
+                                                       align-month="true"
+                                                       single-y-axis-label="ug/m3">
+                                                <ods-chart-query context="pm10" field-x="date" maxpoints="0" timescale="day weekday"> 
+                                                    <ods-chart-serie expression-y="pm10"
+                                                                     chart-type="line"
+                                                                     function-y="AVG"
+                                                                     color="#0B72B5"
+                                                                     scientific-display="false">
+                                                    </ods-chart-serie>
+                                                    <ods-chart-serie expression-y="pm2_5"
+                                                                     chart-type="line"
+                                                                     function-y="AVG"
+                                                                     color="#19630A"
+                                                                     scientific-display="false">
+                                                    </ods-chart-serie>
+                                                    </ods-chart-query>
+                                            </ods-chart>
+                                           </div>
+
+                                    </ods-simple-tab>
+                                    <ods-simple-tab label="Wind Rose">
+                                            <!---------------------------------------------------- HERE STARTS THE WIND ROSE-------------------------------------- -->
+                                         <div class="col-md-12 block-section-chart">
+                                             <div class="block-section-text">
+                                                 Wind data from Bristol (Lulsgate) Airport
+                                             </div>
+                                             <br />
+                                    {{from=obj.from.toString(); to=obj.to.toString();""}}
+                                        {{day1 = from.substr(8, 2); day2 = to.substr(8, 2); month1 = from.substr(5, 2); month2 = to.substr(5, 2); year1 = from.substr(0, 4); year2 = to.substr(0, 4);""}}
+                                        {{ sr =  "https://mesonet.agron.iastate.edu/cgi-bin/mywindrose.py?nsector=36&station=EGGD&network=GB__ASOS&day1=" + day1 + "&day2=" + day2 + "&month1=" + month1 + "&month2=" + month2 + "&year1=" + year1 + "&year2=" + year2 + "&hour1=0&hour2=23&minute1=0&minute2=0&units=mph&fmt=png&dpi=100";""}} 
+                                        <img src="{{sr}}"height="500" width="500"><img /> 
+                                        </div>
+                                    </ods-simple-tab>
+                                </ods-simple-tabs>
+
+                                <div class="row" >
+                                    <div class="row block-section">
+                                        <!-- CHART SECTION -->
+                                        <div class="col-md-12 block-section-table">
+                                            <!-- HERE STARTS THE TABLE -->
+                                            <div>
+                                                <h2 class="block-subtitle">
+                                                    Data table for sensor {{site.fields.sensor_id}}
+                                                </h2>
+                                                <div>
+                                                    <ods-table context="pm10"
+                                                               sort="-date"
+                                                               displayed-fields="sensor_id, date, pm10, pm2_5">
+                                                    </ods-table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row downloads white-block">
+                                    <!-- DOWNLOAD BUTTONS    -->
+                                    <p>Download or share air quality data</p> 
+                                    <div class="row download-buttons">
+                                        <a class="myButton" href="{{pm10.getDownloadURL('csv')}}">CSV</a> 
+                                        <a class="myButton" href="{{pm10.getDownloadURL('json')}}">JSON</a> 
+                                        <a class="myButton" href="{{pm10.getDownloadURL('xls')}}}">Excel</a> 
+                                    </div>  
+                                    <p>
+                                        
+                                    </p>
+                                      <ods-social-buttons buttons="twitter,linkedin,facebook"></ods-social-buttons>
+                                </div>
+                                   
+                            </div>
+                                
+                        </div>
+                    </div>        
+                </div>
+            </div> 
+        </ods-dataset-context>
+    </div>
+</div>
