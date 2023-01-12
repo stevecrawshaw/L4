@@ -43,15 +43,15 @@ c("66963",
 nicetheme <- function(){
   theme_bw() +
 theme(legend.position = "bottom") +
-  theme(plot.title = element_text(size = 12)) +
-  theme(plot.subtitle = element_text(size = 10)) +
-  theme(axis.text.y = element_text(size = 6)) +
+  theme(plot.title = element_text(linewidth = 12)) +
+  theme(plot.subtitle = element_text(linewidth = 10)) +
+  theme(axis.text.y = element_text(linewidth = 6)) +
   theme(strip.background = element_rect(colour = "white")) +
   theme(plot.title = element_text(hjust = 0)) +
   theme(axis.ticks = element_blank()) +
-  theme(axis.text = element_text(size = 7)) + 
-  theme(legend.title = element_text(size = 10), ) +
-  theme(legend.text = element_text(size = 6)) +
+  theme(axis.text = element_text(linewidth = 7)) + 
+  theme(legend.title = element_text(linewidth = 10), ) +
+  theme(legend.text = element_text(linewidth = 6)) +
   removeGrid()#ggExtra
   
 }
@@ -180,7 +180,7 @@ gc()
     return()
 }
 
-fs::dir_create(path = "images", sts_sensors_vec)
+# fs::dir_create(path = "images", sts_sensors_vec)
 
     # mutate(ws = ws / max(ws, na.rm = TRUE)) %>% 
 
@@ -199,7 +199,7 @@ nest_prep_fnc <- function(data){
   }
 
 pp_tbl <-  joined_tbl %>% 
-  select(-geo_point_2d, -rh, -temp) %>% 
+  select( -rh, -temp) %>% 
   nest_prep_fnc()
   # this writes the plots to file below
   pp_tbl %>% 
@@ -229,14 +229,13 @@ nest_ppmaps <- function(data) {
   mutate(sensor_id = fct_drop(sensor_id)) %>% 
       nest_ppmaps()
   
-   test_tbl <- ld_all_met_tbl[1, "data"] %>% pluck(1, 1)
-   test_tbl
-   
-   map_dfr(ld_all_met_tbl$data, ~pluck(.x))
+   # test_tbl <- ld_all_met_tbl[1, "data"] %>% pluck(1, 1)
+   # test_tbl
+   # 
+   # map_dfr(ld_all_met_tbl$data, ~pluck(.x))
 cls <- openColours(c( "darkgreen", "yellow", "red", "purple"), 10) 
    
 save.month.polarmaps <- function(year_month, data, filename){
-
 
 pmap <-   polarMap(data,
            alpha = 0.5,
@@ -257,34 +256,16 @@ saveWidget(pmap, file=filename)
 
 }
 
-ld_all_met_tbl %>% 
-    pwalk(save.month.polarmaps)
-
-ord.season <- function(season){
-        
-prefix <- switch(season,
-       "autumn (SON)" = "4",
-       "winter (DJF)" = "1",
-       "spring (MAM)" = "2",
-       "summer (JJA)" = "3"
-       )
-
-capstart = toupper(str_sub(season, 1, 1))
-therest <- str_sub(season, 2)
-
-return(glue("{prefix} {capstart}{therest}"))
-    
-}
+# this will take long
+# ld_all_met_tbl %>% 
+#     pwalk(save.month.polarmaps)
 
 
 # a single map showing season and daytime period
 unnested_tbl <- ld_all_met_tbl %>% 
     unnest(cols = data) %>% 
     mutate(year_month = NULL,
-           filename = NULL
-           # season = cutData(date, type = "season"),
-           # season_period = glue("{season}_{period}")
-           ) %>% 
+           filename = NULL) %>% 
     cutData(type = "season") %>% 
     mutate(season_period = glue('{case_when(
         season == "autumn (SON)" ~ "4",
@@ -295,12 +276,23 @@ unnested_tbl <- ld_all_met_tbl %>%
         )
         )
 
+plot.polarmap <- function(data, pollutant = c("pm10", "pm2.5")){
 
-pmap <-   polarMap(unnested_tbl,
+    if(pollutant == "pm10"){
+        limits = c(0, 50)
+        file = "season_period_pm10.html"
+    } else if (pollutant == "pm2.5"){
+        limits = c(1, 25)
+        file = "season_period_pm25.html"
+    } else {
+        stop()
+    }
+
+pmap <-   polarMap(data,
                    alpha = 0.5,
-                   limits = c(0, 25),
+                   limits = limits,
                    draw.legend = TRUE,
-                   pollutant = "pm2.5",
+                   pollutant = pollutant,
                    control = "season_period",
                    x = "ws",
                    k = 100,
@@ -311,11 +303,15 @@ pmap <-   polarMap(unnested_tbl,
                    label = "sensor_id",
                    cols = cls)
 
-saveWidget(pmap,  file = "season_period_pm25.html")
+saveWidget(pmap,  file = file)
+}
 
-saveWidget()
+plot.polarmap(unnested_tbl, pollutant = "pm10")
 
-  #-----------------------------------------
+plot.polarmap(unnested_tbl, pollutant = "pm2.5")
+
+
+#-----------------------------------------
 
 # now make the animated gif
 path <- "images/orig/"
@@ -353,6 +349,7 @@ mean_tbl <- stats_tbl %>%
   group_by(sensor_id, sts) %>% 
   summarise(PM2.5 = mean(pm2.5, na.rm = TRUE), .groups = "keep")
 
+
 dc_sts_p <- mean_tbl %>%
     ggplot(aes(x = reorder(x = sensor_id, PM2.5),
              y = PM2.5,
@@ -365,7 +362,7 @@ dc_sts_p <- mean_tbl %>%
        x = "Sensor ID",
        y = quickText(glue("Average PM2.5 for period {my_format_fnc(date_on)} to {my_format_fnc(date_off)}"))) +
   # scale_fill_manual(values = colors) +
-  scale_fill_tq() +
+  tidyquant::scale_fill_tq() +
   nicetheme() 
 
 dc_sts_p
@@ -387,7 +384,7 @@ exc_sts_p <- exc_tbl %>%
   #          y = 8,
   #          label = "4 exceedences allowed per year") +
   # scale_fill_manual(values = colors) +
-  scale_fill_tq() +
+  tidyquant::scale_fill_tq() +
   nicetheme()
 
 exc_sts_p
@@ -429,11 +426,14 @@ scatterPlot(joined_tbl,
  
 # Trendlevel ----
 
-ld_time_tbl <- ld_raw %>% 
+ld_time_tbl <- unnested_tbl %>% 
+    filter(sensor_id == 10491) %>%
     mutate(day = (as_date(date)),
            hour = (hour(date)),
            month = month(date, label = TRUE, abbr = FALSE),
-           year = year(date))
+           year = year(date)) %>% 
+    filter(year == 2022)
+
 
 ld_time_tbl %>% 
     trendLevel(pollutant = "pm2.5", x = "day", cols = cls)
@@ -506,6 +506,12 @@ pm10.breaks <- c(0, 17, 34, 50, 59, 67, 75, 84, 92, 100, 1000)
 pm25.breaks <- c(0, 12, 24, 35, 42, 47, 53, 59, 65, 70, 1000)
 
 
+who_breaks_pm2.5 <- rev(c(100, 75, 50, 37.5, 25, 15))
+who_labels_pm2.5 <- rev(c("IT1", "IT2", "IT3", "IT4", "AQG"))
+
+
+who_breaks_pm10 <- rev(c(100, 70, 50, 30, 20, 15))
+who_labels_pm10 <- rev(c("IT1", "IT2", "IT3", "IT4", "AQG"))
 days <- ld_time_tbl %>%
     select(day) %>% 
     n_distinct() 
@@ -514,19 +520,117 @@ if(days > 7){
     
 }
 
+cal_chart_cols <- cls[4:9]
+
 pm25_calplot <- ld_time_tbl %>% 
     calendarPlot(pollutant = "pm2.5",
-                 labels = labels,
+                 labels = who_labels_pm2.5,
                  statistic = "mean",
-                 breaks = pm25.breaks,
+                 breaks = who_breaks_pm2.5,
                  annotate = "value")
 
-pm10_calplot <- ld_time_tbl %>% 
+
+max_pm10_tbl <- unnested_tbl %>% 
+    filter(year(date) == 2022) %>% 
+    transmute(date = as_date(date),
+           pm10, sensor_id) %>% 
+    group_by(date, sensor_id) %>% 
+    summarise(pm10 = mean(pm10, na.rm = TRUE)) %>% 
+    summarise(pm10 = max(pm10, na.rm = TRUE))
+
+    
+        max_pm10_tbl
+
+pm10_calplot <- max_pm10_tbl %>% 
     calendarPlot(pollutant = "pm10",
                  labels = labels,
                  statistic = "mean",
                  breaks = pm10.breaks,
                  annotate = "value",
-                 cols = cls)
+                 key.header = "UK Daily Air\n Quality Index",
+                 cols = cls,
+                 main = "Maximum daily mean PM10 at 10 sites with good data capture")
+
+scales::show_col(cal_chart_cols)
 
 
+data_cap_chart <- ld_all_tbl %>% 
+    filter(sensor_id %in% sts_sensors_vec) %>% 
+    mutate(sensor_id = fct_drop(sensor_id)) %>% 
+    ggplot(aes(x = date, y = sensor_id)) +
+    geom_point(size = 1, colour = "firebrick") +
+    labs(title = "Data Capture Chart",
+         subtitle = "Slow the Smoke Sensors",
+         x = "Date",
+         y = "Sensor ID",
+         caption = glue("From {as.Date(date_on)} to {as.Date(date_off)}"),
+         colour = "Collected data") +
+    theme_bw() +
+        theme(panel.border = element_blank())
+
+ggsave(filename = "plots/data_capture_chart.png",
+       plot = data_cap_chart,
+       device = "png")
+
+ld_all_tbl %>% 
+    filter(sensor_id %in% sts_sensors_vec) %>% 
+    mutate(sensor_id = fct_drop(sensor_id)) %>% 
+    group_by(sensor_id) %>% 
+    summarise(data_capture = (n() * 100 / hours) %>% round(1)) %>% 
+    arrange(desc(data_capture)) %>% 
+    write_csv("data/datacap.csv")
+
+tv_plot_tbl <- ld_all_tbl %>% 
+    filter(sensor_id %in% 66970,
+           year(date) == 2022) %>% 
+    select(date, pm2.5, pm10)
+    
+tv_plot <- tv_plot_tbl %>% 
+    timeVariation(pollutant = c("pm2.5", "pm10"),
+                  main = "Time Variation Plot at 66970 (The Yard): 2022")
+
+png(filename = "plots/tv_plot_66970.png", width = 750, height = 700, units = "px")
+tv_plot
+dev.off()
+
+aurns_tbl <- importMeta(source = "aurn", all = TRUE)
+aurns_tbl %>% glimpse()
+
+pm_sites <- aurns_tbl %>% 
+    filter(variable %in% c("PM10", "PM2.5"),
+           site_type == "Urban Background",
+           end_date == "ongoing") %>% 
+    distinct(code) %>% 
+    pull()
+
+pm_aurn_tbl <- importAURN(site = pm_sites,
+                          year = 2022,
+                          pollutant = c("pm10", "pm2.5"),
+                          data_type = "annual",
+                          to_narrow = TRUE) %>% 
+    filter(species %in% c("pm10", "pm2.5"),
+           !is.na(value)) %>% 
+    select(site, species, value) %>% 
+    pivot_wider(id_cols = site, names_from = species, values_from = value) %>% 
+    na.omit()
+    
+
+
+
+brs8 <- importAURN(site = "BRS8", year = 2022, pollutant = c("pm10", "pm2.5"))
+
+my1 <- importAURN(site = "my1", year = 2022, pollutant = c("pm10", "pm2.5"))
+
+find.ratio <- . %>% 
+    summarise(pm10 = mean(pm10, na.rm = TRUE),
+              pm2.5 = mean(pm2.5, na.rm = TRUE)) %>% 
+    mutate(ratio = pm10/pm2.5)
+
+tv_plot_tbl %>% find.ratio()
+
+my1 %>% find.ratio()
+
+pm_aurn_tbl %>%
+    group_by(site) %>%
+    find.ratio() %>% 
+    arrange(desc(ratio))
