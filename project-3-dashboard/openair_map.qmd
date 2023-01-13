@@ -1,0 +1,82 @@
+---
+title: "Slow the Smoke: Polar Maps"
+execute: 
+    message: false
+    warning: false
+    echo: false
+format:
+    html:
+        page-layout: custom
+---
+
+```{r}
+pacman::p_load(
+        tidyverse,
+        # lubridate,
+         openair,
+        # glue,
+        # janitor,
+        # viridis,
+        # ggExtra,
+        openairmaps
+        # htmlwidgets,
+        # fs
+    )
+
+```
+
+```{r}
+unnested_tbl <- read_rds(file = "c:/r_local_data/unnested_tbl.rds")
+
+# unnested_tbl <- unnested_tbl %>% 
+#     filter(sensor_id == 66970)
+
+plot.polarmap <- function(data, pollutant = c("pm10", "pm2.5")){
+
+    if(pollutant == "pm10"){
+        limits = c(0, 50)
+        file = "season_period_pm10.html"
+    } else if (pollutant == "pm2.5"){
+        limits = c(1, 25)
+        file = "season_period_pm25.html"
+    } else {
+        stop()
+    }
+cls <- openColours(c( "darkgreen", "yellow", "red", "purple"), 10) 
+pmap <-   polarMap(data,
+                   alpha = 0.5,
+                   limits = limits,
+                   draw.legend = TRUE,
+                   pollutant = pollutant,
+                   control = "season_period",
+                   x = "ws",
+                   k = 100,
+                   latitude = "latitude",
+                   longitude = "longitude",
+                   provider = "OpenStreetMap",
+                   popup = "sensor_id",
+                   label = "sensor_id",
+                   cols = cls)
+return(pmap)
+# saveWidget(pmap,  file = file)
+}
+
+```
+
+::: panel-tabset
+## PM~10~
+
+```{r}
+#| fig-height: 8
+plot.polarmap(unnested_tbl, pollutant = "pm10")
+
+```
+
+## PM~2.5~
+
+```{r}
+#| fig-height: 8
+plot.polarmap(unnested_tbl, pollutant = "pm2.5")
+
+```
+:::

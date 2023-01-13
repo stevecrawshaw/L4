@@ -64,6 +64,9 @@ project-1-reporting-pipeline/plots/*.png
 project-1-reporting-pipeline/data/*.xlsx
 project-1-reporting-pipeline/data/*.csv
 /project-3-dashboard/images
+project-3-dashboard/openair_map.html
+project-3-dashboard/openair_map_files/
+
 
 # big data files
 

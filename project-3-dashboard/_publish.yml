@@ -1,0 +1,4 @@
+- source: openair_map.qmd
+  quarto-pub:
+    - id: b69dcc0d-6a14-4325-9f70-6364ef97034b
+      url: 'https://quartopub.com/sites/stevecrawshaw/slow-the-smoke-polar-maps'
