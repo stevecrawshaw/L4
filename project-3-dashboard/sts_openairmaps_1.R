@@ -297,7 +297,7 @@ unnested_tbl <- ld_all_met_tbl %>%
         )
 
 unnested_tbl %>% 
-    saveRDS('c:/r_local_data/unnested_tbl.rds')
+    saveRDS('data/unnested_tbl.rds')
 
 plot.polarmap <- function(data, pollutant = c("pm10", "pm2.5")){
 

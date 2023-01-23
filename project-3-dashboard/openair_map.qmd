@@ -26,7 +26,7 @@ pacman::p_load(
 ```
 
 ```{r}
-unnested_tbl <- read_rds(file = "c:/r_local_data/unnested_tbl.rds")
+unnested_tbl <- read_rds(file = "data/unnested_tbl.rds")
 
 # unnested_tbl <- unnested_tbl %>% 
 #     filter(sensor_id == 66970)
