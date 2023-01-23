@@ -71,9 +71,25 @@ sts_sensors <- field_filter_str_fnc(field_name = "sensor_id",
                                     values_vec = sts_sensors_vec)
 #get data from ALL sensors for the period
 
+# bcc reference sensors
+bcc_ref_tbl <- 
+    import_ods(dataset = "air-quality-data-continuous",
+               endpoint = "exports",
+               group_by = NULL,
+               date_col = "date_time",
+               dateon = date_on,
+               dateoff = date_off,
+               where = "siteid in (452, 215, 500)",
+               format = "csv",
+               select = "date_time, location, pm10, pm25, geo_point_2d") %>%
+    rename(pm2.5 = pm25,
+           sensor_id = location,
+           date = date_time) 
+
+
 if(!file.exists("data/ld_all_raw_tbl.rds")){
 
-ld_all_raw_tbl <- import_ods(dataset = "luftdaten_pm_bristol",
+    ld_all_raw_tbl <- import_ods(dataset = "luftdaten_pm_bristol",
                               endpoint = "exports",
                               group_by = NULL,
                               date_col = date,
@@ -92,8 +108,12 @@ write_rds(ld_all_raw_tbl, file = "data/ld_all_raw_tbl.rds")
     
 }
 
+# join bcc and ld raw sensors
+
+ld_plus_bcc_tbl <- bind_rows(bcc_ref_tbl, ld_all_raw_tbl)
+
 # put into format needed for openairmaps
-ld_all_tbl <- ld_all_raw_tbl %>% 
+ld_all_tbl <- ld_plus_bcc_tbl %>% 
     separate(geo_point_2d,
              into = c("latitude", "longitude"),
              sep = ",",
@@ -275,6 +295,9 @@ unnested_tbl <- ld_all_met_tbl %>%
         )} {toupper(str_sub(season, 1, 1))}{str_sub(season, 2)} {period}'
         )
         )
+
+unnested_tbl %>% 
+    saveRDS('c:/r_local_data/unnested_tbl.rds')
 
 plot.polarmap <- function(data, pollutant = c("pm10", "pm2.5")){
 
