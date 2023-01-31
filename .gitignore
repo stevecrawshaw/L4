@@ -67,6 +67,8 @@ project-1-reporting-pipeline/data/*.csv
 project-3-dashboard/openair_map.html
 project-3-dashboard/openair_map_files/
 project-3-dashboard/season_period_pm10.html
+project-3-dashboard/plots/*.png
+
 
 
 # big data files
