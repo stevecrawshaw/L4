@@ -14,7 +14,7 @@ p <- c("tidyverse",
 library("xfun")
 pkg_attach2(p)
 
-learning_date <- "2022-12-01"
+learning_date <- "2023-01-01"
 
 # Functions ----
 get_googlesheet <- function() {
@@ -57,11 +57,12 @@ basic_theme <- function(data, ...) {
                     ...)
 }
 
+learning_raw_tbl <- get_googlesheet()
+
 get_gt_table <- function(learning_date, OTJ_only = TRUE) {
     stopifnot("Entered date must be YYYY-MM-DD" = ymd(learning_date) %>% is.Date())
     month_of_learning <-
         glue("{month.name[month(learning_date)]} {year(learning_date)}")
-    
     learning_raw_tbl <- get_googlesheet()
     # transform the raw data
     learning_clean_tbl <- learning_raw_tbl %>%
@@ -80,6 +81,8 @@ get_gt_table <- function(learning_date, OTJ_only = TRUE) {
         ) %>%
         mutate(ksb = map_chr(ksb, ksb_bold)) %>%  # highlight the KSB ID
         mutate(ksb = map_chr(ksb, ksb_bold)) # highlight the KSB ID
+    
+    stopifnot("No data returned - are dates correct?" = nrow(learning_clean_tbl) != 0)
     
     if (OTJ_only) {
         learning_clean_tbl <- learning_clean_tbl %>%

@@ -278,6 +278,137 @@ The `targets` package will control the processing pipeline and ensure efficient 
 
 ## Project 2: To develop a process for monthly diagnostics and QA reporting from air monitors and telemetry devices
 
+
+## Project 3: To publish a dashboard to share the results of citizen science air monitoring for the Slow the Smoke Project
+
+### Introduction
+
+The Slow the Smoke project is introduced in Project 4. A significant component of it is citizen science monitoring with low cost sensors. The aim of this project is to produce a dashboard which enables citizen scientists to interrogate data from their sensors and gain an understanding of the pollution measurement data that is being captured.
+
+### Data Sources
+
+The sensors used are SDS011 sensors that measure PM~10~ and PM~2.5~ as well as temperature and humidity. The measurement interval is five minutes, and the data are transmitted via domestic wifi to a [data repository](https://archive.sensor.community/) which provides a REST [API](https://github.com/opendata-stuttgart/meta/wiki/APIs). This API was used to regularly poll the data and re - publish on Bristol City Council's open data portal.
+
+### Automated Data Ingestion and Processing
+
+Although the Sensor.Community organisation provides some mapping and interrogation tools for the data collected from the sensors, it was felt that Bristol's [open data platform](https://opendata.bristol.gov.uk/) offered several advantages for this project over the Sensor.Community offer.
+
+1. A unified single point of enquiry for local air quality data
+2. Ability to integrate with other air quality measurements
+3. Interactive bespoke dashboard and visualisation options
+4. A powerful and well documented API for querying the data
+
+In order to satisfy expectation for the customers of these data, i.e. the citizen scientists and members of the public, it was decided that the data should be as current as possible. This meant designing a real - time "Extract - Transform - Load" (ETL) process to query the local raw Sensor.Community data from their API, transorm it to a state suitable for publishing on our portal and then using the push API on our portal to publish the data.
+
+The ETL process was first trialled using scripts in R. The `httr` library was used to develop functions to extract the data and push to the portal and data manipulation conducted using the `tidyverse` meta package. After successfully prototyping the solution, this was moved to production using FME (Feature Manipulation Engine).
+
+FME is a no - code platform for ETL which is primarily focused on spatial data. Bristol City Council also has FME server which supports scheduled FME processes. two FME workspaces were developed to implement the ETL of the sensor data. These are represented visually in the screenshots below as FME workspaces.
+
+![Hourly FME ETL Process](images/hourly_ld_fme.png)
+
+![Daily FME ETL Process](images/daily_ld_fme.png)
+It was decided to split into hourly and daily processes because the latency in the Sensor.Community API process made it impossible to reliably downsample data into hourly intervals in a real - time process. The FME hourly process subsets the measurement data using a bounding box to just get Bristol's data, unnests the PM~10~ and PM~2.5~ data from the json array and writes the data to a csv file.
+
+The daily FME process then downsamples the data in the csv to hourly intervals, transforms it in various ways, and then writes the data to a json array and pushes to the open data portal and flushes data from the temporary csv file to prepare it for the next cycle. The daily process also automatically adds any new sites that might be established by a citizen scientist to the [open data datasets for the sensors](https://opendata.bristol.gov.uk/explore/?q=luftdaten&sort=modified)
+
+The FME schedules run reliably and this has proved a robust method for automating ETL processes for the open data portal.
+
+### Developing the Data Products for Citizen Scientists
+
+#### Making Sense of Data - Workshop and Learning Resources
+
+It was recognised that citizen scientists would need some initial training and induction to familiarise themselves with the sensors and the data that was collected. A "Making Sense of Data" workshop was convened in July 2022 and interactive resources hosted on the open data platform were prepared to support the learning activity.  
+The [learning resources](https://opendata.bristol.gov.uk/pages/making_sense_of_data/) include:
+
+1. Interactive leaflet maps showing locations of the sensors
+2. Time series interactive charts (vega) showing hourly and daily sensor data
+3. Polar plots showing dominant wind speeds and directions for different levels of pollutants
+3. Animated gif images of polar plots showing how pollution varies with time and highlighting weather features that affect air pollution.
+
+
+:::{layout-ncol=3 layout-valign="center"}
+
+![Making Sense of Data - screenshot 1](images/msod_1.png)
+
+![Making Sense of Data - screenshot 2](images/msod_2.png)
+
+![Making Sense of Data - screenshot 3](images/msod_3.png)
+:::
+
+#### Sensor Dashboard
+
+In addition to the "Making Sense of Data" workshop and learning resources, it was important to provide an ongoing resource for the citizen scientists to interrogate their data as non - experts in environmental science.
+
+The open data portal provides strong capability for visualisation and transformation by default. For each dataset there is a tabular view, which can be ordered and filtered by facet or user entered search criteria. Interactive maps and charts are also provided which can be similarly filtered and the filtered data can be exported in a range of common formats. For experienced users, a REST API is available which offers some SQL - like syntax to manipulate and export the data. However, for this purpose, it was felt appropriate to develop a more curated data product than the default offer which was tailored to the anticipated needs of the customer. The dashboard should help to answer the following questions.
+
+1. What is the current (or recent) level of pollution at my sensor?
+2. What is the spatial context of my sensor?
+3. What do the readings mean in terms of relevant legal or health - based limits?
+4. How do pollutant levels change with time of day or day of week?
+5. How can I relate pollution levels to wind patterns or weather?
+6. How can I download the data if I need to do more detailed analysis on it?
+
+A [web dashboard](https://opendata.bristol.gov.uk/pages/luftdaten-sitepage/?q=sensor_id:66970) was designed to answer these questions by implementing the following features.
+
+1. An interactive map on the first page where the user can select their sensor and go to the dashboard main page
+2. A simple coloured bar gauge graphic at the top of the page for each pollutant which relates the most recent concentration to the relevant air quality index - including a link to the method for determining the index.
+3. Descriptive text for the sensor and an interactive zoomable map showing the location of the selected sensor.
+4. A slider control to select the time period for subsequent visualisations.
+5. Tabs, providing five different visualisations including:
+6. Time series chart for both pollutants (selectable)
+7. Daily mean chart including relevant World Health Organisation (WHO) guideline values for comparison
+8. Charts for hour of day and day of week
+9. A wind rose for the selected time period, which shows wind speed and direction
+10. A data table with download links in Excel, JSON and CSV formats
+
+:::{layout-ncol=1 layout-valign="center"}
+
+![Sensor Dashboard 1](images/sensor_1.png)
+![Sensor Dashboard 2](images/sensor_2.png)
+:::
+
+#### Technologies used in Data Products
+
+Both the "Making Sense of Data" learning resources and the sensor dashboard were built on the Opendatasoft platform using the components available. These were:
+
+1. Web development using HTML and CSS
+2. Angular JS for logic
+3. Opendatasoft's widgets for visualisations, aggregation, iteration and controls
+4. Javascript for string and dataset manipulation
+
+In addition to these technologies, javascript was used to manipulate a url in order to implement the wind rose. The wind rose image is rendered by sending a request to a resource at https://mesonet.agron.iastate.edu. Depending on the query within the request, a wind rose will be returned for the requested time period. 
+
+### Advanced Data Products for Project Reporting
+
+The two data products cited above are helpful for citizen scientists trying to understand their sensor data. The Slow the Smoke project is also intended to help other practitioners in the air quality field to understand the issue of air pollution arising from the specific source of domestic solid fuel burning, for example open fires and solid fuel stoves. This is a serious and growing problem for public health.
+
+In order to provide deeper insight into this issue, further analysis was conducted on the data from the Slow the Smoke, Sensor.Community and reference method sensors in Bristol.
+
+#### Openair Polar Plot Maps
+
+The [`openair`](https://davidcarslaw.github.io/openair/) package in R provides open source tools for the analysis of air quality data. Several bespoke visualisations are available to reveal patterns in air quality data such as summary plots, heat maps and polar plots, as used in the "Making Sense of Data" materials. A separate package [`openairmaps`](https://github.com/davidcarslaw/openairmaps) implements polar plots superimposed on an interactive Leaflet base map.
+
+> The openairmaps package has been designed to create interactive HTML air quality > maps. These are useful to understand the geospatial context of openair-type
+> analysis, and to present data in an engaging way in dashboards and websites.
+
+The advantages of visualising air quality data in this way are as follows:
+
+1. Where many sensors are in the same location, the dispersion patterns can be inspected for consistency
+2. Data can be binned by, for example, time period and season to help reveal likely source sectors
+3. If reference method and low cost sensors are used on both maps, the relative difference in scale of measurements can be highlighted
+
+Despite these advantages, care must be taken not to misinterpret the maps. They are intended to indicate patterns of dispersion and source direction, not absolute values or comparison with objectives. This is why they are not deployed as a resource in the sensor dashboard.
+
+The data were prepared by first filtering the available Sensor.Community sensor data for data capture. This is necessary because the surface fitting algorithm in openairmaps requires a certain level of data availability. Reference method data are downloaded from open data resources and joined to the Sensor.Community data and then a wind speed and direction data from Bristol airport is joined by timestamp to the air quality data. The data are binned using the `cutData` function in openair to create data which is used in a selector control. This dataset is fed into the `polarMap` function for each pollutant to produce the map. 
+
+The interactive maps are published by rendering them as Quarto documents and publishing on the [quarto-pubs website.](https://stevecrawshaw.quarto.pub/slow-the-smoke-polar-maps/)
+
+An example of a static version of the maps is shown below.
+
+![Example of static PM ~2.5~ polar map by cut by season](images/static_polar_pm25.png)
+
+
+
 ## Project 4: Comparing performance of low – cost sensors with reference method instruments
 
 ### Introduction

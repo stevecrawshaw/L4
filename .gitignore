@@ -49,7 +49,7 @@ Thumbs.db
 summative-portfolio.pdf
 
 # images
-/images/Objective*.png
+/images/*.png
 
 # dashboards - big
 
@@ -69,6 +69,8 @@ project-3-dashboard/openair_map_files/
 project-3-dashboard/season_period_pm10.html
 project-3-dashboard/plots/*.png
 
+#SP Word
+summative-portfolio.docx
 
 
 # big data files

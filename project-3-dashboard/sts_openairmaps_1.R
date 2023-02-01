@@ -299,6 +299,8 @@ unnested_tbl <- ld_all_met_tbl %>%
 unnested_tbl %>% 
     saveRDS('data/unnested_tbl.rds')
 
+unnested_tbl <- read_rds("data/unnested_tbl.rds")
+
 plot.polarmap <- function(data, pollutant = c("pm10", "pm2.5")){
 
     if(pollutant == "pm10"){
@@ -332,6 +334,33 @@ saveWidget(pmap,  file = file)
 plot.polarmap(unnested_tbl, pollutant = "pm10")
 
 plot.polarmap(unnested_tbl, pollutant = "pm2.5")
+
+
+
+static_polar_pm25 <- unnested_tbl %>% 
+    rename(lat = latitude,
+           lon = longitude) %>% 
+    mutate(sensor_id = as.character(sensor_id)) %>% 
+    filter(sensor_id != "Parson Street School") %>% 
+    polarMapStatic(pollutant = "pm2.5",
+                   limits = c(1, 20),
+                   facet = 'season',
+                   facet.nrow = 2,
+                   alpha = 0.6, cols = cls, d.icon = 30)
+
+ggsave('images/static_polar_pm25.png',
+       static_polar_pm25,
+       device = "png", width = 1200, height = 900, units = "px")
+
+polar_data %>%
+    openair::cutData("daylight") %>%
+    polarMapStatic(
+        pollutant = "no2",
+        limits = c(0, 180),
+        facet = "daylight",
+        facet.nrow = 2, 
+        alpha = .9
+    )
 
 
 #-----------------------------------------
