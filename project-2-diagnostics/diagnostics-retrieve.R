@@ -1,6 +1,4 @@
-library(pacman)
-p <- c("odbc", "dplyr", "DBI", "config", "lubridate")
-p_load(char = p)
+pacman::p_load(char = c("odbc", "dplyr", "DBI", "config", "lubridate"))
 
 connect.envista <- function(){
     con_params <- get(config = "envista") # credentials
@@ -18,15 +16,14 @@ connect.envista <- function(){
     
 }
 
-
 get.diag.tbl <- function(con, dateon, dateoff){
 # function to get the raw diagnostics table from the envista database
 tbl(con, "TB_DIAGNOSTICS") %>% 
     filter(between(DIG_DateTime,
                    as_datetime(dateon),
-                   as_datetime(dateoff))) %>% 
+                   as_datetime(dateoff)),
+           DIG_Channel == 1) %>% 
     collect() %>% 
         return()
-
 }
 

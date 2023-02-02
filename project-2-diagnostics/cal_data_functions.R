@@ -187,6 +187,7 @@ cal_factor_gt <- cal_plot_tbl %>%
 
 # TESTING ----
 
+
 responses_tbl <- get.responses.tbl(config)
     
 cal_tbl <- get.cal.tbl(config)  
