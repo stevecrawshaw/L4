@@ -7,13 +7,9 @@ pacman::p_load(tidyverse,
 
 source("diagnostics-retrieve.R")
 # Variables ----
-dateon <-  "2022-01-01"
+dateon <-  "2022-12-01"
 dateoff <-  "2022-12-31"
-month <- month(dateon,
-               label = TRUE,
-               abbr = FALSE) %>%
-    as.character()
-year <- year(dateon)
+
 
 # Data ----
 # diagnostics data
@@ -25,6 +21,9 @@ con %>% dbDisconnect()
 
 # site metadata linking station ID's with site ID's and pollutants
 final_tbl <- read_delim(file = "S:/SUSTAIN/Sustain-Common/SCCCS/write_gis_r/R Projects/air_quality_data_management/data/finalContinTablerhtemp.csv", delim = ",", col_types = "ciiciccc")
+
+    # https://www.teledyne-api.com/prod/Downloads/06858F%20-%20MANUAL,%20OPERATORS,%20T200.pdf
+    # table 12.1
 
 limits_tbl <- tribble(
 	~parameter, ~warning_low, ~warning_high, ~normal_low, ~normal_high,
@@ -85,17 +84,46 @@ lengthen.diag <- function(diagnostics_tbl){
     return(combined_tbl)
 }
 
-clean.plot <- function(data, site, month, year){
+clean.plot <- function(data, site, dateon, dateoff){
 # takes the nested df, strips out conc data (not interesting)
     # and produces ggplot with facets
+	if(var(month(c(dateon, dateoff))) == 0 & var(year(c(dateon, dateoff))) == 0){
+	    
+	    datelabel <- glue("{month(dateon,
+               label = TRUE,
+               abbr = FALSE) %>%
+	    as.character()} {year(dateon)}")
+
+	} else {
+	    datelabel = glue("{format(as.Date(dateon), '%d/%m/%Y')} to {format(as.Date(dateoff), '%d/%m/%Y')}")
+	}
+    
         p <- data %>% 
         filter(!str_detect(parameter, "Conc")) %>% 
         ggplot(aes(x = DIG_DateTime, y = value)) +
         geom_line() +
-        geom_line(aes(x = DIG_DateTime, y = normal_low), color = "red", lty = 5) +
-        geom_line(aes(x = DIG_DateTime, y = normal_high), color = "red", lty = 5) +
+        geom_line(aes(x = DIG_DateTime,
+                      y = normal_low),
+                  color = "blue",
+                  lty = 5,
+                  alpha = 0.6) +
+        geom_line(aes(x = DIG_DateTime,
+                      y = normal_high),
+                  color = "blue",
+                  lty = 5,
+                  alpha = 0.6) +
+        # geom_line(aes(x = DIG_DateTime,
+        #               y = warning_low),
+        #           color = "firebrick",
+        #           lty = 5,
+        #           alpha = 0.9) +
+        # geom_line(aes(x = DIG_DateTime,
+        #               y = warning_high),
+        #           color = "firebrick",
+        #           lty = 5,
+        #           alpha = 0.9) +
         facet_wrap(~parameter + unit, scales = "free_y", ncol = 3) +
-        labs(title = glue("Diagnostics plots for {site}: {month} {year}"),
+        labs(title = glue("Diagnostics plots for {site}: {datelabel}"),
              x = "Date") +
         scale_x_datetime(breaks = "1 weeks", date_labels = "%d") +
         theme_bw() 
@@ -123,23 +151,20 @@ clean_combined_tbl <- combined_tbl %>%
     inner_join(station_site_tbl, by = c("DIG_Station" = "station")) %>% 
 	left_join(limits_tbl, by = join_by(parameter == parameter))
 
-clean_combined_tbl %>% 
-	saveRDS(file = "data/clean_combined_diagnostics_tbl.rds")
+# clean_combined_tbl %>% 
+# 	saveRDS(file = "data/clean_combined_diagnostics_tbl.rds")
 
 all_sites_plots_tbl <- clean_combined_tbl %>%
     select(-DIG_Station) %>% 
     nest_by(siteid, site_name) %>% 
     mutate(plot = list(clean.plot(data,
                                   site = site_name,
-                                  {{month}},
-                                  {{year}})))
+                                  {{dateon}},
+                                  {{dateoff}})))
 
 #testing plotting
-# clean.plot(bris_test_tbl, site ="bris", month, year)
-# 
-# plot_tbl <- all_sites_tbl %>% 
 
-all_sites_plots_tbl[all_sites_plots_tbl$siteid == 203, "plot"][[1]]
+all_sites_plots_tbl$plot
 
 all_sites_plots_tbl[all_sites_plots_tbl$siteid == 203, "data"]$data[[1]] %>%
     
@@ -154,27 +179,8 @@ all_sites_plots_tbl[all_sites_plots_tbl$siteid == 203, "data"]$data[[1]] %>%
     write_csv(file = "wells_road_diagnostics.csv")
 
     
-    all_sites_plots_tbl[all_sites_plots_tbl$siteid == 215, "plot"][[1]]
-
-    
 # Next step ---
     
-    # https://www.teledyne-api.com/prod/Downloads/06858F%20-%20MANUAL,%20OPERATORS,%20T200.pdf
-    # table 12.1
-limits_tbl <- tribble(
-	~parameter, ~warning_low, ~warning_high, ~normal_low, ~normal_high,
-	"Converter temp", 305, 325, 313, 316,
-	"Internal box temp", 7, 48, 7, 40,
-	"React cell temp", 45, 55, 49, 51,
-	"Ozone flow rate", 50, 150, 85, 90,
-	"PMT temp", 5, 12, 6, 8,
-	"React cell pres", 4, 10, 5, 5.6,
-	"Sample flow rate", 350, 600, 450, 550
-)
-
-limits_tbl
-
-# create a range for each parameter in a tbl
 
     
 # ensure all possible names are included.
