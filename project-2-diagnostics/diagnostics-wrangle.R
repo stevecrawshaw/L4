@@ -3,12 +3,17 @@ pacman::p_load(tidyverse,
                openair,
                glue,
                timetk,
-               lubridate)
+               lubridate,
+               testthat)
 
 source("diagnostics-retrieve.R")
 # Variables ----
 dateon <-  "2022-12-01"
 dateoff <-  "2022-12-31"
+
+datediff <- as.Date(dateoff) - as.Date(dateon)
+
+expect_gt(datediff, expected =  27)
 
 
 # Data ----
