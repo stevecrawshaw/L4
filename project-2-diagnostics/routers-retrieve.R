@@ -1,12 +1,11 @@
 pacman::p_load(tidyverse, jsonlite, httr2,
-               janitor, glue, lubridate, config, rlist)
+               janitor, glue, lubridate, config, rlist, plotly)
 
 # use the teltonika API to extract useful info about the routers
 
 dateon <-  "2022-12-01"
 dateoff <-  "2022-12-31"
 device_url <- "https://rms.teltonika-networks.com/api/devices/"
-csv_url <- "https://rms.teltonika-networks.com/api/devices/export/csv/"
 
 get.router.pat <- function(){
     
@@ -32,7 +31,7 @@ get.device.data <- function(device_url){
     return(content)
 }
 
-device_data <- get.device.data(device_url = device_url)
+    device_data <- get.device.data(device_url = device_url)
 
 make.device.id.tbl <- function(device_data){
     #get the ids - strangely not available from the csv endpoint
@@ -44,7 +43,7 @@ make.device.id.tbl <- function(device_data){
     return(device_id_tbl)
 }
 
-device_id_tbl <- make.device.id.tbl(device_data = device_data)
+    device_id_tbl <- make.device.id.tbl(device_data = device_data)
 
 make.device.wide.tbl <- function(device_data){
     
@@ -55,7 +54,7 @@ make.device.wide.tbl <- function(device_data){
     return(device_wide_tbl)
 }
 
-device_wide_tbl <- make.device.wide.tbl(device_data = device_data)
+    device_wide_tbl <- make.device.wide.tbl(device_data = device_data)
 
 make.sim.data.tbl <- function(device_wide_tbl){
     sim_data_tbl <- device_wide_tbl %>% 
@@ -64,10 +63,12 @@ make.sim.data.tbl <- function(device_wide_tbl){
     return(sim_data_tbl)
 }
 
-sim_data_tbl <- make.sim.data.tbl(device_wide_tbl = device_wide_tbl)
+    sim_data_tbl <- make.sim.data.tbl(device_wide_tbl = device_wide_tbl)
 
-get.devices.details.tbl <- function(csv_url){
-    req_csv <- request(csv_url)
+get.devices.details.tbl <- function(device_url){
+    req_csv <- request(device_url) %>% 
+        req_url_path_append("export") %>% 
+        req_url_path_append("csv")
     
     response_devices <- req_csv %>% 
         req_headers(Accept = "text/csv") %>% 
@@ -86,7 +87,7 @@ get.devices.details.tbl <- function(csv_url){
 }
 # Data usage per device
 
-devices_details_tbl <- get.devices.details.tbl(csv_url = csv_url)
+    devices_details_tbl <- get.devices.details.tbl(device_url = device_url)
 
 get.data.use <- function(dateon, dateoff, device_url, id) {
     req <- request(device_url)
@@ -120,10 +121,10 @@ get.data.use.partial <- partial(.f = get.data.use,
 
 # get data for all ids with vecorised partial function
 
-data_use_tbl <- map_dfr(device_id_tbl$id,
+    data_use_tbl <- map_dfr(device_id_tbl$id,
                         .f = ~get.data.use.partial(.x))
 
-make.daily.data.use.tbl <- function(data_use_tbl, device_id_tbl){
+make.daily.data.tbl <- function(data_use_tbl, device_id_tbl){
     daily_data_tbl <- data_use_tbl %>% 
         mutate(across(.cols = everything(), .fns = ~as.character(.x))) %>% 
         select(- starts_with("sim2")) %>% 
@@ -140,10 +141,10 @@ make.daily.data.use.tbl <- function(data_use_tbl, device_id_tbl){
     return(daily_data_tbl)
 }
 
-daily_data_tbl <- make.daily.data.use.tbl(data_use_tbl = data_use_tbl,
+    daily_data_tbl <- make.daily.data.tbl(data_use_tbl = data_use_tbl,
                                           device_id_tbl = device_id_tbl)
 
-make.chart.datelabel <- function(dateon, dateoff){
+make.datelabel <- function(dateon, dateoff){
     
     if(var(c(month(dateon), month(dateoff))) == 0){
         datelabel = glue("{month(dateon, label = TRUE, abbr = FALSE)} {year(dateon)}")
@@ -154,9 +155,9 @@ make.chart.datelabel <- function(dateon, dateoff){
     
 }
 
-    datelabel = make.chart.datelabel(dateon, dateoff)
+    datelabel = make.datelabel(dateon, dateoff)
 
-plot.daily.data.use.gg <- function(daily_data_tbl){
+make.daily.data.use.plot <- function(daily_data_tbl){
 daily_data_tbl %>%
     filter(name != "RUT950_Spare_000") %>%
     ggplot(aes(x = date, y = MB, fill = r_t)) +
@@ -164,13 +165,13 @@ daily_data_tbl %>%
     facet_wrap(~ name, ncol = 2) +
     labs(title = "Mobile telemetry data use by routers",
          subtitle = "Daily Totals",
-         fill = "Receive \ Transmit",
+         fill = "Receive \nTransmit",
          x = "Date") %>% 
         return()
     
 }
 
-plot.daily.data.use.gg(daily_data_tbl = daily_data_tbl)
+    daily_use_plot <- make.daily.data.use.plot(daily_data_tbl = daily_data_tbl)
 
 
 make.cumulative.tbl <- function(daily_data_tbl){
@@ -185,12 +186,70 @@ daily_data_tbl %>%
 
     cumulative_tbl <- make.cumulative.tbl(daily_data_tbl = daily_data_tbl)
 
+make.cumulative.plot <- function(cumulative_tbl){
 cumulative_tbl %>% 
     ggplot() +
-    geom_line(aes(x = date, y = cum_data, group = site, colour = site)) +
+    geom_line(aes(x = date, y = cum_data, colour = site), linewidth = 1) +
     labs(x = "Date", y = "MB", 
          title = glue("Cumulative data use for period: {datelabel}"),
          caption = "Airport and BTW are low because no datalogger present\n
                     Use rises at the end of the month due to updates",
-         colour = "Site") 
+         colour = "Site") +
+    theme_minimal() 
+    }
+
+    cumulative_plot <- make.cumulative.plot(cumulative_tbl = cumulative_tbl)
+
+    plotly::ggplotly(cumulative_plot)
+
+make.data.summary.tbl <- function(daily_data_tbl, device_id_tbl, datelabel){
+
+    total_data_period <- daily_data_tbl %>% 
+        summarise(total_data_period = sum(MB, na.rm = TRUE)) %>% 
+        pull() %>% 
+        `/`(1024)
     
+        
+        num_sites <- device_id_tbl %>% 
+        filter(!str_detect(name, "Spare")) %>% 
+        nrow()
+        
+        daily_allowance_site <-  (3 * 1.024) / 30
+    
+        if(str_match(datelabel, pattern = "\\w+")[1] %in% month.name){
+            allowance <-  daily_allowance_site * 30 * num_sites
+        } else {
+            allowance <- 
+            str_split(datelabel, pattern = " to ")[[1]] %>%
+                as.character() %>%
+                as.Date() %>%
+                diff() %>% 
+                as.integer() %>% 
+                `*`(daily_allowance_site * num_sites)
+        }
+        
+    headroom_gb <- round((allowance - total_data_period) / 1.024, 1)
+    
+    headroom_pc <- round((allowance - total_data_period) * 100 / allowance, 1)
+    
+    data_summary_tbl <- tribble(
+        ~ "Period",
+        ~ "Total data used (GB)",
+        ~ "Allowance (GB)",
+        ~ "Headroom (GB)",
+        ~ "Headroom (%)",
+        datelabel,
+        total_data_period,
+        allowance,
+        headroom_gb,
+        headroom_pc
+    )
+    
+    return(data_summary_tbl)
+
+}
+
+
+    data_summary_tbl <- make.data.summary.tbl(daily_data_tbl = daily_data_tbl,
+                                          device_id_tbl = device_id_tbl,
+                                          datelabel = datelabel)
