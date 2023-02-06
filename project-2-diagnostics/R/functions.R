@@ -14,7 +14,6 @@ pacman::p_load(odbc,
                plotly,
                httr2)
 
-
 # 1.0 Global Variables ----
 
 dateon <-  "2022-12-01"
