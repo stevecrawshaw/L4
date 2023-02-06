@@ -13,9 +13,6 @@ get.router.pat <- function(){
         return()
 }
 
-    pat <- get.router.pat()
-
-
 get.device.data <- function(device_url){
     
     req <- request(device_url)
@@ -31,8 +28,6 @@ get.device.data <- function(device_url){
     return(content)
 }
 
-    device_data <- get.device.data(device_url = device_url)
-
 make.device.id.tbl <- function(device_data){
     #get the ids - strangely not available from the csv endpoint
     ids <- map_int(device_data, pluck("id")) %>% 
@@ -43,8 +38,6 @@ make.device.id.tbl <- function(device_data){
     return(device_id_tbl)
 }
 
-    device_id_tbl <- make.device.id.tbl(device_data = device_data)
-
 make.device.wide.tbl <- function(device_data){
     
     device_wide_tbl <- map_dfr(device_data, .f = ~unlist(.x) %>%
@@ -54,16 +47,12 @@ make.device.wide.tbl <- function(device_data){
     return(device_wide_tbl)
 }
 
-    device_wide_tbl <- make.device.wide.tbl(device_data = device_data)
-
 make.sim.data.tbl <- function(device_wide_tbl){
     sim_data_tbl <- device_wide_tbl %>% 
         select(mobile_ip, iccid, operator, name) %>% 
         filter(!is.na(iccid))
     return(sim_data_tbl)
 }
-
-    sim_data_tbl <- make.sim.data.tbl(device_wide_tbl = device_wide_tbl)
 
 get.devices.details.tbl <- function(device_url){
     req_csv <- request(device_url) %>% 
@@ -86,9 +75,6 @@ get.devices.details.tbl <- function(device_url){
         return()
 }
 # Data usage per device
-
-    devices_details_tbl <- get.devices.details.tbl(device_url = device_url)
-
 get.data.use <- function(dateon, dateoff, device_url, id) {
     req <- request(device_url)
     start_date <- paste0(dateon, " 00:00:00")
@@ -113,16 +99,12 @@ get.data.use <- function(dateon, dateoff, device_url, id) {
         return()
 }
 
-
 get.data.use.partial <- partial(.f = get.data.use,
                                 dateon = dateon,
                                 dateoff = dateoff,
                                 device_url = device_url)
 
 # get data for all ids with vecorised partial function
-
-    data_use_tbl <- map_dfr(device_id_tbl$id,
-                        .f = ~get.data.use.partial(.x))
 
 make.daily.data.tbl <- function(data_use_tbl, device_id_tbl){
     daily_data_tbl <- data_use_tbl %>% 
@@ -141,9 +123,6 @@ make.daily.data.tbl <- function(data_use_tbl, device_id_tbl){
     return(daily_data_tbl)
 }
 
-    daily_data_tbl <- make.daily.data.tbl(data_use_tbl = data_use_tbl,
-                                          device_id_tbl = device_id_tbl)
-
 make.datelabel <- function(dateon, dateoff){
     
     if(var(c(month(dateon), month(dateoff))) == 0){
@@ -154,8 +133,6 @@ make.datelabel <- function(dateon, dateoff){
     return(datelabel)
     
 }
-
-    datelabel = make.datelabel(dateon, dateoff)
 
 make.daily.data.use.plot <- function(daily_data_tbl){
 daily_data_tbl %>%
@@ -171,9 +148,6 @@ daily_data_tbl %>%
     
 }
 
-    daily_use_plot <- make.daily.data.use.plot(daily_data_tbl = daily_data_tbl)
-
-
 make.cumulative.tbl <- function(daily_data_tbl){
 daily_data_tbl %>% 
     mutate(site = str_sub(name, 8, -5) %>% str_replace_all("_", " ")) %>% 
@@ -183,8 +157,6 @@ daily_data_tbl %>%
     
         return()
 }
-
-    cumulative_tbl <- make.cumulative.tbl(daily_data_tbl = daily_data_tbl)
 
 make.cumulative.plot <- function(cumulative_tbl){
 cumulative_tbl %>% 
@@ -197,10 +169,6 @@ cumulative_tbl %>%
          colour = "Site") +
     theme_minimal() 
     }
-
-    cumulative_plot <- make.cumulative.plot(cumulative_tbl = cumulative_tbl)
-
-    plotly::ggplotly(cumulative_plot)
 
 make.data.summary.tbl <- function(daily_data_tbl, device_id_tbl, datelabel){
 
@@ -250,6 +218,29 @@ make.data.summary.tbl <- function(daily_data_tbl, device_id_tbl, datelabel){
 }
 
 
+
+    #-------------TESTING ------------------
+    
+    pat <- get.router.pat()
+    device_data <- get.device.data(device_url = device_url)
+    device_id_tbl <- make.device.id.tbl(device_data = device_data)
+    device_wide_tbl <- make.device.wide.tbl(device_data = device_data)
+    sim_data_tbl <- make.sim.data.tbl(device_wide_tbl = device_wide_tbl)
+    devices_details_tbl <- get.devices.details.tbl(device_url = device_url)
+
+        data_use_tbl <- map_dfr(device_id_tbl$id,
+                        .f = ~get.data.use.partial(.x))
+        
+    daily_data_tbl <- make.daily.data.tbl(data_use_tbl = data_use_tbl,
+                                          device_id_tbl = device_id_tbl)
+    datelabel = make.datelabel(dateon, dateoff)
+    daily_use_plot <- make.daily.data.use.plot(daily_data_tbl = daily_data_tbl)
+    cumulative_tbl <- make.cumulative.tbl(daily_data_tbl = daily_data_tbl)
+        
+        
+    cumulative_plot <- make.cumulative.plot(cumulative_tbl = cumulative_tbl)
+
+    plotly::ggplotly(cumulative_plot)
     data_summary_tbl <- make.data.summary.tbl(daily_data_tbl = daily_data_tbl,
                                           device_id_tbl = device_id_tbl,
                                           datelabel = datelabel)

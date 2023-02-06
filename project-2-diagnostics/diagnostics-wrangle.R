@@ -3,18 +3,21 @@ pacman::p_load(tidyverse,
                openair,
                glue,
                timetk,
-               lubridate,
-               testthat)
+               lubridate)
 
 source("diagnostics-retrieve.R")
 # Variables ----
 dateon <-  "2022-12-01"
 dateoff <-  "2022-12-31"
 
+datecheck <- function(dateon, dateoff){
+    
 datediff <- as.Date(dateoff) - as.Date(dateon)
 
-expect_gt(datediff, expected =  27)
+return(datediff > 27)
 
+}
+    datecheck(dateon = dateon, dateoff = dateoff)
 
 # Data ----
 # diagnostics data
@@ -57,39 +60,39 @@ site_name <- c("Parson St",
 sites_tbl <- tibble(siteid, site_name)
 # Functions ----
 
-lengthen.diag <- function(diagnostics_tbl){
+make.long.diag.tbl <- function(diag_tbl){
     # function to pivot longer the names, units and values from the 
     # diagnostics table and combine into one dataframe
     
-    names_df <- diagnostics_tbl %>% 
+    names_df <- diag_tbl %>% 
         select(DIG_DateTime, DIG_Station, contains("Name")) %>% 
         pivot_longer(cols = contains("Name"),
                      names_to = "DIG_Name",
                      values_to = "parameter")
     
-    units_df <- diagnostics_tbl %>% 
+    units_df <- diag_tbl %>% 
         select(DIG_DateTime, DIG_Station, contains("Unit")) %>% 
         pivot_longer(cols = contains("Unit"),
                      names_to = "DIG_Unit",
                      values_to = "unit")
     
-    values_df <- diagnostics_tbl %>% 
+    values_df <- diag_tbl %>% 
         select(DIG_DateTime, DIG_Station, contains("Value")) %>% 
         pivot_longer(cols = contains("Value"),
                      names_to = "DIG_Value",
                      values_to = "value")
     
-    combined_tbl <- cbind(names_df %>% 
+    long_diag_tbl <- cbind(names_df %>% 
                               select(-DIG_Name),
                           units_df %>%
                               select(unit),
                           values_df %>% 
                               select(value)) %>% 
         as_tibble()
-    return(combined_tbl)
+    return(long_diag_tbl)
 }
 
-clean.plot <- function(data, site, dateon, dateoff){
+make.clean.plot <- function(data, site, dateon, dateoff){
 # takes the nested df, strips out conc data (not interesting)
     # and produces ggplot with facets
 	if(var(month(c(dateon, dateoff))) == 0 & var(year(c(dateon, dateoff))) == 0){
@@ -136,53 +139,70 @@ clean.plot <- function(data, site, dateon, dateoff){
 }
 
 # Wrangling ----
-
+make.station.site.tbl <- function(final_tbl, sites_tbl){
 station_site_tbl <- final_tbl %>% 
     mutate(station = str_remove(tablename, "S") %>% as.integer()) %>% 
     distinct(station, siteid) %>% 
     inner_join(sites_tbl, by = "siteid")
 
-combined_tbl <- lengthen.diag(diag_tbl)
+return(station_site_tbl)
+
+}
+
+station_site_tbl <-  make.station.site.tbl(final_tbl, sites_tbl)
+
+long_diag_tbl <- make.long.diag.tbl(diag_tbl)
 
 # clean it
-clean_combined_tbl <- combined_tbl %>% 
+make.clean.long.diag.tbl <- function(long_diag_tbl, limits_tbl, station_site_tbl){
+clean_long_diag_tbl <- long_diag_tbl %>% 
     na.omit() %>% 
     mutate(parameter = str_trim(parameter),
-           unit = str_trim(unit)
-    #        limit_low = if_else(parameter == "Sample flow rate", 485.0, NA_real_),
-    #        limit_high = if_else(parameter == "Sample flow rate", 510.0, NA_real_)
-    	   ) %>%
+           unit = str_trim(unit)) %>%
     filter(value != -9999) %>% 
     inner_join(station_site_tbl, by = c("DIG_Station" = "station")) %>% 
 	left_join(limits_tbl, by = join_by(parameter == parameter))
 
-# clean_combined_tbl %>% 
-# 	saveRDS(file = "data/clean_combined_diagnostics_tbl.rds")
+return(clean_long_diag_tbl)
+}
 
-all_sites_plots_tbl <- clean_combined_tbl %>%
+    clean_long_diag_tbl <- make.clean.long.diag.tbl(long_diag_tbl,
+                                                    limits_tbl,
+                                                    station_site_tbl)
+
+
+make.all.sites.plots.tbl <- function(clean_long_diag_tbl, dateon, dateoff){
+all_sites_plots_tbl <- clean_long_diag_tbl %>%
     select(-DIG_Station) %>% 
     nest_by(siteid, site_name) %>% 
-    mutate(plot = list(clean.plot(data,
+    mutate(plot = list(make.clean.plot(data,
                                   site = site_name,
                                   {{dateon}},
                                   {{dateoff}})))
+return(all_sites_plots_tbl)
+}
 
-#testing plotting
+all_sites_plots_tbl <- make.all.sites.plots.tbl(clean_long_diag_tbl, dateon, dateoff)
 
 all_sites_plots_tbl$plot
 
-all_sites_plots_tbl[all_sites_plots_tbl$siteid == 203, "data"]$data[[1]] %>%
-    
-    transmute(DIG_DateTime,
-              param_unit = glue("{parameter}_{unit}"),
-              value) %>% 
-    pivot_wider(id_cols = DIG_DateTime,
-                names_from = param_unit,
-                values_from = value)
-    
-    
-    write_csv(file = "wells_road_diagnostics.csv")
+#---------------------------
 
+# all_sites_plots_tbl %>%
+#     filter(siteid == 203) %>% 
+#     ungroup() %>% 
+#     select(data) %>% 
+#     pluck(1, 1) %>% 
+#     transmute(DIG_DateTime,
+#               param_unit = glue("{parameter}_{unit}"),
+#               value) %>% 
+#     pivot_wider(id_cols = DIG_DateTime,
+#                 names_from = param_unit,
+#                 values_from = value)
+#     
+#     
+#     write_csv(file = "wells_road_diagnostics.csv")
+# 
     
 # Next step ---
     

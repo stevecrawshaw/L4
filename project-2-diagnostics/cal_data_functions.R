@@ -9,17 +9,17 @@ p_load(tidyverse,
        googlesheets4,
        janitor)
 
-start_date <- "2022-01-01"
-end_date <- "2022-12-31"
+dateon <- "2022-01-01"
+dateoff <- "2022-12-31"
 
 # Functions ----
 
-config <- config::get(file = here::here("config.yml"),
+google_config <- config::get(file = here::here("config.yml"),
                           config = "google_cal")
 
-get.cal.tbl <- function(config){
+get.cal.tbl <- function(google_config){
 
-        cal_raw_tbl <- read_sheet(config$cal_sheet_path,
+        cal_raw_tbl <- read_sheet(google_config$cal_sheet_path,
                               sheet = "Workings",
                               col_types = "______ddccdddd--")
         
@@ -30,8 +30,8 @@ get.cal.tbl <- function(config){
             return()
 }
 
-get.gas.tbl <- function(config){
-    gas_raw_tbl <- read_sheet(config$cal_sheet_path,
+get.gas.tbl <- function(google_config){
+    gas_raw_tbl <- read_sheet(google_config$cal_sheet_path,
                               sheet = "Workings",
                               col_types = "cii", range = "A1:C31")
     
@@ -42,9 +42,9 @@ get.gas.tbl <- function(config){
     return(gas_tbl)
 }
 
-get.responses.tbl <- function(config){
-
-responses_raw_tbl <- read_sheet(config$cal_sheet_path,
+get.responses.tbl <- function(google_config){
+gs4_auth(email = google_config$email)
+responses_raw_tbl <- read_sheet(google_config$cal_sheet_path,
                                 sheet = "Form responses 1",
                                 col_types = "cc_cccdddddddddddddddddd_cd_")
 
@@ -86,10 +86,10 @@ responses_tbl <- responses_raw_tbl %>%
 return(responses_tbl)
 }
 
-make.cal.plot.tbl <- function(cal_tbl, start_date, end_date){
+make.cal.plot.tbl <- function(cal_tbl, dateon, dateoff){
 
 cal_plot_tbl <- cal_tbl %>% 
-    filter(between(date, as.Date(start_date), as.Date(end_date))) %>% 
+    filter(between(date, as.Date(dateon), as.Date(dateoff))) %>% 
     rename(NOx_span = noxvs,
            NO_span = novs,
            NOx_zero = noxvz_nox_zero,
@@ -103,8 +103,8 @@ cal_plot_tbl <- cal_tbl %>%
 return(cal_plot_tbl)
 }
 
-make.date.list <- function(start_date, end_date){
-days <- (as.Date(end_date) - as.Date(start_date)) %>% as.integer()
+make.date.list <- function(dateon, dateoff){
+days <- (as.Date(dateoff) - as.Date(dateon)) %>% as.integer()
 
 if (days > 100){
     db <- "3 months"
@@ -117,14 +117,14 @@ if (days > 100){
     dl <- "%e"
 }
 
-end_month <- strftime(end_date, "%B")
-start_month <- strftime(start_date, "%B")
+end_month <- strftime(dateoff, "%B")
+start_month <- strftime(dateon, "%B")
 
 date_breaks_labels_list <- list(
     "breaks" = db,
     "labels" = dl,
-    "start_date" = start_date,
-    "end_date" = end_date,
+    "dateon" = dateon,
+    "dateoff" = dateoff,
     "start_month" = start_month,
     "end_month" = end_month,
     "days" = days)
@@ -145,7 +145,7 @@ span_diff_plot <- cal_plot_tbl %>%
                  date_labels = date_list$labels) +
     facet_wrap(~site) +
     labs(title = "NOx and NO Span Value Divergence",
-         subtitle = glue("Between {date_list$start_date} and {date_list$end_date}"),
+         subtitle = glue("Between {date_list$dateon} and {date_list$dateoff}"),
          y = "% difference",
          x = "Date",
          caption = "Values > 10% indicate possible cylinder oxidation")
@@ -178,7 +178,7 @@ cal_factor_gt <- cal_plot_tbl %>%
     gt_plt_bullet(column = val, target = target) %>% 
     tab_header(
         title = "NOx Calibration Factors Summary",
-        subtitle = glue("{date_list$start_date} to {date_list$end_date}")) %>% 
+        subtitle = glue("{date_list$dateon} to {date_list$dateoff}")) %>% 
     tab_style(style = list(cell_text(weight = "bold")),
               locations = cells_row_groups())
     
@@ -188,13 +188,13 @@ cal_factor_gt <- cal_plot_tbl %>%
 # TESTING ----
 
 
-responses_tbl <- get.responses.tbl(config)
+responses_tbl <- get.responses.tbl(google_config)
     
-cal_tbl <- get.cal.tbl(config)  
+cal_tbl <- get.cal.tbl(google_config)  
 
-cal_plot_tbl <- make.cal.plot.tbl(cal_tbl, start_date, end_date)
+cal_plot_tbl <- make.cal.plot.tbl(cal_tbl, dateon, dateoff)
 
-date_list <- make.date.list(start_date, end_date)
+date_list <- make.date.list(dateon, dateoff)
 
 span_diff_plot <- plot.span.diff(cal_plot_tbl, date_list)
 
