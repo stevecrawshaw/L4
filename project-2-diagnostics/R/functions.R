@@ -18,7 +18,7 @@ pacman::p_load(odbc,
 
 dateon <-  "2022-12-01"
 dateoff <-  "2022-12-31"
-
+testing <- FALSE
 google_config <- config::get(file = here::here("config.yml"),
                              config = "google_cal")
 
@@ -74,6 +74,7 @@ connect.envista <- function(){
         return()
     
 }
+con <- connect.envista()
 
 get.diag.tbl <- function(con, dateon, dateoff){
     # function to get the raw diagnostics table from the envista database
@@ -162,7 +163,7 @@ make.clean.plot <- function(data, site, dateon, dateoff){
         scale_x_datetime(breaks = "1 weeks", date_labels = "%d") +
         theme_bw() 
     return(p)
-}
+} ##
 
 make.station.site.tbl <- function(final_tbl, sites_tbl){
     station_site_tbl <- final_tbl %>% 
@@ -334,7 +335,7 @@ plot.span.diff <- function(cal_plot_tbl, date_list){
     
     return(span_diff_plot)
     
-}
+} ##
 
 make.cal.factor.gt <- function(cal_plot_tbl, date_list){
     
@@ -375,7 +376,9 @@ get.router.pat <- function(){
         return()
 }
 
-get.device.data <- function(device_url){
+# pat <- get.router.pat()
+
+get.device.data <- function(device_url, pat){
     
     req <- request(device_url)
     
@@ -416,7 +419,7 @@ make.sim.data.tbl <- function(device_wide_tbl){
     return(sim_data_tbl)
 }
 
-get.devices.details.tbl <- function(device_url){
+get.devices.details.tbl <- function(device_url, pat){
     req_csv <- request(device_url) %>% 
         req_url_path_append("export") %>% 
         req_url_path_append("csv")
@@ -437,7 +440,9 @@ get.devices.details.tbl <- function(device_url){
         return()
 }
 # Data usage per device
-get.data.use <- function(dateon, dateoff, device_url, id) {
+get.data.use <- function(dateon, dateoff, device_url, pat, device_id_tbl) {
+    
+    single.site.data <- function(dateon, dateoff, device_url, id, pat){
     req <- request(device_url)
     start_date <- paste0(dateon, " 00:00:00")
     end_date <- paste0(dateoff, " 23:59:59")
@@ -452,19 +457,28 @@ get.data.use <- function(dateon, dateoff, device_url, id) {
         req_perform()
     # req_dry_run()
     
-    response_data_usage %>%
+        response_data_usage %>%
         resp_body_json() %>%
         pluck("data") %>%
         list.rbind() %>%
         as.data.frame() %>%
-        mutate(id = id) %>%
-        return()
-}
-
-get.data.use.partial <- partial(.f = get.data.use,
+        mutate(id = id) %>% 
+            return()
+    }
+    
+    get.data.use.partial <- partial(.f = single.site.data,
                                 dateon = dateon,
                                 dateoff = dateoff,
-                                device_url = device_url)
+                                device_url = device_url,
+                                pat = pat)
+    
+    all_sites_data_tbl <- map_dfr(device_id_tbl$id,
+                        .f = ~get.data.use.partial(.x))
+    
+            return(all_sites_data_tbl)
+}
+
+
 
 make.daily.data.tbl <- function(data_use_tbl, device_id_tbl){
     daily_data_tbl <- data_use_tbl %>% 
@@ -518,7 +532,7 @@ make.cumulative.tbl <- function(daily_data_tbl){
         return()
 }
 
-make.cumulative.plot <- function(cumulative_tbl){
+make.cumulative.plot <- function(cumulative_tbl, datelabel){
     cumulative_tbl %>% 
         ggplot() +
         geom_line(aes(x = date, y = cum_data, colour = site), linewidth = 1) +
@@ -578,6 +592,7 @@ make.data.summary.tbl <- function(daily_data_tbl, device_id_tbl, datelabel){
 }
 
 
+if(testing){
 
 # TESTING --------------------------
 
@@ -645,3 +660,4 @@ plotly::ggplotly(cumulative_plot)
 data_summary_tbl <- make.data.summary.tbl(daily_data_tbl = daily_data_tbl,
                                           device_id_tbl = device_id_tbl,
                                           datelabel = datelabel)
+}
