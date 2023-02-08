@@ -56,7 +56,7 @@ list(
   ),
     tar_target(
     name = all_sites_plots_tbl,
-    command = make.all.sites.plots.tbl(clean_long_diag_tbl, dateon, dateoff)
+    command = make.all.sites.plots.tbl(clean_long_diag_tbl, datelabel)
   ),
     tar_target(
     name = cal_tbl,
@@ -82,6 +82,10 @@ list(
     name = cal_factor_gt,
     command = make.cal.factor.gt(cal_plot_tbl, date_list)
   ),
+    tar_target(
+        name = span_diff_plot,
+        command = plot.span.diff(cal_plot_tbl, date_list)
+    ),
     tar_target(
     name = pat,
     command = get.router.pat()
@@ -135,5 +139,17 @@ list(
     command = make.data.summary.tbl(daily_data_tbl,
                                           device_id_tbl,
                                           datelabel)
+  ),
+  tar_target(
+      name = aq_data_tbl,
+      command = get.aq_data.tbl(final_tbl = final_tbl,
+                dateon = dateon,
+                dateoff = dateoff,
+                siteid =  c(215, 270, 463, 203, 501, 672),
+                timebase = 60)
+  ),
+  tar_target(
+      name = missing_data_tbl,
+      command =  make.missing.data.tbl(aq_data_tbl, station_site_tbl)
   )
 )

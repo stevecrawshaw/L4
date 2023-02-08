@@ -12,7 +12,8 @@ pacman::p_load(odbc,
                janitor,
                rlist,
                plotly,
-               httr2)
+               httr2,
+               naniar)
 
 # 1.0 Global Variables ----
 
@@ -58,7 +59,7 @@ make.sites.tbl <- function(){
 
 # 2.0 Analyser Diagnostics ----
 
-#   Database Connection ----
+#   Database Connection
 connect.envista <- function(){
     con_params <- get(config = "envista") # credentials
     con_params$driver
@@ -119,22 +120,13 @@ make.long.diag.tbl <- function(diag_tbl){
     return(long_diag_tbl)
 }
 
-make.clean.plot <- function(data, site, dateon, dateoff){
+make.clean.plot <- function(data, site, datelabel){
     # takes the nested df, strips out conc data (not interesting)
     # and produces ggplot with facets
-    if(var(month(c(dateon, dateoff))) == 0 & var(year(c(dateon, dateoff))) == 0){
-        
-        datelabel <- glue("{month(dateon,
-               label = TRUE,
-               abbr = FALSE) %>%
-	    as.character()} {year(dateon)}")
-        
-    } else {
-        datelabel = glue("{format(as.Date(dateon), '%d/%m/%Y')} to {format(as.Date(dateoff), '%d/%m/%Y')}")
-    }
-    
+
     p <- data %>% 
         filter(!str_detect(parameter, "Conc")) %>% 
+        mutate(par_unit = glue("{parameter} {unit}")) %>% 
         ggplot(aes(x = DIG_DateTime, y = value)) +
         geom_line() +
         geom_line(aes(x = DIG_DateTime,
@@ -147,21 +139,16 @@ make.clean.plot <- function(data, site, dateon, dateoff){
                   color = "blue",
                   lty = 5,
                   alpha = 0.6) +
-        # geom_line(aes(x = DIG_DateTime,
-        #               y = warning_low),
-        #           color = "firebrick",
-        #           lty = 5,
-        #           alpha = 0.9) +
-        # geom_line(aes(x = DIG_DateTime,
-        #               y = warning_high),
-        #           color = "firebrick",
-        #           lty = 5,
-        #           alpha = 0.9) +
-        facet_wrap(~parameter + unit, scales = "free_y", ncol = 3) +
+        facet_wrap(~par_unit, scales = "free_y", ncol = 2) +
         labs(title = glue("Diagnostics plots for {site}: {datelabel}"),
              x = "Date") +
-        scale_x_datetime(breaks = "1 weeks", date_labels = "%d") +
-        theme_bw() 
+        scale_x_datetime(breaks = "1 weeks", date_labels = "%d")+
+        theme_minimal() +
+        theme(strip.background = element_rect(fill = 'azure2',
+                                              linewidth = 0,
+                                              linetype = 0)) +
+        theme(strip.text = element_text(face = "bold",
+                                        size = 8))
     return(p)
 } ##
 
@@ -187,14 +174,14 @@ make.clean.long.diag.tbl <- function(long_diag_tbl, limits_tbl, station_site_tbl
     return(clean_long_diag_tbl)
 }
 
-make.all.sites.plots.tbl <- function(clean_long_diag_tbl, dateon, dateoff){
+make.all.sites.plots.tbl <- function(clean_long_diag_tbl,
+                                     datelabel){
     all_sites_plots_tbl <- clean_long_diag_tbl %>%
         select(-DIG_Station) %>% 
         nest_by(siteid, site_name) %>% 
         mutate(plot = list(make.clean.plot(data,
                                            site = site_name,
-                                           {{dateon}},
-                                           {{dateoff}})))
+                                           {{datelabel}})))
     return(all_sites_plots_tbl)
 }
 
@@ -320,18 +307,24 @@ plot.span.diff <- function(cal_plot_tbl, date_list){
     span_diff_plot <- cal_plot_tbl %>% 
         filter(calibration == "NOx_NO_span_delta") %>% 
         ggplot(aes(x = date, y = value)) +
-        geom_line() +
+        geom_line(linewidth = 1, colour = "#3200D1") +
         geom_hline(yintercept = c(10, -10),
                    colour = "firebrick",
                    lty = 5) +
         scale_x_date(date_breaks = date_list$breaks,
                      date_labels = date_list$labels) +
-        facet_wrap(~site) +
+        facet_wrap(~site, ncol = 2) +
         labs(title = "NOx and NO Span Value Divergence",
              subtitle = glue("Between {date_list$dateon} and {date_list$dateoff}"),
              y = "% difference",
              x = "Date",
-             caption = "Values > 10% indicate possible cylinder oxidation")
+             caption = "Values > 10% indicate possible cylinder oxidation") +
+        theme_minimal() +
+        theme(strip.background = element_rect(fill = 'azure2',
+                                              linewidth = 0,
+                                              linetype = 0)) +
+        theme(strip.text = element_text(face = "bold",
+                                        size = 12))
     
     return(span_diff_plot)
     
@@ -517,7 +510,13 @@ make.daily.data.use.plot <- function(daily_data_tbl){
         labs(title = "Mobile telemetry data use by routers",
              subtitle = "Daily Totals",
              fill = "Receive \nTransmit",
-             x = "Date") %>% 
+             x = "Date") +
+         theme_minimal() +
+        theme(strip.background = element_rect(fill = 'azure2',
+                                              linewidth = 0,
+                                              linetype = 0)) +
+        theme(strip.text = element_text(face = "bold",
+                                        size = 12)) %>% 
         return()
     
 }
@@ -591,6 +590,112 @@ make.data.summary.tbl <- function(daily_data_tbl, device_id_tbl, datelabel){
     
 }
 
+# 5.0 Missingness of Continuous data ----
+
+get.aq_data.tbl <- function(final_tbl,
+                        dateon = "2022-12-01",
+                        dateoff = "2022-12-31",
+                        siteid = c(215, 270, 463, 203, 501, 672),
+                        timebase = 60){
+
+#variable to use in padding function
+padby <- case_when(
+  timebase == 15 ~ "15 min",
+  timebase == 60 ~ "hour",
+  timebase == 1440 ~ "day",
+  TRUE ~ "hour"
+)
+
+if (any(siteid %in% "all")) siteid = unique(final_tbl$siteid) 
+
+#this tbl filters for the sites and timebase supplied to the function
+  filtered_tbl <- final_tbl %>% 
+  filter(siteid %in% {{siteid}},
+    minutes == timebase) 
+  
+# this tbl adds the start and end date  
+arg_tbl <- filtered_tbl %>% 
+  select(siteid, value, status, table) %>% 
+  mutate(dateStartPOS = as.POSIXct(dateon),
+         dateEndPOS = as.POSIXct(glue("{dateoff} 24:00")),
+         table_site = glue("{siteid}_{table}"))
+#we convert to a list with tibles in each element
+# to iterate over and supply the siteids when mapped to a df
+site_list <- arg_tbl %>%
+      split(arg_tbl$table_site) %>% 
+  map(select, -c(siteid, table_site)) #remove siteid and table_site as it is the list element name
+
+#function to extract data for each line of the tibble =
+#combination of pollutant and timebase for each site
+getData <- function(value,
+                    status,
+                    table,
+                    dateStartPOS,
+                    dateEndPOS,
+                    con = connect.envista()){
+# dbplyr to get each table
+  tbl(con, as.character(table)) %>%
+    filter(between(Date_Time, dateStartPOS, dateEndPOS)) %>%
+    select(Date_Time, all_of(value), all_of(status)) %>%
+    collect() 
+}
+
+output <- map_dfr(site_list,
+                  ~pmap_dfr(.l = all_of(.x),
+                            .f = getData),
+                  .id = "table_site")
+
+# con %>% dbDisconnect()
+
+# output
+
+long <- output %>% 
+  separate(table_site, into = c("siteid", "table"), sep = "_", remove = T) %>% 
+  pivot_longer(cols = -(siteid:Date_Time), names_to = "metric") %>% 
+inner_join(filtered_tbl %>% 
+             mutate(siteid = as.character(siteid)) %>% 
+                      pivot_longer(cols = value:status) %>% 
+             select(siteid, pollutant, metric = value, table),
+           by = c("siteid" = "siteid",
+                  "metric" = "metric",
+                  "table" = "table")) %>% 
+  filter(!is.na(value)) %>% 
+  mutate(field = str_sub(metric, 1, 1)) %>% 
+  select(-metric) %>% 
+  pivot_wider(id_cols = c(siteid, table, Date_Time, pollutant),
+              names_from = field,
+              values_from = value) %>% 
+  mutate(V = replace(V, S != 1, NA)) %>% 
+  pivot_wider(id_cols = c(siteid, Date_Time),
+              names_from = pollutant,
+              values_from = V) %>% 
+  group_by(siteid) %>% 
+  pad_by_time(.date_var = Date_Time, #throws a non fatal dplyr error here
+              .by = padby) %>%
+  # padr::pad(interval = padby) %>% 
+  rename(date = Date_Time) %>% 
+  mutate(siteid = as.integer(siteid))
+
+long %>% return()
+
+}
+
+make.missing.data.tbl <- function(aq_data_tbl, station_site_tbl){
+    aq_data_tbl %>% 
+    split(.$siteid) %>% 
+    map_dfr(~remove_empty(.x, which = "cols") %>% 
+            miss_var_summary()) %>% 
+    filter(str_detect(variable, "no2|pm10|pm2\\.5|rh|temp")) %>% 
+    inner_join(station_site_tbl, by = "siteid", multiple = "all") %>%
+    ungroup() %>%
+    transmute(site_name,
+              pollutant = toupper(variable),
+              n_miss,
+              pct_miss = round(pct_miss, 1)) %>% 
+    distinct() %>%     
+        return()
+}
+
 
 if(testing){
 
@@ -601,6 +706,7 @@ if(testing){
 final_tbl <- get.final.tbl()
 limits_tbl <- make.limits.tbl()
 sites_tbl <- make.sites.tbl()
+station_site_tbl <-  make.station.site.tbl(final_tbl, sites_tbl)
 
 con <- connect.envista()
 diag_tbl <- get.diag.tbl(con, dateon, dateoff)
@@ -608,14 +714,13 @@ dbDisconnect(con)
 
 long_diag_tbl <- make.long.diag.tbl(diag_tbl)
 
-station_site_tbl <-  make.station.site.tbl(final_tbl, sites_tbl)
 clean_long_diag_tbl <- make.clean.long.diag.tbl(long_diag_tbl,
                                                 limits_tbl,
                                                 station_site_tbl)
 
 all_sites_plots_tbl <- make.all.sites.plots.tbl(clean_long_diag_tbl, dateon, dateoff)
 
-all_sites_plots_tbl$plot
+# all_sites_plots_tbl$plot
 
 #------------------ Calibrations ---------------
 
@@ -638,26 +743,38 @@ cal_factor_gt
 #------------------Routers -------------------
 
 pat <- get.router.pat()
-device_data <- get.device.data(device_url = device_url)
+device_data <- get.device.data(device_url = device_url, pat = pat)
 device_id_tbl <- make.device.id.tbl(device_data = device_data)
 device_wide_tbl <- make.device.wide.tbl(device_data = device_data)
 sim_data_tbl <- make.sim.data.tbl(device_wide_tbl = device_wide_tbl)
-devices_details_tbl <- get.devices.details.tbl(device_url = device_url)
+devices_details_tbl <- get.devices.details.tbl(device_url = device_url, pat = pat)
 
-data_use_tbl <- map_dfr(device_id_tbl$id,
-                        .f = ~get.data.use.partial(.x))
+data_use_tbl <- get.data.use(dateon, dateoff, device_url, pat, device_id_tbl)
 
 daily_data_tbl <- make.daily.data.tbl(data_use_tbl = data_use_tbl,
                                       device_id_tbl = device_id_tbl)
 datelabel = make.datelabel(dateon, dateoff)
+
 daily_use_plot <- make.daily.data.use.plot(daily_data_tbl = daily_data_tbl)
 cumulative_tbl <- make.cumulative.tbl(daily_data_tbl = daily_data_tbl)
 
 
-cumulative_plot <- make.cumulative.plot(cumulative_tbl = cumulative_tbl)
+cumulative_plot <- make.cumulative.plot(cumulative_tbl = cumulative_tbl,
+                                        datelabel = datelabel)
 
 plotly::ggplotly(cumulative_plot)
 data_summary_tbl <- make.data.summary.tbl(daily_data_tbl = daily_data_tbl,
                                           device_id_tbl = device_id_tbl,
                                           datelabel = datelabel)
+
+#--------------Missingness--------------------
+
+aq_data_tbl <- get.aq_data.tbl(final_tbl = final_tbl,
+                dateon = dateon,
+                dateoff = dateoff,
+                siteid =  c(215, 270, 463, 203, 501, 672),
+                timebase = 60)
+
+missing_data_tbl <- make.missing.data.tbl(aq_data_tbl, station_site_tbl)
+
 }
