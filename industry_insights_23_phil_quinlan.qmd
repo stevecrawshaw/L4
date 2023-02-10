@@ -1,0 +1,56 @@
+---
+title: "Industry Insights 23: Phil Quinlan"
+author: "Steve Crawshaw"
+format: pdf
+editor: visual
+---
+
+University of Nottingham: Digital Research Service  
+
+## Academic Career Routes  
+
+* Computing 
+* Systems Analyst 
+* Bioinformatics (database dev) 
+* Breast cancer research 
+* PhD (while working) 
+
+
+Student placement helped application of technical skills. Phil realised that skills could improve health care. First boss enabled, supported and accepted failure.  
+
+## Building a data team in a University     
+
+* Software Engineering 
+* Data Engineering 
+* Data Science 
+* Bioinformatics
+
+Service to researchers across university, supporting data activity. The science of the infractructure.  
+
+### Key Concepts
+
+1. Cost recovered - innovation 
+2. Research leading - conduct and support research 
+3. Challenge led 
+4. People led 
+5. Think beyond possible - research should be risky     
+
+## National Infrastructure for Health Analytics     
+
+New way of searching health data needed. Federated model applies analytics to data wherever it is. Infrastructure development project. **Partnered with industry** because more advanced tools and tech and could facilitate a federated approach.  
+
+Approach of co - creation. 2017 seed funding from UoN. Then opened up thye proprietary version to make it open source. Protocol. 2019 establish rapid deployment and curation tools. 2020 opensource connector to link multiple isolated datasets. Pandemic drove move to link national datasets and avoid separate queries. 2022 MRC finalists for impact award. 
+
+Developed now to engineer re - usable workflows based on pseudonomous data. 
+
+## AI in Health 
+
+* Awareness is low 
+* Term overused 
+* Fear factor because of lack of understanding 
+* Access to suitable datasets is difficult 
+* Installing locally is difficult - political
+
+Five Safes (framework for governance in health) people, projects, settings, data, outputs  
+
+Overview of system - five safes wrapped query runs analysis workflow across federated datasets.
