@@ -72,9 +72,15 @@ Bristol City Council is currently a mayoral - led authority. The current Mayor, 
 
 BCC is a large and complex organisation dealing with a wide range of functions, from managing highways and planning applications to looking after vulnerable people. It follows that multiple systems and approaches exist for managing data across the organisation, many of which have evolved over time and have not been centrally planned or managed.
 
-A recently published ["Data, Insight and Information Strategy"](https://democracy.bristol.gov.uk/documents/s64321/DII%20Strategy%20Final.pdf) sets out the strategic direction and objectives for the council in this area:
+A recently published ["Data, Insight and Information Strategy"](https://democracy.bristol.gov.uk/documents/s64321/DII%20Strategy%20Final.pdf) sets out the strategic direction and objectives for the council in this area as follows:
 
-![Data, Insights and Information Strategy Objectives](images/DII_strategy_1.png)
+* Objective 1 - Create the right culture and environment for great collaboration amongst teams and partners
+
+* Objective 2 - Become an insight - rich data driven organisation to improve performance
+* Objective 3 - Manage our information safely, securely and appropriately
+* Objective 4 - Create a more efficient and effective approach to the use of data
+* Objective 2 - Establish the supply and use of data as a key enabler of a more connected, smarter city
+
 The strategy aims to deliver these objectives by developing a single analytics team to deliver insights across the organisation and by consolidating the disparate and distributed datasets across the council into a corporate data lake with analysis being done on one data analytics platform (Power BI). Several projects are under way to deliver this change.
 
 
@@ -84,19 +90,19 @@ No specific document exists about BCC's data architecture, however there is an i
 
 ![Information Asset Taxonomy](images/Info_Asset_Taxonomy_2017.png)
 
-Much of this data architecture is not of direct relevance to my work as it pertains to other departments and functions. In my own work area, the main data architecture is summarised as follows:
+Much of this data architecture is not of direct relevance to my work as it pertains to other departments and functions. In my own work area, the main data architecture which I design,,m maintain and operate is summarised as follows:
 
 * 182 passive samplers (Diffusion tubes) providing monthly concentrations of pollutants (NO~2~)
-* MS Access database to hold diffusion tube and monitoring network meta data on site
+* MS Access database (K6) to hold diffusion tube and monitoring network meta data
 * A network of 8 real time air quality monitors (analysers)
-* 4G Telemetry to connect these devices to:
+* A fleet of 4G routers providing telemetry to connect these devices to:
 * A proprietary communications software suite (Envista Commcentre)
-* A database client and analytics program (Envista ARM)
-* A SQL server database hosted on Azure
-* An open data (OD) platform provided by Opendatasoft
-* FME and FME Server processes to Extract, Transform and Load (ETL) air quality data to the open data platform
-* Dashboards, visualisation and analytics delivered through the OD platform
-* Bespoke reporting and ETL pipelines delivered through R, sourcing data through the OD portal and the Envista database
+* A database client and analytics program (Envista ARM) (K6)
+* A SQL server database hosted on Azure (K6)
+* An open data (OD) platform provided by Opendatasoft (K4)
+* FME and FME Server processes to Extract, Transform and Load (ETL) air quality data to the open data platform (K10)
+* Dashboards, visualisation and analytics delivered through the OD platform (S14)
+* Bespoke reporting and ETL pipelines delivered through R, sourcing data through the OD portal and the Envista database (S14, S10, S2, K14, K7)
 
 ## Security Standards and Policies
 
@@ -136,15 +142,15 @@ My official job title is "Project Manager". This is currently under review, part
 The deliverables for which I am responsible are summarised as follows:
 
 1. Data capture rates exceeding 85% for continuous monitoring, 75% for passive.
-2. Monthly data cleaning (ratification) of continuous data.
-3. Annual reporting of air quality data.
+2. Monthly data cleaning (ratification) of continuous data. (K3, K4, K8)
+3. Annual reporting of air quality data. (S12, S13, S14, S15)
 4. Calculation of Key Performance Indicators (KPIs) for air quality.
-5. Developing or revising KPIs as necessary.
+5. Developing or revising KPIs as necessary. (K11, K13)
 6. Ad hoc analysis and summaries of air quality data to support other programmes.
-7. Ensuring all relevant air quality data are published on the Open Data Portal.
-8. Ensuring all relevant technical guidance is followed in relation to air quality management.
-9. Responding to relevant requests from stakeholders for air quality data and analysis.
-10. Delivery of specific projects such as "Slow the Smoke"
+7. Ensuring all relevant air quality data are published on the Open Data Portal. (K4, S12)
+8. Ensuring all relevant technical guidance is followed in relation to air quality management. (S1)
+9. Responding to relevant requests from stakeholders for air quality data and analysis. (S7)
+10. Delivery of specific projects such as "Slow the Smoke" (S12, S13, S14, S15)
 
 ## Key Skills and Knowledge
 
@@ -152,11 +158,11 @@ The key skills and knowledge for my role are as follows:
 
 ### Knowledge
 
-* A good understanding of the legal framework for air quality management in the UK.
-* Familiarity with the relevant technical guidance on assessing air quality.
+* A good understanding of the legal framework for air quality management in the UK. (K1)
+* Familiarity with the relevant technical guidance on assessing air quality. (K2)
 * Knowledge of air quality policy and interactions with other domains like transport.
 * An understanding of the development management (land use planning) process in the UK including Environmental Impact Assessment (EIA).
-* An understanding of the principles of open data and legal framework for public access to data.
+* An understanding of the principles of open data and legal framework for public access to data. (K4)
 
 ### Skills
 
@@ -256,7 +262,7 @@ The reporting for diffusion tube data consists of providing data in a pre - form
 
 The overall process will be controlled using the [`targets` R package](https://books.ropensci.org/targets/). This is a "Make" - like  pipeline tool for Statistics and data science in R to help maintain a reproducible workflow. Targets learns how the pipeline fits together, skips costly runtime for tasks that are already up to date, runs only the necessary computation, supports implicit parallel computing, abstracts files as R objects, and shows tangible evidence that the results match the underlying code and data.
 
-Each operation will be assigned to a function. Targets will ensure that the functions run in the right order, and only when all pre - conditions are satisfied.
+Each operation will be assigned to a function. Targets will ensure that the functions run in the right order, and only when all pre - conditions are satisfied. (K3, K8, K10, K14, S2, S4, S15)
 
 #### Data Sources
 
@@ -294,7 +300,7 @@ The pipeline for this project was built in R, using the `targets` package to ens
 
 ### Reporting
 
-The final reporting product needs to be easily readable and to highlight the key parameters which govern measurment quality and system reliability. It was decided that an html output from a Quarto document would be the ideal option. The file is portable across systems and can be easily published for sharing with e.g. service contractors on a website such as Quarto pubs.
+The final reporting product needs to be easily readable and to highlight the key parameters which govern measurement quality and system reliability. It was decided that an html output from a Quarto document would be the ideal option. The file is portable across systems and can be easily published for sharing with e.g. service contractors on a website such as Quarto pubs.
 
 The key outputs in the report are as follows.
 
@@ -323,12 +329,13 @@ Although the Sensor.Community organisation provides some mapping and interrogati
 2. Ability to integrate with other air quality measurements
 3. Interactive bespoke dashboard and visualisation options
 4. A powerful and well documented API for querying the data
+5. Integrated aggregation of data to hourly interval enabling direct comparison with reference method instruments
 
-In order to satisfy expectation for the customers of these data, i.e. the citizen scientists and members of the public, it was decided that the data should be as current as possible. This meant designing a real - time "Extract - Transform - Load" (ETL) process to query the local raw Sensor.Community data from their API, transform it to a state suitable for publishing on our portal and then using the push API on our portal to publish the data.
+In order to satisfy expectation for the customers of these data, i.e. the citizen scientists and members of the public, it was decided that the data should be as current as possible. (K7, K4, K9) This meant designing a real - time "Extract - Transform - Load" (ETL) process to query the local raw Sensor.Community data from their API, transform it to a state suitable for publishing on our portal and then using the push API on our portal to publish the data.
 
 The ETL process was first trialled using scripts in R. The `httr` library was used to develop functions to extract the data and push to the portal and data manipulation conducted using the `tidyverse` meta package. After successfully prototyping the solution, this was moved to production using FME (Feature Manipulation Engine).
 
-FME is a no - code platform for ETL which is primarily focused on spatial data. Bristol City Council also has FME server which supports scheduled FME processes. two FME workspaces were developed to implement the ETL of the sensor data. These are represented visually in the screenshots below as FME workspaces.
+FME is a no - code platform for ETL which is primarily focused on spatial data. Bristol City Council also has FME server which supports scheduled FME processes. Two FME workspaces were developed to implement the ETL of the sensor data. These are represented visually in the screenshots below as FME workspaces. (K10, K11, K12, S1)
 
 ![Hourly FME ETL Process](images/hourly_ld_fme.png)
 
@@ -343,7 +350,7 @@ The FME schedules run reliably and this has proved a robust method for automatin
 
 #### Making Sense of Data - Workshop and Learning Resources
 
-It was recognised that citizen scientists would need some initial training and induction to familiarise themselves with the sensors and the data that was collected. A "Making Sense of Data" workshop was convened in July 2022 and interactive resources hosted on the open data platform were prepared to support the learning activity.  
+It was recognised that citizen scientists would need some initial training and induction to familiarise themselves with the sensors and the data that was collected (S7, S12). A "Making Sense of Data" workshop was convened in July 2022 and interactive resources hosted on the open data platform were prepared to support the learning activity.  (S7, S12)  
 The [learning resources](https://opendata.bristol.gov.uk/pages/making_sense_of_data/) include:
 
 1. Interactive leaflet maps showing locations of the sensors
@@ -374,6 +381,8 @@ The open data portal provides strong capability for visualisation and transforma
 5. How can I relate pollution levels to wind patterns or weather?
 6. How can I download the data if I need to do more detailed analysis on it?
 
+(S7, S12, S13, S14, S15, B2)
+
 A [web dashboard](https://opendata.bristol.gov.uk/pages/luftdaten-sitepage/?q=sensor_id:66970) was designed to answer these questions by implementing the following features.
 
 1. An interactive map on the first page where the user can select their sensor and go to the dashboard main page
@@ -383,7 +392,7 @@ A [web dashboard](https://opendata.bristol.gov.uk/pages/luftdaten-sitepage/?q=se
 5. Tabs, providing five different visualisations including:
 6. Time series chart for both pollutants (selectable)
 7. Daily mean chart including relevant World Health Organisation (WHO) guideline values for comparison
-8. Charts for hour of day and day of week
+8. Charts for hour of day and day of week - to show diurnal and weekly variation
 9. A wind rose for the selected time period, which shows wind speed and direction
 10. A data table with download links in Excel, JSON and CSV formats
 
@@ -400,7 +409,9 @@ Both the "Making Sense of Data" learning resources and the sensor dashboard were
 1. Web development using HTML and CSS
 2. Angular JS for logic
 3. Opendatasoft's widgets for visualisations, aggregation, iteration and controls
-4. Javascript for string and dataset manipulation
+4. Javascript for string and data manipulation
+
+(K10, S2, S7, S12, S14)
 
 In addition to these technologies, javascript was used to manipulate a url in order to implement the wind rose. The wind rose image is rendered by sending a request to a resource at https://mesonet.agron.iastate.edu. Depending on the query within the request, a wind rose will be returned for the requested time period. 
 
@@ -433,7 +444,7 @@ An example of a static version of the maps is shown below.
 
 ![Example of static PM ~2.5~ polar map by cut by season](images/static_polar_pm25.png)
 
-
+NEED SOME TEXT TO FINALISE THIS PROJECT SECTION ^
 
 ## Project 4: Comparing performance of low – cost sensors with reference method instruments
 
@@ -480,7 +491,7 @@ pm_tbl %>%
 
 The co - location study used two of these sites; Parson Street School and Temple Way. This is because these sites are both operated by the council. Using the AURN St Pauls site would have required permissions from the Environment Agency which would have been a time consuming and uncertain process.  
 
-The [airrohr SDS011 fine dust sensors](https://sensor.community/en/sensors/airrohr/) require a wifi signal in order to push data to a server. The Bristol City Council sites did not previously have wifi access available. The telemetry at our air monitoring sites was a combination of 3G modems and analogue land lines in 2021. In order to accommodate the co - location study and also for the purposes of virtualising our data collection machine, I procured, configured and installed Teltonika RUT950 4G LTE routers at all of our monitoring sites. This enabled 4G TCP/IP access to the data loggers or instruments at all of the sites, and also provided a wifi hotspot to enable the SDS011 sensors to send data.
+The [airrohr SDS011 fine dust sensors](https://sensor.community/en/sensors/airrohr/) require a wifi signal in order to push data to a server. The Bristol City Council sites did not previously have wifi access available. The telemetry at our air monitoring sites was a combination of 3G modems and analogue land lines in 2021. In order to accommodate the co - location study and also for the purposes of virtualising our data collection machine, I procured, configured and installed Teltonika RUT950 or RUT955 4G LTE routers at all of our monitoring sites. This enabled 4G TCP/IP access to the data loggers or instruments at all of the sites, and also provided a wifi hotspot to enable the SDS011 sensors to send data.
 
 The physical installation of the SDS011 at both sites was complete in early May 2022.
 
@@ -494,7 +505,9 @@ Within this study it was not possible to compare the responses of multiple low c
 
 Continuous Ambient Air Quality Monitoring Systems (CAMS) are certified by the Environment Agency under their MCERTS scheme. This certifies the quality regimes and equipment for environmental permit holders. Local authorities are required to use MCERTS (or equivalent) equipment for monitoring air quality under the LAQM (Local Air Quality Management) regime. The certification and approval process ensures that the measurement standard provides data of an acceptable quality. In addition to the specification of the equipment, a local authority is required to adhere to the calibration and maintenance requirements for the equipment as set out in the relevant guidance [LAQM.TG(16)](https://laqm.defra.gov.uk/documents/LAQM-TG16-April-21-v1.pdf) and the [Local Site Operator (LSO) manual](https://uk-air.defra.gov.uk/assets/documents/reports/empire/lsoman/lsoman.html) for sites that are part of, or affiliated to the national AURN (Automated Urban and Rural Network).
 
-The equipment used in this colocation study is the Met One BAM 1020 Continuous Particulate Monitor, hereafter referred to as "BAM 1020". The instrument works by drawing a sample of air through a filter tape every hour. The deposited PM is then exposed to a source of radiactive Carbon 14 on one side of the filter tape. A beta radiation detector is on the other side of the tape and measures the attenuation of the beta radiation through the sampled filter. The attenuation of the beta radiation is a function of the deposited PM mass on the filter tape. Because the flow rate of the sampled air is known, the concentration in &mu;gm^-3^ can be calculated. Hourly concentrations are recorded, either on an internal or external data logger. These data are regularly polled by a central telemetry system.
+(K2, K8, K9, S1)
+
+The equipment used in this colocation study is the Met One BAM 1020 Continuous Particulate Monitor, hereafter referred to as "BAM 1020". The instrument works by drawing a sample of air through a filter tape every hour. The deposited PM is then exposed to a source of radioactive Carbon 14 on one side of the filter tape. A beta radiation detector is on the other side of the tape and measures the attenuation of the beta radiation through the sampled filter. The attenuation of the beta radiation is a function of the deposited PM mass on the filter tape. Because the flow rate of the sampled air is known, the concentration in &mu;gm^-3^ can be calculated. Hourly concentrations are recorded, either on an external data logger and polled by a central telemetry system.
 
 #### Colocation Sites: Temple Way
 
@@ -579,18 +592,20 @@ The data for the low cost sensor at Temple Way are not published on the council'
 
 #### Data Processing Pipeline
 
-Initially the data processing pipeline was split into three R scripts, one for retrieving and preparing the data, one for plotting, and one for modelling the data. However, while developing this approach, it became apparent that there were significant problems with this method. Tracking the operations across three different scripts became confusing, and testing and debugging was sub - optimal and resulted in errors when running the scripts if they weren't called in order.
+Initially the data processing pipeline was split into three R scripts, one for retrieving and preparing the data, one for plotting, and one for modelling the data. However, while developing this approach, it became apparent that there were significant problems with this method. Tracking the operations across three different scripts became confusing, and testing and debugging was sub - optimal and resulted in errors when running the scripts if they weren't called in order. 
 Researching this issue identified a possible solution, which was eventually used for this project. The [`targets`](https://books.ropensci.org/targets/) R package by Will Landau is a "Make" - like pipeline tool for data science in R. It helps to maintain a reproducible workflow, minimising repetition, running only necessary code, and forces a functional approach to code and pipeline development.
+
+(B7, B6, S15, K11)
 
 ##### Retrieving and Preparing data for Modelling
 
 Data for the two BAM 1020 instruments and the Parson Street low cost sensor are retrieved using a purpose built R function which uses endpoints from the [Opendatasoft API](https://opendata.bristol.gov.uk/api/v2/console).
 
-For the Temple Way sensor, it was not possible to register this on the sensor.community website. A different approach was developed to retrieve the data, which is available through the [Madavi API](https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445) as a combination of csv and zip files. This operation entails retrieving a number of files in different formats and joining the data into one dataframe.
+For the Temple Way sensor a different approach was developed to retrieve the data, which is available through the [Madavi API](https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445) as a combination of csv and zip files. This operation entails retrieving a number of files in different formats and joining the data into one data frame.
 
-Once data are retrieved from the online repositories, they are combined into a nested dataframe (or tibble in the tidyverse vernacular) with functions from the purrr package such that columns are created that can be used in the subsequent modelling process. The resulting nested dataframe is a 2 row, four column tibble grouped by the site ID with list columns containing the raw hourly data, the prepared source data for the model, and a pivoted (wide) dataset used in the plotting and modelling functions.
+Once data are retrieved from the online repositories, they are combined into a nested data frame with functions from the `purrr` package such that columns are created that can be used in the subsequent modelling process. The resulting nested dataframe is grouped by the site ID with list columns containing the raw hourly data, the prepared source data for the model, and a pivoted (wide) dataset used in the plotting and modelling functions.
 
-Nesting the model data within a tibble enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a tibble with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.
+Nesting the model data enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a data frame with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.
 
 ##### Plotting Functions
 
