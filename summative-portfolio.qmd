@@ -1,7 +1,7 @@
 ---
 title: "Summative Portfolio: L4"
 author: "Steve Crawshaw"
-format: docx
+format: html
 date: "`r Sys.Date()`"
 toc: true
 toc-title: "Table of Contents"
@@ -278,6 +278,32 @@ The `targets` package will control the processing pipeline and ensure efficient 
 
 ## Project 2: To develop a process for monthly diagnostics and QA reporting from air monitors and telemetry devices
 
+### Introduction
+The QA process for air quality measurements is set out in the relevant guidance LAQM.TG(22). Bristol City Council follows this guidance which essentially requires regular calibration of NOx analysers with a traceable gas. In addition to the calibration activity, other datasets are helpful in understanding and maintaining the good operation of the monitoring network. The aim of this project is to bring all those sources of data together in a coherent report to summarise the operating characteristics of the monitoring system and provide assurance that the system is operating within desired parameters.
+
+### Data Sources
+The sources of data are summarised as follows:
+
+1. SQL server database (Envista). Stores air quality measurements and diagnostics data
+2. Google Drive. Calibration data is collected in the field with google forms and stored in google sheets
+3. Teltonika Remote Management System (RMS). Parameters for the 4G routers which provide telemetry to the network are available through a REST API.
+
+### Data Processing Pipeline
+
+The pipeline for this project was built in R, using the `targets` package to ensure reproducibility and organise the functions. Data are extracted from the data sources, using database connections, the `googlesheets4` R package and the RMS API provided by Teltonika. Various data cleaning and processing functions are implemented in the targets pipeline to prepare the data for output in a Quarto document.
+
+### Reporting
+
+The final reporting product needs to be easily readable and to highlight the key parameters which govern measurment quality and system reliability. It was decided that an html output from a Quarto document would be the ideal option. The file is portable across systems and can be easily published for sharing with e.g. service contractors on a website such as Quarto pubs.
+
+The key outputs in the report are as follows.
+
+1. A `gt` table showing the amount and percentage of missing data for the measurement period
+2. A `gt` table with sparklines showing the calibration factors used and their ideal target values. This is broken down by pollutant and site and indicates whether calibrations are providing correct data which which to adjust the measurement data.
+3. A chart showing the divergence of span values for two pollutants. This can indicate problems with contamination in calibration gas cylinders.
+4. Charts showing the data use of airtime data allowances by routers. This can help identify excessive data use, which could indicate security breach or operating system problem. If data thresholds are exceeded, airtime can be cut which would inhibit our real time reporting of air quality measurements.
+5. Time series charts of instrument diagnostics. These are compared to high and low "normal operating characteristics" to show when instrument problems may be developing. This could for example be the sample pressure declining, indicating a leak in the system.
+
 
 ## Project 3: To publish a dashboard to share the results of citizen science air monitoring for the Slow the Smoke Project
 
@@ -291,14 +317,14 @@ The sensors used are SDS011 sensors that measure PM~10~ and PM~2.5~ as well as t
 
 ### Automated Data Ingestion and Processing
 
-Although the Sensor.Community organisation provides some mapping and interrogation tools for the data collected from the sensors, it was felt that Bristol's [open data platform](https://opendata.bristol.gov.uk/) offered several advantages for this project over the Sensor.Community offer.
+Although the Sensor.Community organisation provides some mapping and interrogation tools for the data collected from the sensors, it was felt that Bristol's [open data platform](https://opendata.bristol.gov.uk/) offered several advantages for this project over the Sensor.Community offer as follows.
 
 1. A unified single point of enquiry for local air quality data
 2. Ability to integrate with other air quality measurements
 3. Interactive bespoke dashboard and visualisation options
 4. A powerful and well documented API for querying the data
 
-In order to satisfy expectation for the customers of these data, i.e. the citizen scientists and members of the public, it was decided that the data should be as current as possible. This meant designing a real - time "Extract - Transform - Load" (ETL) process to query the local raw Sensor.Community data from their API, transorm it to a state suitable for publishing on our portal and then using the push API on our portal to publish the data.
+In order to satisfy expectation for the customers of these data, i.e. the citizen scientists and members of the public, it was decided that the data should be as current as possible. This meant designing a real - time "Extract - Transform - Load" (ETL) process to query the local raw Sensor.Community data from their API, transform it to a state suitable for publishing on our portal and then using the push API on our portal to publish the data.
 
 The ETL process was first trialled using scripts in R. The `httr` library was used to develop functions to extract the data and push to the portal and data manipulation conducted using the `tidyverse` meta package. After successfully prototyping the solution, this was moved to production using FME (Feature Manipulation Engine).
 
@@ -564,7 +590,7 @@ For the Temple Way sensor, it was not possible to register this on the sensor.co
 
 Once data are retrieved from the online repositories, they are combined into a nested dataframe (or tibble in the tidyverse vernacular) with functions from the purrr package such that columns are created that can be used in the subsequent modelling process. The resulting nested dataframe is a 2 row, four column tibble grouped by the site ID with list columns containing the raw hourly data, the prepared source data for the model, and a pivoted (wide) dataset used in the plotting and modelling functions.
 
-The approach of nesting the model data within a tibble enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a tibble with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.
+Nesting the model data within a tibble enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a tibble with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.
 
 ##### Plotting Functions
 
