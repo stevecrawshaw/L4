@@ -24,8 +24,8 @@ p_load(char = p)
 
 # Variables ----
 
-startDate <- "2021-01-01"
-endDate <- "2021-12-31"
+startDate <- "2022-01-01"
+endDate <- "2022-12-31"
 
 
 # Functions ----
@@ -439,7 +439,8 @@ get.no2.data.db <- function(con, startDate, endDate){
                dateoff = dateOff,
                siteid = LocID,
                concentration,
-               id = ID)
+               id = ID,
+               use_for_annual = UseForAnnual)
     return(out)
     
 }
@@ -526,6 +527,8 @@ get.lastyears.sites <- function(con, startDate){
 pivot.tubes.monthly <- function(no2_data){
     #construct the wide format concentration data grouped by siteid and month
     no2_data %>% 
+        filter(use_for_annual == 1L) %>%
+        # THIS REMOVES TUBES WITH NON COMPLIANT EXPOSURE DATES
         mutate(month_num = lubridate::month(mid_date) %>% as.integer(),
                month = month.abb[month_num] %>%
                    as_factor(),
@@ -561,8 +564,8 @@ make.step.2.table <- function(aqms_tbl,
                   # spreadsheet doesn't run a fall off distance calc
                   tube_kerb_distance = tube_kerb) %>% 
         right_join(pivoted_tubes_tbl,
-                   by = c("siteid" = "siteid")) %>% 
-        left_join(last_years_sites_tbl, by = c("siteid" = "siteid")) %>% 
+                   by = c("siteid" = "siteid"), multiple = 'all') %>% 
+        left_join(last_years_sites_tbl, by = c("siteid" = "siteid"), multiple = 'all') %>% 
         mutate(new_existing = if_else(is.na(exist_last_year), "New", "Existing")) %>%
         group_by(siteid, dup_trip) %>%
         mutate(row_id = row_number()) %>%
@@ -598,7 +601,6 @@ join_table <- aqms_tbl %>%
 colocated_tbl <- no2_data %>%
     inner_join(join_table, by ="siteid") %>%
     arrange(siteid, mid_date)
-
 year <- year(median(no2_data$mid_date, na.rm = TRUE))
 # 
 # # colocated_tbl %>% 
@@ -628,8 +630,8 @@ bias_site_list <- no2_data %>%
         group_by(site, month) %>% 
         nest() %>% 
         unnest_wider(data) %>%
-        unnest_wider(concentration) %>% 
-        rename_with(renameTube, starts_with("..")) %>%
+        unnest_wider(concentration, names_sep = "_") %>% 
+        # rename_with(renameTube, starts_with("..")) %>%
         arrange(site, month) %>% 
         ungroup() %>% 
         split(as_factor(.$site))
@@ -770,7 +772,7 @@ make.table.a4 <- function(annual_tube_data_4years_tbl,
         right_join(data_cap_period_tbl %>%
                        select(siteid, dc_monitoring_period),
                    by = "siteid") %>% 
-        mutate(across(where(is.numeric), round, 1)) %>% 
+        mutate(across(where(is.numeric), ~round(.x, 1))) %>% 
         relocate(siteid, dc_monitoring_period)
 }
 
@@ -1138,7 +1140,7 @@ make.pm25.trend.chart <- function(startDate){
     
     pm25_chart <- pm_25_tbl %>%
         ggplot(aes(x = year, y = pm2.5)) +
-        geom_line(lwd = 1) +
+        geom_line(linewidth = 1) +
         geom_text(aes(label = round(pm2.5, 1)),
                   vjust = 2) +
         geom_hline(yintercept = 5,

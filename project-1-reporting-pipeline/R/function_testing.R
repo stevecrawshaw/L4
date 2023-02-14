@@ -45,8 +45,6 @@ table_a7 <- make.table.a7(contin_4yrs_tbl, startDate, aqms_tbl, pm10_data_cap_tb
 
 table_a8 <- make.table.a8(contin_4yrs_tbl, startDate, aqms_tbl, pm2.5_data_cap_tbl)
 
-bias_site_list <- make.bias.site.list(aqms_tbl, no2_data)
-
 table_list <- make.table.list(step_2_tbl,
                               step_2a_tbl,
                               table_a1,
