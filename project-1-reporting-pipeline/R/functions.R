@@ -18,7 +18,8 @@ p <-
       "readxl",
       "openxlsx2",
       "scales",
-      "ggtext"
+      "ggtext",
+      "sf"
       )
 p_load(char = p)
 

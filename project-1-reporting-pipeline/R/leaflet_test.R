@@ -18,8 +18,9 @@ aqma_boundary <- st_read("data/air-quality-management-areas.geojson")
 
 aqgs <- read_file("data/air-quality-management-areas.geojson")
 
-livenox <- aq_monitors %>% 
-    filter(str_detect(pollutants, "NOX")) %>% 
+livenox <- aqms_tbl %>% 
+    filter(str_detect(pollutants, "NOX"),
+           current == 1) %>% 
     nrow()
 
 glimpse(aqms_map_tbl)
