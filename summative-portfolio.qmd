@@ -256,13 +256,13 @@ The purpose of the CAZ is to reduce concentrations of one pollutant (NO~2~) to l
 
 The reporting for diffusion tube data consists of providing data in a pre - formatted template quarterly. The data is a combination of meta - data for the measurement site, e.g. location, height, distance from a road and the "raw" monthly concentrations from the diffusion tube. The measurement technique for diffusion tubes and continuous analysers is described later on.
 
-### Proposed analysis and processing techniques
+### Analysis and Processing Techniques
 
 #### Summary 
 
-The overall process will be controlled using the [`targets` R package](https://books.ropensci.org/targets/). This is a "Make" - like  pipeline tool for Statistics and data science in R to help maintain a reproducible workflow. Targets learns how the pipeline fits together, skips costly runtime for tasks that are already up to date, runs only the necessary computation, supports implicit parallel computing, abstracts files as R objects, and shows tangible evidence that the results match the underlying code and data.
+The overall process was controlled using the [`targets` R package](https://books.ropensci.org/targets/). This is a "Make" - like  pipeline tool for Statistics and data science in R to help maintain a reproducible workflow. Targets learns how the pipeline fits together, skips costly runtime for tasks that are already up to date, runs only the necessary computation, supports implicit parallel computing, abstracts files as R objects, and shows tangible evidence that the results match the underlying code and data.
 
-Each operation will be assigned to a function. Targets will ensure that the functions run in the right order, and only when all pre - conditions are satisfied. (K3, K8, K10, K14, S2, S4, S15)
+Each operation was assigned to a function. Targets ensures that the functions run in the right order, and only when all pre - conditions are satisfied. (K3, K8, K10, K14, S2, S4, S15)
 
 #### Data Sources
 
@@ -273,13 +273,14 @@ The data needed for the analysis are in four separate repositories:
 3. The council's [open data portal](https://opendata.bristol.gov.uk/explore/?sort=modified)
 4. UK Government's [Air Information Resource](https://uk-air.defra.gov.uk/data/) which holds data for the air monitoring sites run by government as part of the Automated Urban and Rural Network (AURN). There are two of these sites in Bristol.
 
-Three of these repositories will be used in the analysis. The open data portal will not be used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.
+Three of these repositories were used in the analysis. The open data portal was not used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.
 
-The data from databases will be accessed using a combination of the `DBI`, `dplyr` and `odbc` packages. For the data that is hosted on the government's website, the `openair` package provides a helpful function called `importAURN`. Once the data is available in the R session, they will be manipulated using base R and tools from the `tidyverse` metapackage to produce dataframes to populate the tables in the required format. The dataframes will be exported as csv files and also pasted directly into the spreadsheet template.
+##### Data processing overview
 
-For the generation of spatial output, the `sf` and `osm` packages will be used to create shapefiles for use in ArcGIS and output graphics as png files.
+The data from databases was accessed using a combination of the `DBI`, `dplyr` and `odbc` packages. For the data that is hosted on the government's website, the `openair` package provides a helpful function called `importAURN`. Functions written using a combination of `tidyverse` and base R and controlled by `targets` implement the ETL processes. The dataframes are exported as csv files ready to be pasted directly into the spreadsheet template.
 
-The `targets` package will control the processing pipeline and ensure efficient operation of the data manipulation steps.
+For the generation of spatial output, the `sf` package is used to create shapefiles for use in ArcGIS and output graphics as png files.
+
 
 
 ## Project 2: To develop a process for monthly diagnostics and QA reporting from air monitors and telemetry devices
@@ -452,7 +453,7 @@ NEED SOME TEXT TO FINALISE THIS PROJECT SECTION ^
 
 The Slow the Smoke (StS) project is a Citizen Science project funded by Defra's Air Quality Grant. It aims to test engagement approaches based on citizen monitoring of air quality with a particular focus on emissions from domestic solid fuel burning (wood burning stoves etc.).   
 
-Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities.  
+Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities. I developed and agreed with the partners a data sharing agreement to cover the management of personal data under GDPR that was collected by the outreach activities. (K1, K2, K15, S1) 
 
 The combination of citizen science, community engagement and behavioural surveys is intended to identify effective approaches to influencing behaviour in relation to domestic emissions to air.
 
@@ -507,11 +508,11 @@ Continuous Ambient Air Quality Monitoring Systems (CAMS) are certified by the En
 
 (K2, K8, K9, S1)
 
-The equipment used in this colocation study is the Met One BAM 1020 Continuous Particulate Monitor, hereafter referred to as "BAM 1020". The instrument works by drawing a sample of air through a filter tape every hour. The deposited PM is then exposed to a source of radioactive Carbon 14 on one side of the filter tape. A beta radiation detector is on the other side of the tape and measures the attenuation of the beta radiation through the sampled filter. The attenuation of the beta radiation is a function of the deposited PM mass on the filter tape. Because the flow rate of the sampled air is known, the concentration in &mu;gm^-3^ can be calculated. Hourly concentrations are recorded, either on an external data logger and polled by a central telemetry system.
+The equipment used in this colocation study is the Met One BAM 1020 Continuous Particulate Monitor, hereafter referred to as "BAM 1020". The instrument works by drawing a sample of air through a filter tape every hour. The deposited PM is then exposed to a source of radioactive Carbon 14 on one side of the filter tape. A beta radiation detector is on the other side of the tape and measures the attenuation of the beta radiation through the sampled filter. The attenuation of the beta radiation is a function of the deposited PM mass on the filter tape. Because the flow rate of the sampled air is known, the concentration in &mu;gm^-3^ can be calculated. Hourly concentrations are recorded on an external data logger and polled by a central telemetry system.
 
 #### Colocation Sites: Temple Way
 
-The [Temple Way site](https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:500) is affiliated to the national monitoring network. This means that the site is owned by Bristol City Council, but the management of the data and the oversight of the QA regime is done by the Environment Agency's contractors. PM~10~ and NOx are measured at this site and summary metadata are provided below.
+The [Temple Way site](https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:500) is affiliated to the national monitoring network. PM~10~ and NOx are measured at this site; summary metadata are provided below.
 
 ```{r}
 #| eval = FALSE
@@ -597,17 +598,21 @@ Researching this issue identified a possible solution, which was eventually used
 
 (B7, B6, S15, K11)
 
+One advantage of using `targets` is that the entire processing pipeline can be viewed as an interactive graph using the tar_visnetwork() function. This enables a quick overview of functions, targets etc and helps understanding of the process. An extract from the pipeline visualisation is shown below, highlighting the model development part of the pipeline.
+
+![Visual network graph of data processing pipeline](project-4-colocation-study/plots/tar_vis_network_colocation.png)
+
 ##### Retrieving and Preparing data for Modelling
 
 Data for the two BAM 1020 instruments and the Parson Street low cost sensor are retrieved using a purpose built R function which uses endpoints from the [Opendatasoft API](https://opendata.bristol.gov.uk/api/v2/console).
 
 For the Temple Way sensor a different approach was developed to retrieve the data, which is available through the [Madavi API](https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445) as a combination of csv and zip files. This operation entails retrieving a number of files in different formats and joining the data into one data frame.
 
-Once data are retrieved from the online repositories, they are combined into a nested data frame with functions from the `purrr` package such that columns are created that can be used in the subsequent modelling process. The resulting nested dataframe is grouped by the site ID with list columns containing the raw hourly data, the prepared source data for the model, and a pivoted (wide) dataset used in the plotting and modelling functions.
+Once data are retrieved from the online repositories, they are combined into a nested data frame or "tibble" with functions from the `purrr` package such that columns are created that can be used in the subsequent modelling process. The resulting nested tibble is grouped by the site ID with list columns containing the raw hourly data, the prepared source data for the model, and a pivoted (wide) dataset used in the plotting and modelling functions.
 
 Nesting the model data enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a data frame with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.
 
-##### Plotting Functions
+##### Plotting
 
 Functions were developed to create a range of visualisations of both the raw and processed data and model outputs.
 
@@ -618,25 +623,58 @@ Functions were developed to create a range of visualisations of both the raw and
 5. Other helper functions which format and save plots.
 
 
-##### Modelling Functions
+##### Modelling
 
 The model data tibble previously created is used as input to a function to run a linear model on the data for each site. A script to import custom themes for plots is imported at the top of the _targets.R file. The make.model.output.tbl() function takes the data tibble and creates a new output tibble with the following features:
 
 1. a list column (model_obj) which is the model object derived from the lm() function comparing the low - cost (dependent variable) and reference (independent variable) device data for each site and pollutant
 2. a list column containing the linear coefficients (intercept and slope) from each model object using the tidymodels package.
-3. a list column, perf, which holds a tibble of performance metrics for each site derived by the glance() function from the broom package. Glance accepts a model object and returns a tibble with exactly one row of model summaries. The summaries are typically goodness of fit measures, p-values for hypothesis tests on residuals, or model convergence information.
+3. a list column, perf, which holds a tibble of performance metrics for each site derived by the glance() function from the `broom` package. Glance accepts a model object and returns a tibble with exactly one row of model summaries. The summaries are typically goodness of fit measures, p-values for hypothesis tests on residuals, or model convergence information.
+
+### Results
+
+The colocated data were first plotted using the summaryPlot function from the `openair` package. This gives a schematic overview of the time series, distribution, and summary statistics for the data. It can be immediately seen that the distributions differ, with the low cost sensor data being markedly more right - skewed than the reference data, but with lower overall concentrations than the reference data.
+
+:::{layout-ncol=2 layout-valign="center"}
+
+![Summary plot: PM10](project-4-colocation-study/plots/summary_plot_pm10.png)
+
+![Summary plot: PM2.5](project-4-colocation-study/plots/summary_plot_pm2_5.png)
+
+Summary plots
+:::
+
+
+Further exploratory data analysis (EDA) with time series charts showed that the data from the low cost sensors diverged significantly from the reference instruments. The plot below shows daily mean concentrations at both sites.
+
+![Daily mean time series chart](project-4-colocation-study/plots/time_series_day_gg.png)
+The divergence does not appear to be uniform or consistent and seems to drift over the study period, so drift plots were developed to examine this artefact. Drift is significant, and different at each site and for each pollutant.
+
+:::{layout-ncol=2 layout-valign="center"}
+
+![Drift plot: PM10](project-4-colocation-study/plots/drift_plot_500_gg.png)
+
+![Drift plot: PM2.5](project-4-colocation-study/plots/drift_plot_215_gg.png)
+
+Drift plots
+:::
+
+#### Scatter Plot and Linear Regression
+
+Scatter plots were made of the colocated data at each site to visualise the hourly data and distributions alongside each other. Model coefficients are displayed on the charts.
+
+![Scatter plot: PM10](project-4-colocation-study/plots/scatter_gg_500.png)
+
+![Scatter plot: PM2.5](project-4-colocation-study/plots/scatter_gg_215.png)
+
 
 #### Summary Tables
 
 The performance metrics for each model are extracted and tabulated into a range of formats for display. the `gtsummary` package produces a nicely formatted html table and the `performance` package from the `easystats` suite of statistical tools is used to generate a comprehensive html dashboard for each model showing the performance of the model including several plots.
 
+![Model Summary table](project-4-colocation-study/plots/model_perf_gt_image.png)
 
 ```{r}
-# targets_tbl <- readRDS("project-4-colocation-study/data/tar_manifest.rds")
-# flextable(targets_tbl, )
-
+here::here()
 ```
-
-[](project-4-colocation-study/plots/model_perf_tbl_gt.html)
-
 

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Steve Crawshaw">
-<meta name="dcterms.date" content="2023-02-08">
+<meta name="dcterms.date" content="2023-02-15">
 
 <title>Summative Portfolio: L4</title>
 <style>
@@ -99,6 +99,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#introduction-4" id="toc-introduction-4" class="nav-link" data-scroll-target="#introduction-4"><span class="toc-section-number">4.4.1</span>  Introduction</a></li>
   <li><a href="#co---location-study" id="toc-co---location-study" class="nav-link" data-scroll-target="#co---location-study"><span class="toc-section-number">4.4.2</span>  Co - location Study</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="toc-section-number">4.4.3</span>  Results</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -127,7 +128,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 8, 2023</p>
+      <p class="date">February 15, 2023</p>
     </div>
   </div>
   
@@ -179,8 +180,15 @@ ul.task-list li input[type="checkbox"] {
 <section id="how-bcc-uses-data" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="how-bcc-uses-data"><span class="header-section-number">2.2</span> How BCC Uses Data</h2>
 <p>BCC is a large and complex organisation dealing with a wide range of functions, from managing highways and planning applications to looking after vulnerable people. It follows that multiple systems and approaches exist for managing data across the organisation, many of which have evolved over time and have not been centrally planned or managed.</p>
-<p>A recently published <a href="https://democracy.bristol.gov.uk/documents/s64321/DII%20Strategy%20Final.pdf">“Data, Insight and Information Strategy”</a> sets out the strategic direction and objectives for the council in this area:</p>
-<p><img src="images/DII_strategy_1.png" class="img-fluid" alt="Data, Insights and Information Strategy Objectives"> The strategy aims to deliver these objectives by developing a single analytics team to deliver insights across the organisation and by consolidating the disparate and distributed datasets across the council into a corporate data lake with analysis being done on one data analytics platform (Power BI). Several projects are under way to deliver this change.</p>
+<p>A recently published <a href="https://democracy.bristol.gov.uk/documents/s64321/DII%20Strategy%20Final.pdf">“Data, Insight and Information Strategy”</a> sets out the strategic direction and objectives for the council in this area as follows:</p>
+<ul>
+<li><p>Objective 1 - Create the right culture and environment for great collaboration amongst teams and partners</p></li>
+<li><p>Objective 2 - Become an insight - rich data driven organisation to improve performance</p></li>
+<li><p>Objective 3 - Manage our information safely, securely and appropriately</p></li>
+<li><p>Objective 4 - Create a more efficient and effective approach to the use of data</p></li>
+<li><p>Objective 2 - Establish the supply and use of data as a key enabler of a more connected, smarter city</p></li>
+</ul>
+<p>The strategy aims to deliver these objectives by developing a single analytics team to deliver insights across the organisation and by consolidating the disparate and distributed datasets across the council into a corporate data lake with analysis being done on one data analytics platform (Power BI). Several projects are under way to deliver this change.</p>
 </section>
 <section id="data-architecture" class="level2" data-number="2.3">
 <h2 data-number="2.3" class="anchored" data-anchor-id="data-architecture"><span class="header-section-number">2.3</span> Data Architecture</h2>
@@ -191,19 +199,19 @@ ul.task-list li input[type="checkbox"] {
 <p></p><figcaption class="figure-caption">Information Asset Taxonomy</figcaption><p></p>
 </figure>
 </div>
-<p>Much of this data architecture is not of direct relevance to my work as it pertains to other departments and functions. In my own work area, the main data architecture is summarised as follows:</p>
+<p>Much of this data architecture is not of direct relevance to my work as it pertains to other departments and functions. In my own work area, the main data architecture which I design,,m maintain and operate is summarised as follows:</p>
 <ul>
 <li>182 passive samplers (Diffusion tubes) providing monthly concentrations of pollutants (NO<sub>2</sub>)</li>
-<li>MS Access database to hold diffusion tube and monitoring network meta data on site</li>
+<li>MS Access database (K6) to hold diffusion tube and monitoring network meta data</li>
 <li>A network of 8 real time air quality monitors (analysers)</li>
-<li>4G Telemetry to connect these devices to:</li>
+<li>A fleet of 4G routers providing telemetry to connect these devices to:</li>
 <li>A proprietary communications software suite (Envista Commcentre)</li>
-<li>A database client and analytics program (Envista ARM)</li>
-<li>A SQL server database hosted on Azure</li>
-<li>An open data (OD) platform provided by Opendatasoft</li>
-<li>FME and FME Server processes to Extract, Transform and Load (ETL) air quality data to the open data platform</li>
-<li>Dashboards, visualisation and analytics delivered through the OD platform</li>
-<li>Bespoke reporting and ETL pipelines delivered through R, sourcing data through the OD portal and the Envista database</li>
+<li>A database client and analytics program (Envista ARM) (K6)</li>
+<li>A SQL server database hosted on Azure (K6)</li>
+<li>An open data (OD) platform provided by Opendatasoft (K4)</li>
+<li>FME and FME Server processes to Extract, Transform and Load (ETL) air quality data to the open data platform (K10)</li>
+<li>Dashboards, visualisation and analytics delivered through the OD platform (S14)</li>
+<li>Bespoke reporting and ETL pipelines delivered through R, sourcing data through the OD portal and the Envista database (S14, S10, S2, K14, K7)</li>
 </ul>
 </section>
 <section id="security-standards-and-policies" class="level2" data-number="2.4">
@@ -243,15 +251,15 @@ ul.task-list li input[type="checkbox"] {
 <p>The deliverables for which I am responsible are summarised as follows:</p>
 <ol type="1">
 <li>Data capture rates exceeding 85% for continuous monitoring, 75% for passive.</li>
-<li>Monthly data cleaning (ratification) of continuous data.</li>
-<li>Annual reporting of air quality data.</li>
+<li>Monthly data cleaning (ratification) of continuous data. (K3, K4, K8)</li>
+<li>Annual reporting of air quality data. (S12, S13, S14, S15)</li>
 <li>Calculation of Key Performance Indicators (KPIs) for air quality.</li>
-<li>Developing or revising KPIs as necessary.</li>
+<li>Developing or revising KPIs as necessary. (K11, K13)</li>
 <li>Ad hoc analysis and summaries of air quality data to support other programmes.</li>
-<li>Ensuring all relevant air quality data are published on the Open Data Portal.</li>
-<li>Ensuring all relevant technical guidance is followed in relation to air quality management.</li>
-<li>Responding to relevant requests from stakeholders for air quality data and analysis.</li>
-<li>Delivery of specific projects such as “Slow the Smoke”</li>
+<li>Ensuring all relevant air quality data are published on the Open Data Portal. (K4, S12)</li>
+<li>Ensuring all relevant technical guidance is followed in relation to air quality management. (S1)</li>
+<li>Responding to relevant requests from stakeholders for air quality data and analysis. (S7)</li>
+<li>Delivery of specific projects such as “Slow the Smoke” (S12, S13, S14, S15)</li>
 </ol>
 </section>
 <section id="key-skills-and-knowledge" class="level2" data-number="3.2">
@@ -260,11 +268,11 @@ ul.task-list li input[type="checkbox"] {
 <section id="knowledge" class="level3" data-number="3.2.1">
 <h3 data-number="3.2.1" class="anchored" data-anchor-id="knowledge"><span class="header-section-number">3.2.1</span> Knowledge</h3>
 <ul>
-<li>A good understanding of the legal framework for air quality management in the UK.</li>
-<li>Familiarity with the relevant technical guidance on assessing air quality.</li>
+<li>A good understanding of the legal framework for air quality management in the UK. (K1)</li>
+<li>Familiarity with the relevant technical guidance on assessing air quality. (K2)</li>
 <li>Knowledge of air quality policy and interactions with other domains like transport.</li>
 <li>An understanding of the development management (land use planning) process in the UK including Environmental Impact Assessment (EIA).</li>
-<li>An understanding of the principles of open data and legal framework for public access to data.</li>
+<li>An understanding of the principles of open data and legal framework for public access to data. (K4)</li>
 </ul>
 </section>
 <section id="skills" class="level3" data-number="3.2.2">
@@ -356,7 +364,7 @@ ul.task-list li input[type="checkbox"] {
 <section id="summary" class="level4">
 <h4 class="anchored" data-anchor-id="summary">Summary</h4>
 <p>The overall process will be controlled using the <a href="https://books.ropensci.org/targets/"><code>targets</code> R package</a>. This is a “Make” - like pipeline tool for Statistics and data science in R to help maintain a reproducible workflow. Targets learns how the pipeline fits together, skips costly runtime for tasks that are already up to date, runs only the necessary computation, supports implicit parallel computing, abstracts files as R objects, and shows tangible evidence that the results match the underlying code and data.</p>
-<p>Each operation will be assigned to a function. Targets will ensure that the functions run in the right order, and only when all pre - conditions are satisfied.</p>
+<p>Each operation will be assigned to a function. Targets will ensure that the functions run in the right order, and only when all pre - conditions are satisfied. (K3, K8, K10, K14, S2, S4, S15)</p>
 </section>
 <section id="data-sources" class="level4">
 <h4 class="anchored" data-anchor-id="data-sources">Data Sources</h4>
@@ -395,7 +403,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="reporting" class="level3" data-number="4.2.4">
 <h3 data-number="4.2.4" class="anchored" data-anchor-id="reporting"><span class="header-section-number">4.2.4</span> Reporting</h3>
-<p>The final reporting product needs to be easily readable and to highlight the key parameters which govern measurment quality and system reliability. It was decided that an html output from a Quarto document would be the ideal option. The file is portable across systems and can be easily published for sharing with e.g.&nbsp;service contractors on a website such as Quarto pubs.</p>
+<p>The final reporting product needs to be easily readable and to highlight the key parameters which govern measurement quality and system reliability. It was decided that an html output from a Quarto document would be the ideal option. The file is portable across systems and can be easily published for sharing with e.g.&nbsp;service contractors on a website such as Quarto pubs.</p>
 <p>The key outputs in the report are as follows.</p>
 <ol type="1">
 <li>A <code>gt</code> table showing the amount and percentage of missing data for the measurement period</li>
@@ -424,10 +432,11 @@ ul.task-list li input[type="checkbox"] {
 <li>Ability to integrate with other air quality measurements</li>
 <li>Interactive bespoke dashboard and visualisation options</li>
 <li>A powerful and well documented API for querying the data</li>
+<li>Integrated aggregation of data to hourly interval enabling direct comparison with reference method instruments</li>
 </ol>
-<p>In order to satisfy expectation for the customers of these data, i.e.&nbsp;the citizen scientists and members of the public, it was decided that the data should be as current as possible. This meant designing a real - time “Extract - Transform - Load” (ETL) process to query the local raw Sensor.Community data from their API, transform it to a state suitable for publishing on our portal and then using the push API on our portal to publish the data.</p>
+<p>In order to satisfy expectation for the customers of these data, i.e.&nbsp;the citizen scientists and members of the public, it was decided that the data should be as current as possible. (K7, K4, K9) This meant designing a real - time “Extract - Transform - Load” (ETL) process to query the local raw Sensor.Community data from their API, transform it to a state suitable for publishing on our portal and then using the push API on our portal to publish the data.</p>
 <p>The ETL process was first trialled using scripts in R. The <code>httr</code> library was used to develop functions to extract the data and push to the portal and data manipulation conducted using the <code>tidyverse</code> meta package. After successfully prototyping the solution, this was moved to production using FME (Feature Manipulation Engine).</p>
-<p>FME is a no - code platform for ETL which is primarily focused on spatial data. Bristol City Council also has FME server which supports scheduled FME processes. two FME workspaces were developed to implement the ETL of the sensor data. These are represented visually in the screenshots below as FME workspaces.</p>
+<p>FME is a no - code platform for ETL which is primarily focused on spatial data. Bristol City Council also has FME server which supports scheduled FME processes. Two FME workspaces were developed to implement the ETL of the sensor data. These are represented visually in the screenshots below as FME workspaces. (K10, K11, K12, S1)</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="images/hourly_ld_fme.png" class="img-fluid figure-img"></p>
@@ -442,7 +451,7 @@ ul.task-list li input[type="checkbox"] {
 <h3 data-number="4.3.4" class="anchored" data-anchor-id="developing-the-data-products-for-citizen-scientists"><span class="header-section-number">4.3.4</span> Developing the Data Products for Citizen Scientists</h3>
 <section id="making-sense-of-data---workshop-and-learning-resources" class="level4">
 <h4 class="anchored" data-anchor-id="making-sense-of-data---workshop-and-learning-resources">Making Sense of Data - Workshop and Learning Resources</h4>
-<p>It was recognised that citizen scientists would need some initial training and induction to familiarise themselves with the sensors and the data that was collected. A “Making Sense of Data” workshop was convened in July 2022 and interactive resources hosted on the open data platform were prepared to support the learning activity.<br>
+<p>It was recognised that citizen scientists would need some initial training and induction to familiarise themselves with the sensors and the data that was collected (S7, S12). A “Making Sense of Data” workshop was convened in July 2022 and interactive resources hosted on the open data platform were prepared to support the learning activity. (S7, S12)<br>
 The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learning resources</a> include:</p>
 <ol type="1">
 <li>Interactive leaflet maps showing locations of the sensors</li>
@@ -491,6 +500,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <li>How can I relate pollution levels to wind patterns or weather?</li>
 <li>How can I download the data if I need to do more detailed analysis on it?</li>
 </ol>
+<p>(S7, S12, S13, S14, S15, B2)</p>
 <p>A <a href="https://opendata.bristol.gov.uk/pages/luftdaten-sitepage/?q=sensor_id:66970">web dashboard</a> was designed to answer these questions by implementing the following features.</p>
 <ol type="1">
 <li>An interactive map on the first page where the user can select their sensor and go to the dashboard main page</li>
@@ -500,7 +510,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <li>Tabs, providing five different visualisations including:</li>
 <li>Time series chart for both pollutants (selectable)</li>
 <li>Daily mean chart including relevant World Health Organisation (WHO) guideline values for comparison</li>
-<li>Charts for hour of day and day of week</li>
+<li>Charts for hour of day and day of week - to show diurnal and weekly variation</li>
 <li>A wind rose for the selected time period, which shows wind speed and direction</li>
 <li>A data table with download links in Excel, JSON and CSV formats</li>
 </ol>
@@ -519,8 +529,9 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <li>Web development using HTML and CSS</li>
 <li>Angular JS for logic</li>
 <li>Opendatasoft’s widgets for visualisations, aggregation, iteration and controls</li>
-<li>Javascript for string and dataset manipulation</li>
+<li>Javascript for string and data manipulation</li>
 </ol>
+<p>(K10, S2, S7, S12, S14)</p>
 <p>In addition to these technologies, javascript was used to manipulate a url in order to implement the wind rose. The wind rose image is rendered by sending a request to a resource at https://mesonet.agron.iastate.edu. Depending on the query within the request, a wind rose will be returned for the requested time period.</p>
 </section>
 </section>
@@ -550,6 +561,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <p></p><figcaption class="figure-caption">Example of static PM <sub>2.5</sub> polar map by cut by season</figcaption><p></p>
 </figure>
 </div>
+<p>NEED SOME TEXT TO FINALISE THIS PROJECT SECTION ^</p>
 </section>
 </section>
 </section>
@@ -558,7 +570,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <section id="introduction-4" class="level3" data-number="4.4.1">
 <h3 data-number="4.4.1" class="anchored" data-anchor-id="introduction-4"><span class="header-section-number">4.4.1</span> Introduction</h3>
 <p>The Slow the Smoke (StS) project is a Citizen Science project funded by Defra’s Air Quality Grant. It aims to test engagement approaches based on citizen monitoring of air quality with a particular focus on emissions from domestic solid fuel burning (wood burning stoves etc.).</p>
-<p>Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities.</p>
+<p>Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities. I developed and agreed with the partners a data sharing agreement to cover the management of personal data under GDPR that was collected by the outreach activities. (K1, K2, K15, S1)</p>
 <p>The combination of citizen science, community engagement and behavioural surveys is intended to identify effective approaches to influencing behaviour in relation to domestic emissions to air.</p>
 <p>Ten citizen scientists have self selected in the study area which is a ward in the city centre called Ashley. This ward was selected because we have evidence that there is a higher level of solid fuel burning than average.</p>
 <p>The citizen scientists have each been given a “low cost” air sensor that monitors particulate matter (PM). PM is fine dust in the air, including smoke. There are two fractions of PM that are important for health; PM<sub>10</sub> (aerodynamic diameter &lt; 10 μ) and PM<sub>2.5</sub> (aerodynamic diameter &lt; 10 μ). The devices deployed monitor both of these fractions using a light - scattering approach, where the diffusion of laser light is a function of the concentration of PM in the sampled air.</p>
@@ -572,12 +584,12 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="pbupwwndfj" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="wqptrpysnn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-:where(#pbupwwndfj) .gt_table {
+:where(#wqptrpysnn) .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -602,7 +614,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-left-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_heading {
+:where(#wqptrpysnn) .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -614,12 +626,12 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-right-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_caption {
+:where(#wqptrpysnn) .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-:where(#pbupwwndfj) .gt_title {
+:where(#wqptrpysnn) .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -631,7 +643,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-bottom-width: 0;
 }
 
-:where(#pbupwwndfj) .gt_subtitle {
+:where(#wqptrpysnn) .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -643,13 +655,13 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-top-width: 0;
 }
 
-:where(#pbupwwndfj) .gt_bottom_border {
+:where(#wqptrpysnn) .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_col_headings {
+:where(#wqptrpysnn) .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -664,7 +676,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-right-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_col_heading {
+:where(#wqptrpysnn) .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -684,7 +696,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   overflow-x: hidden;
 }
 
-:where(#pbupwwndfj) .gt_column_spanner_outer {
+:where(#wqptrpysnn) .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -696,15 +708,15 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 4px;
 }
 
-:where(#pbupwwndfj) .gt_column_spanner_outer:first-child {
+:where(#wqptrpysnn) .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-:where(#pbupwwndfj) .gt_column_spanner_outer:last-child {
+:where(#wqptrpysnn) .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-:where(#pbupwwndfj) .gt_column_spanner {
+:where(#wqptrpysnn) .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -716,7 +728,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   width: 100%;
 }
 
-:where(#pbupwwndfj) .gt_group_heading {
+:where(#wqptrpysnn) .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -742,7 +754,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   text-align: left;
 }
 
-:where(#pbupwwndfj) .gt_empty_group_heading {
+:where(#wqptrpysnn) .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -757,15 +769,15 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   vertical-align: middle;
 }
 
-:where(#pbupwwndfj) .gt_from_md > :first-child {
+:where(#wqptrpysnn) .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-:where(#pbupwwndfj) .gt_from_md > :last-child {
+:where(#wqptrpysnn) .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-:where(#pbupwwndfj) .gt_row {
+:where(#wqptrpysnn) .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -784,7 +796,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   overflow-x: hidden;
 }
 
-:where(#pbupwwndfj) .gt_stub {
+:where(#wqptrpysnn) .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -797,7 +809,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#pbupwwndfj) .gt_stub_row_group {
+:where(#wqptrpysnn) .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -811,11 +823,11 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   vertical-align: top;
 }
 
-:where(#pbupwwndfj) .gt_row_group_first td {
+:where(#wqptrpysnn) .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-:where(#pbupwwndfj) .gt_summary_row {
+:where(#wqptrpysnn) .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -825,16 +837,16 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#pbupwwndfj) .gt_first_summary_row {
+:where(#wqptrpysnn) .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_first_summary_row.thick {
+:where(#wqptrpysnn) .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-:where(#pbupwwndfj) .gt_last_summary_row {
+:where(#wqptrpysnn) .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -844,7 +856,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-bottom-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_grand_summary_row {
+:where(#wqptrpysnn) .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -854,7 +866,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#pbupwwndfj) .gt_first_grand_summary_row {
+:where(#wqptrpysnn) .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -864,11 +876,11 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-top-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_striped {
+:where(#wqptrpysnn) .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-:where(#pbupwwndfj) .gt_table_body {
+:where(#wqptrpysnn) .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -877,7 +889,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-bottom-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_footnotes {
+:where(#wqptrpysnn) .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -891,7 +903,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-right-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_footnote {
+:where(#wqptrpysnn) .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -900,7 +912,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#pbupwwndfj) .gt_sourcenotes {
+:where(#wqptrpysnn) .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -914,7 +926,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-right-color: #D3D3D3;
 }
 
-:where(#pbupwwndfj) .gt_sourcenote {
+:where(#wqptrpysnn) .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -922,64 +934,64 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#pbupwwndfj) .gt_left {
+:where(#wqptrpysnn) .gt_left {
   text-align: left;
 }
 
-:where(#pbupwwndfj) .gt_center {
+:where(#wqptrpysnn) .gt_center {
   text-align: center;
 }
 
-:where(#pbupwwndfj) .gt_right {
+:where(#wqptrpysnn) .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-:where(#pbupwwndfj) .gt_font_normal {
+:where(#wqptrpysnn) .gt_font_normal {
   font-weight: normal;
 }
 
-:where(#pbupwwndfj) .gt_font_bold {
+:where(#wqptrpysnn) .gt_font_bold {
   font-weight: bold;
 }
 
-:where(#pbupwwndfj) .gt_font_italic {
+:where(#wqptrpysnn) .gt_font_italic {
   font-style: italic;
 }
 
-:where(#pbupwwndfj) .gt_super {
+:where(#wqptrpysnn) .gt_super {
   font-size: 65%;
 }
 
-:where(#pbupwwndfj) .gt_footnote_marks {
+:where(#wqptrpysnn) .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-:where(#pbupwwndfj) .gt_asterisk {
+:where(#wqptrpysnn) .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-:where(#pbupwwndfj) .gt_indent_1 {
+:where(#wqptrpysnn) .gt_indent_1 {
   text-indent: 5px;
 }
 
-:where(#pbupwwndfj) .gt_indent_2 {
+:where(#wqptrpysnn) .gt_indent_2 {
   text-indent: 10px;
 }
 
-:where(#pbupwwndfj) .gt_indent_3 {
+:where(#wqptrpysnn) .gt_indent_3 {
   text-indent: 15px;
 }
 
-:where(#pbupwwndfj) .gt_indent_4 {
+:where(#wqptrpysnn) .gt_indent_4 {
   text-indent: 20px;
 }
 
-:where(#pbupwwndfj) .gt_indent_5 {
+:where(#wqptrpysnn) .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
@@ -1020,7 +1032,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 </div>
 </div>
 <p>The co - location study used two of these sites; Parson Street School and Temple Way. This is because these sites are both operated by the council. Using the AURN St Pauls site would have required permissions from the Environment Agency which would have been a time consuming and uncertain process.</p>
-<p>The <a href="https://sensor.community/en/sensors/airrohr/">airrohr SDS011 fine dust sensors</a> require a wifi signal in order to push data to a server. The Bristol City Council sites did not previously have wifi access available. The telemetry at our air monitoring sites was a combination of 3G modems and analogue land lines in 2021. In order to accommodate the co - location study and also for the purposes of virtualising our data collection machine, I procured, configured and installed Teltonika RUT950 4G LTE routers at all of our monitoring sites. This enabled 4G TCP/IP access to the data loggers or instruments at all of the sites, and also provided a wifi hotspot to enable the SDS011 sensors to send data.</p>
+<p>The <a href="https://sensor.community/en/sensors/airrohr/">airrohr SDS011 fine dust sensors</a> require a wifi signal in order to push data to a server. The Bristol City Council sites did not previously have wifi access available. The telemetry at our air monitoring sites was a combination of 3G modems and analogue land lines in 2021. In order to accommodate the co - location study and also for the purposes of virtualising our data collection machine, I procured, configured and installed Teltonika RUT950 or RUT955 4G LTE routers at all of our monitoring sites. This enabled 4G TCP/IP access to the data loggers or instruments at all of the sites, and also provided a wifi hotspot to enable the SDS011 sensors to send data.</p>
 <p>The physical installation of the SDS011 at both sites was complete in early May 2022.</p>
 <section id="colocation-study-concept" class="level4">
 <h4 class="anchored" data-anchor-id="colocation-study-concept">Colocation Study: Concept</h4>
@@ -1030,11 +1042,12 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <section id="reference-method-equipment" class="level4">
 <h4 class="anchored" data-anchor-id="reference-method-equipment">Reference Method Equipment</h4>
 <p>Continuous Ambient Air Quality Monitoring Systems (CAMS) are certified by the Environment Agency under their MCERTS scheme. This certifies the quality regimes and equipment for environmental permit holders. Local authorities are required to use MCERTS (or equivalent) equipment for monitoring air quality under the LAQM (Local Air Quality Management) regime. The certification and approval process ensures that the measurement standard provides data of an acceptable quality. In addition to the specification of the equipment, a local authority is required to adhere to the calibration and maintenance requirements for the equipment as set out in the relevant guidance <a href="https://laqm.defra.gov.uk/documents/LAQM-TG16-April-21-v1.pdf">LAQM.TG(16)</a> and the <a href="https://uk-air.defra.gov.uk/assets/documents/reports/empire/lsoman/lsoman.html">Local Site Operator (LSO) manual</a> for sites that are part of, or affiliated to the national AURN (Automated Urban and Rural Network).</p>
-<p>The equipment used in this colocation study is the Met One BAM 1020 Continuous Particulate Monitor, hereafter referred to as “BAM 1020”. The instrument works by drawing a sample of air through a filter tape every hour. The deposited PM is then exposed to a source of radiactive Carbon 14 on one side of the filter tape. A beta radiation detector is on the other side of the tape and measures the attenuation of the beta radiation through the sampled filter. The attenuation of the beta radiation is a function of the deposited PM mass on the filter tape. Because the flow rate of the sampled air is known, the concentration in μgm<sup>-3</sup> can be calculated. Hourly concentrations are recorded, either on an internal or external data logger. These data are regularly polled by a central telemetry system.</p>
+<p>(K2, K8, K9, S1)</p>
+<p>The equipment used in this colocation study is the Met One BAM 1020 Continuous Particulate Monitor, hereafter referred to as “BAM 1020”. The instrument works by drawing a sample of air through a filter tape every hour. The deposited PM is then exposed to a source of radioactive Carbon 14 on one side of the filter tape. A beta radiation detector is on the other side of the tape and measures the attenuation of the beta radiation through the sampled filter. The attenuation of the beta radiation is a function of the deposited PM mass on the filter tape. Because the flow rate of the sampled air is known, the concentration in μgm<sup>-3</sup> can be calculated. Hourly concentrations are recorded on an external data logger and polled by a central telemetry system.</p>
 </section>
 <section id="colocation-sites-temple-way" class="level4">
 <h4 class="anchored" data-anchor-id="colocation-sites-temple-way">Colocation Sites: Temple Way</h4>
-<p>The <a href="https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:500">Temple Way site</a> is affiliated to the national monitoring network. This means that the site is owned by Bristol City Council, but the management of the data and the oversight of the QA regime is done by the Environment Agency’s contractors. PM<sub>10</sub> and NOx are measured at this site and summary metadata are provided below.</p>
+<p>The <a href="https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:500">Temple Way site</a> is affiliated to the national monitoring network. PM<sub>10</sub> and NOx are measured at this site; summary metadata are provided below.</p>
 <div class="cell">
 
 </div>
@@ -1082,15 +1095,23 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <section id="data-processing-pipeline-1" class="level4">
 <h4 class="anchored" data-anchor-id="data-processing-pipeline-1">Data Processing Pipeline</h4>
 <p>Initially the data processing pipeline was split into three R scripts, one for retrieving and preparing the data, one for plotting, and one for modelling the data. However, while developing this approach, it became apparent that there were significant problems with this method. Tracking the operations across three different scripts became confusing, and testing and debugging was sub - optimal and resulted in errors when running the scripts if they weren’t called in order. Researching this issue identified a possible solution, which was eventually used for this project. The <a href="https://books.ropensci.org/targets/"><code>targets</code></a> R package by Will Landau is a “Make” - like pipeline tool for data science in R. It helps to maintain a reproducible workflow, minimising repetition, running only necessary code, and forces a functional approach to code and pipeline development.</p>
+<p>(B7, B6, S15, K11)</p>
+<p>One advantage of using <code>targets</code> is that the entire processing pipeline can be viewed as an interactive graph using the tar_visnetwork() function. This enables a quick overview of functions, targets etc and helps understanding of the process. An extract from the pipeline visualisation is shown below, highlighting the model development part of the pipeline.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-4-colocation-study/plots/tar_vis_network_colocation.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Visual network graph of data processing pipeline</figcaption><p></p>
+</figure>
+</div>
 <section id="retrieving-and-preparing-data-for-modelling" class="level5">
 <h5 class="anchored" data-anchor-id="retrieving-and-preparing-data-for-modelling">Retrieving and Preparing data for Modelling</h5>
 <p>Data for the two BAM 1020 instruments and the Parson Street low cost sensor are retrieved using a purpose built R function which uses endpoints from the <a href="https://opendata.bristol.gov.uk/api/v2/console">Opendatasoft API</a>.</p>
-<p>For the Temple Way sensor, it was not possible to register this on the sensor.community website. A different approach was developed to retrieve the data, which is available through the <a href="https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445">Madavi API</a> as a combination of csv and zip files. This operation entails retrieving a number of files in different formats and joining the data into one dataframe.</p>
-<p>Once data are retrieved from the online repositories, they are combined into a nested dataframe (or tibble in the tidyverse vernacular) with functions from the purrr package such that columns are created that can be used in the subsequent modelling process. The resulting nested dataframe is a 2 row, four column tibble grouped by the site ID with list columns containing the raw hourly data, the prepared source data for the model, and a pivoted (wide) dataset used in the plotting and modelling functions.</p>
-<p>Nesting the model data within a tibble enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a tibble with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.</p>
+<p>For the Temple Way sensor a different approach was developed to retrieve the data, which is available through the <a href="https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445">Madavi API</a> as a combination of csv and zip files. This operation entails retrieving a number of files in different formats and joining the data into one data frame.</p>
+<p>Once data are retrieved from the online repositories, they are combined into a nested data frame or “tibble” with functions from the <code>purrr</code> package such that columns are created that can be used in the subsequent modelling process. The resulting nested tibble is grouped by the site ID with list columns containing the raw hourly data, the prepared source data for the model, and a pivoted (wide) dataset used in the plotting and modelling functions.</p>
+<p>Nesting the model data enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a data frame with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.</p>
 </section>
-<section id="plotting-functions" class="level5">
-<h5 class="anchored" data-anchor-id="plotting-functions">Plotting Functions</h5>
+<section id="plotting" class="level5">
+<h5 class="anchored" data-anchor-id="plotting">Plotting</h5>
 <p>Functions were developed to create a range of visualisations of both the raw and processed data and model outputs.</p>
 <ol type="1">
 <li>plot_drift() is a function based on the ggplot2 library which takes the prepared model data tibble and a site ID and returns a ggplot object (plot) showing how the pollutant concentrations from the low cost sensor diverge from the reference method measurements over time. The plot uses the geom_smooth() geom with the smoothing set to “gam” in order to show a smoothed trace.</li>
@@ -1100,23 +1121,102 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <li>Other helper functions which format and save plots.</li>
 </ol>
 </section>
-<section id="modelling-functions" class="level5">
-<h5 class="anchored" data-anchor-id="modelling-functions">Modelling Functions</h5>
+<section id="modelling" class="level5">
+<h5 class="anchored" data-anchor-id="modelling">Modelling</h5>
 <p>The model data tibble previously created is used as input to a function to run a linear model on the data for each site. A script to import custom themes for plots is imported at the top of the _targets.R file. The make.model.output.tbl() function takes the data tibble and creates a new output tibble with the following features:</p>
 <ol type="1">
 <li>a list column (model_obj) which is the model object derived from the lm() function comparing the low - cost (dependent variable) and reference (independent variable) device data for each site and pollutant</li>
 <li>a list column containing the linear coefficients (intercept and slope) from each model object using the tidymodels package.</li>
-<li>a list column, perf, which holds a tibble of performance metrics for each site derived by the glance() function from the broom package. Glance accepts a model object and returns a tibble with exactly one row of model summaries. The summaries are typically goodness of fit measures, p-values for hypothesis tests on residuals, or model convergence information.</li>
+<li>a list column, perf, which holds a tibble of performance metrics for each site derived by the glance() function from the <code>broom</code> package. Glance accepts a model object and returns a tibble with exactly one row of model summaries. The summaries are typically goodness of fit measures, p-values for hypothesis tests on residuals, or model convergence information.</li>
 </ol>
 </section>
+</section>
+</section>
+<section id="results" class="level3" data-number="4.4.3">
+<h3 data-number="4.4.3" class="anchored" data-anchor-id="results"><span class="header-section-number">4.4.3</span> Results</h3>
+<p>The colocated data were first plotted using the summaryPlot function from the <code>openair</code> package. This gives a schematic overview of the time series, distribution, and summary statistics for the data. It can be immediately seen that the distributions differ, with the low cost sensor data being markedly more right - skewed than the reference data, but with lower overall concentrations than the reference data.</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-4-colocation-study/plots/summary_plot_pm10.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Summary plot: PM10</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-4-colocation-study/plots/summary_plot_pm2_5.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Summary plot: PM2.5</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p>Summary plots</p>
+</div>
+</div>
+</div>
+<p>Further exploratory data analysis (EDA) with time series charts showed that the data from the low cost sensors diverged significantly from the reference instruments. The plot below shows daily mean concentrations at both sites.</p>
+<p><img src="project-4-colocation-study/plots/time_series_day_gg.png" class="img-fluid" alt="Daily mean time series chart"> The divergence does not appear to be uniform or consistent and seems to drift over the study period, so drift plots were developed to examine this artefact. Drift is significant, and different at each site and for each pollutant.</p>
+<div class="quarto-layout-panel">
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-4-colocation-study/plots/drift_plot_500_gg.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Drift plot: PM10</figcaption><p></p>
+</figure>
+</div>
+</div>
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-4-colocation-study/plots/drift_plot_215_gg.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Drift plot: PM2.5</figcaption><p></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="quarto-layout-row quarto-layout-valign-center">
+<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<p>Drift plots</p>
+</div>
+</div>
+</div>
+<section id="scatter-plot-and-linear-regression" class="level4">
+<h4 class="anchored" data-anchor-id="scatter-plot-and-linear-regression">Scatter Plot and Linear Regression</h4>
+<p>Scatter plots were made of the colocated data at each site to visualise the hourly data and distributions alongside each other. Model coefficients are displayed on the charts.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-4-colocation-study/plots/scatter_gg_500.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Scatter plot: PM10</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-4-colocation-study/plots/scatter_gg_215.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Scatter plot: PM2.5</figcaption><p></p>
+</figure>
+</div>
 </section>
 <section id="summary-tables" class="level4">
 <h4 class="anchored" data-anchor-id="summary-tables">Summary Tables</h4>
 <p>The performance metrics for each model are extracted and tabulated into a range of formats for display. the <code>gtsummary</code> package produces a nicely formatted html table and the <code>performance</code> package from the <code>easystats</code> suite of statistical tools is used to generate a comprehensive html dashboard for each model showing the performance of the model including several plots.</p>
-<div class="cell">
-
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-4-colocation-study/plots/model_perf_gt_image.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Model Summary table</figcaption><p></p>
+</figure>
 </div>
-<p><a href="project-4-colocation-study/plots/model_perf_tbl_gt.html"></a></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "C:/ds_projects/r-projects/L4"</code></pre>
+</div>
+</div>
 </section>
 </section>
 </section>
