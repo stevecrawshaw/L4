@@ -44,6 +44,27 @@ tar_source("R/functions.R")
 
 # Replace the target list below with your own:
 list(
+    # tar_target(
+    #     name = dt_cal_content,
+    #     command = read_html(
+    #         "https://laqm.defra.gov.uk/air-quality/air-quality-assessment/diffusion-tube-monitoring-calendar/"
+    #         )
+    # ),
+    tar_target(
+        name = html_tables_list,
+        command = make.html.tables.list()
+    ),
+    tar_target(
+        name = step1_dt_calendar_dates_tbl,
+        command = make.step1.dt.calendar.dates.tbl(html_tables_list = html_tables_list,
+                                                   startDate = startDate)
+    ),
+    tar_target(
+        name = step1_dt_first_last_dates_tbl,
+        command = make.step1.dt.first.last.dates.tbl(
+            step1_dt_calendar_dates_tbl = step1_dt_calendar_dates_tbl
+            )
+    ),
   tar_target(
     name = final_tbl,
     command = get.final.tbl()
@@ -174,7 +195,11 @@ list(
   ),
   tar_target(
     name = table_list,
-    command = make.table.list(step_2_tbl,
+    command = make.table.list(
+                           
+                           step1_dt_calendar_dates_tbl,
+                           step1_dt_first_last_dates_tbl,
+                           step_2_tbl,
                            step_2a_tbl,
                            table_a1,
                            table_a2,

@@ -1,4 +1,12 @@
 # Testing ----
+
+# dt_cal_content <- get.dt.cal.content()
+html_tables_list <- make.html.tables.list()
+
+step1_dt_calendar_dates_tbl <- make.step1.dt.calendar.dates.tbl(html_tables_list, startDate)
+
+step1_dt_first_last_dates_tbl <- make.step1.dt.first.last.dates.tbl(step1_dt_calendar_dates_tbl = step1_dt_calendar_dates_tbl)
+
 siteids <- c(175L, 239L, 405L, 502L, 567L)
 con <- connect.access()
 last_years_sites_tbl <- get.lastyears.sites(con, startDate)

@@ -21,27 +21,23 @@ p <-
       "ggtext",
       "sf"
       )
-p_load(char = p)
+# p_load(char = p) # Uncomment to test- 
 
 # Variables ----
 
 startDate <- "2022-01-01"
 endDate <- "2022-12-31"
 
-
 # Functions ----
 
-# Functions to scrape the DT calendar dates ----
+# Functions to scrape the DT calendar dates
 
-get.cal.content <- function(){
-    url <- "https://laqm.defra.gov.uk/air-quality/air-quality-assessment/diffusion-tube-monitoring-calendar/"
-    
-    return(read_html(url))
-}
 
-get.html.tables <- function(content){
+make.html.tables.list <- function(){
     # return a named list of the html tables holding the DT calendar dates
-    get.cal.tbl <- function(tbl){
+   dt_cal_content <- rvest::read_html("https://laqm.defra.gov.uk/air-quality/air-quality-assessment/diffusion-tube-monitoring-calendar/")
+    
+     get.cal.tbl <- function(tbl){
         if(dim(tbl)[1] == 12){
             return(tbl)
         } else {
@@ -49,13 +45,13 @@ get.html.tables <- function(content){
         }   
     }
     
-    tables <- content %>% 
+    tables <- dt_cal_content %>% 
         html_table(fill = TRUE)
     
     table_tbls <- map(tables, .f = ~get.cal.tbl(.x))
     table_list <- table_tbls[!sapply(table_tbls, is.null)]
     
-    table_years_names <- html_elements(content, "caption") %>% 
+    table_years_names <- html_elements(dt_cal_content, "caption") %>% 
         html_text() %>% 
         str_extract("[0-9]{1,4}") %>% 
         paste0("tbl_", .)
@@ -66,10 +62,10 @@ get.html.tables <- function(content){
     
 }
 
-get.calendar.dates <- function(table_list, year, start_end = "start"){
+make.step1.dt.calendar.dates.tbl <- function(html_tables_list, startDate){
     # parse the dates in the calendar table for the year
     # return a named vector of start and end dates for the year
-    
+    year = year(startDate)
     table_name <- paste0("tbl_", year)
     
     p.date <- function(string, year, end = FALSE){
@@ -78,7 +74,7 @@ get.calendar.dates <- function(table_list, year, start_end = "start"){
             return()
     }
     
-    dates_table <- table_list[names(table_list) == table_name][[1]] %>% 
+    dates_table <- html_tables_list[names(html_tables_list) == table_name][[1]] %>% 
         clean_names() %>% 
         mutate(sd = p.date(start_date, {{year}}),
                ed = if_else(month(as.Date(end_date, format = "%e %B")) == 1,
@@ -86,20 +82,25 @@ get.calendar.dates <- function(table_list, year, start_end = "start"){
                             p.date(end_date, {{year}})),
                mth = month(sd + ((ed - sd) / 2)))
     
-    cal_start_date <- dates_table$sd[dates_table$mth == 1]
-    cal_end_date <- dates_table$ed[dates_table$mth == 12]
+    start_end_tbl <- dates_table %>% 
+        select(sd, ed)
     
-    calendar_dates <- c(cal_start_date, cal_end_date) 
-    names(calendar_dates) <- c("cal_start", "cal_end")
-    
-    if (start_end == "start"){
-        return(calendar_dates[1])
-    } else if (start_end == "end") {
-        return(calendar_dates[2])
-    }
-    
-    
+    return(start_end_tbl)
+   
 }
+
+make.step1.dt.first.last.dates.tbl <- function(step1_dt_calendar_dates_tbl){
+    
+    cal_start_date <- step1_dt_calendar_dates_tbl$sd[1]
+    cal_end_date <- step1_dt_calendar_dates_tbl$ed[12]
+    
+    dates_tbl <- (data.frame(dates = c(cal_start_date, cal_end_date)))
+
+    row.names(dates_tbl) <- c("Year Start Date", "Year End Date")
+return(dates_tbl)
+ 
+}
+
 
 # Utility functions ---- 
 
@@ -446,6 +447,24 @@ get.no2.data.db <- function(con, startDate, endDate){
     
 }
 
+get.annual.tube.data.4yrs.tbl <- function(con, startDate){
+    year <- year(as.Date(startDate))
+    
+    annual_tube_data_4years_tbl <-
+        tbl(con, "tbl_final_ba_annual") %>% 
+        filter(between(dYear,
+                       {{year}} - 4,
+                       {{year}} - 1)) %>% 
+        select(siteid = LocID,
+               year = dYear,
+               conc = final_adjusted_conc) %>% 
+        pivot_wider(id_cols = siteid,
+                    names_from = year,
+                    values_from = conc) %>%
+        collect()
+
+    return(annual_tube_data_4years_tbl)
+}
 get.background.data <- function(no2_data){
 # return the hourly NO2 data in wide format from 4 background sites
     year <- year(no2_data$mid_date %>% median(na.rm = TRUE))
@@ -512,6 +531,16 @@ get.aqms <- function(con){
     
     return(aqms_tbl)
 }
+get.count.tubes.tbl <- function(con){
+    tbl(con, "data") %>% 
+        mutate(mid_date = dateOn + ((dateOff - dateOn) / 2L)) %>% 
+        filter(mid_date >= as.Date("2010-01-01")) %>% 
+        select(mid_date, siteid = LocID) %>% 
+        collect() %>% 
+        group_by(year = year(mid_date), siteid) %>% 
+        summarise(count = n(), .groups = "drop") %>% 
+        return()
+}
 
 get.lastyears.sites <- function(con, startDate){
     lastyear = year(startDate) - 1
@@ -522,6 +551,49 @@ get.lastyears.sites <- function(con, startDate){
         collect() %>% 
         mutate(exist_last_year = TRUE) %>% 
         return()
+}
+get.contin_data <- function(con, no2_data, final_tbl){
+    mindate <- min(no2_data$dateon)
+    maxdate <- max(no2_data$dateoff)
+    
+    get.aq.data.db(con = con, final_tbl = get.final.tbl(),
+                   startDate = mindate,
+                   endDate = maxdate, timebase = 60)
+}
+get.gridconcs.da.tubes <- function(con, startDate, siteids){
+    year <- year(as.Date(startDate))
+    # tbl of sites that need adjusting with grid id's
+    distance_adjust_sites_tbl <- aqms_tbl %>% 
+        filter(current,
+               exposure,
+               rec_kerb > tube_kerb,
+               siteid %in% siteids) %>% 
+        select(siteid, grid_id)
+    
+    # the no2 backfground grid data
+    grid_concs_tbl <- tbl(con, "tbl_background_grids_2018_base") %>% 
+        select(id, starts_with("no2")) %>% 
+        collect()
+    # reference table linking grid ids
+    grid_id_tbl <- tbl(con, "tbl_grid_id") %>% 
+        rename(grid_id = gridid) %>% 
+        collect()
+    # join these two
+    grid_joined_tbl <- grid_concs_tbl %>% 
+        pivot_longer(cols = -id,
+                     names_to = "year",
+                     names_prefix = "no2_",
+                     values_to = "back_conc") %>%
+        mutate(year = as.integer(year)) %>% 
+        filter(year == {{year}}) %>% 
+        inner_join(grid_id_tbl, by = c("id" = "id"))
+    #join the tubes tbl to return the final tbl of background concs for the tubes in sitids
+    sites_gridconcs_tbl <- grid_joined_tbl %>% 
+        inner_join(distance_adjust_sites_tbl,
+                   by = c("grid_id" = "grid_id")) %>% 
+        select(siteid, back_conc) 
+    
+    return(sites_gridconcs_tbl)
 }
 # Wrangle data ----
 
@@ -642,15 +714,6 @@ bias_site_list <- no2_data %>%
 return(bias_site_list)
 }
 
-get.contin_data <- function(con, no2_data, final_tbl){
-    mindate <- min(no2_data$dateon)
-    maxdate <- max(no2_data$dateoff)
-    
-    get.aq.data.db(con = con, final_tbl = get.final.tbl(),
-                   startDate = mindate,
-                   endDate = maxdate, timebase = 60)
-}
-
 make.contin.no2.nested <- function(contin_data, aqms_tbl){
 
     year <- year(median(contin_data$date))
@@ -668,42 +731,6 @@ contin_data %>%
         return()
 # write with pwalk write_csv
 #pwalk(fwrite, na = "", dateTimeAs = "write.csv"
-}
-
-get.gridconcs.da.tubes <- function(con, startDate, siteids){
-    year <- year(as.Date(startDate))
-    # tbl of sites that need adjusting with grid id's
-    distance_adjust_sites_tbl <- aqms_tbl %>% 
-        filter(current,
-               exposure,
-               rec_kerb > tube_kerb,
-               siteid %in% siteids) %>% 
-        select(siteid, grid_id)
-    
-    # the no2 backfground grid data
-    grid_concs_tbl <- tbl(con, "tbl_background_grids_2018_base") %>% 
-        select(id, starts_with("no2")) %>% 
-        collect()
-    # reference table linking grid ids
-    grid_id_tbl <- tbl(con, "tbl_grid_id") %>% 
-        rename(grid_id = gridid) %>% 
-        collect()
-    # join these two
-    grid_joined_tbl <- grid_concs_tbl %>% 
-        pivot_longer(cols = -id,
-                     names_to = "year",
-                     names_prefix = "no2_",
-                     values_to = "back_conc") %>%
-        mutate(year = as.integer(year)) %>% 
-        filter(year == {{year}}) %>% 
-        inner_join(grid_id_tbl, by = c("id" = "id"))
-    #join the tubes tbl to return the final tbl of background concs for the tubes in sitids
-    sites_gridconcs_tbl <- grid_joined_tbl %>% 
-        inner_join(distance_adjust_sites_tbl,
-                   by = c("grid_id" = "grid_id")) %>% 
-        select(siteid, back_conc) 
-    
-    return(sites_gridconcs_tbl)
 }
 
 make.table.a2 <- function(aqms_tbl){
@@ -747,25 +774,6 @@ make.data.cap.period.tbl <- function(coloc_divisor_tbl, no2_data){
         mutate(dc_monitoring_period = ((sumdays / period) / div) * 100)
 }
 
-get.annual.tube.data.4yrs.tbl <- function(con, startDate){
-    year <- year(as.Date(startDate))
-    
-    annual_tube_data_4years_tbl <-
-        tbl(con, "tbl_final_ba_annual") %>% 
-        filter(between(dYear,
-                       {{year}} - 4,
-                       {{year}} - 1)) %>% 
-        select(siteid = LocID,
-               year = dYear,
-               conc = final_adjusted_conc) %>% 
-        pivot_wider(id_cols = siteid,
-                    names_from = year,
-                    values_from = conc) %>%
-        collect()
-
-    return(annual_tube_data_4years_tbl)
-}
-
 make.table.a4 <- function(annual_tube_data_4years_tbl,
                           data_cap_period_tbl){
     
@@ -777,16 +785,6 @@ make.table.a4 <- function(annual_tube_data_4years_tbl,
         relocate(siteid, dc_monitoring_period)
 }
 
-get.count.tubes.tbl <- function(con){
-    tbl(con, "data") %>% 
-        mutate(mid_date = dateOn + ((dateOff - dateOn) / 2L)) %>% 
-        filter(mid_date >= as.Date("2010-01-01")) %>% 
-        select(mid_date, siteid = LocID) %>% 
-        collect() %>% 
-        group_by(year = year(mid_date), siteid) %>% 
-        summarise(count = n(), .groups = "drop") %>% 
-        return()
-}
 
 make.ods.upload.tube.tbl <- function(con,
                                      count_tubes_tbl,
@@ -1038,27 +1036,6 @@ make.table.list <- function(...){
     return(t)
 }
 
-write.spreadsheets <- function(table_list,
-                               bias_site_list,
-                               ods_tubes_upload_tbl,
-                               startDate){
-    year <- year(startDate)
-    asr_dtpt_file = glue("data/asr_tables_{year}.xlsx")
-    bias_tube_file = glue("data/bias_input_tables_{year}.xlsx")
-    ods_tubes_upload_tbl_file = glue("data/ods_tubes_upload_{year}.csv")
-    
-    write_xlsx(table_list, file = asr_dtpt_file)
-    write_xlsx(bias_site_list, file = bias_tube_file)
-    write.csv2(ods_tubes_upload_tbl, ods_tubes_upload_tbl_file)
-    
-    print(glue("  files are saved /n
-               {bias_tube_file} /n
-               {asr_dtpt_file} /n
-               {ods_tubes_upload_tbl_file}")) %>% 
-        return()
-    
-}
-
 make.plotareas_tbl <- function(){
     
     central <- tribble(~siteid, 2, 5, 9, 11, 15, 113, 125, 147, 423, 318) %>% 
@@ -1120,14 +1097,7 @@ make.no2.trend.chart.tbl <- function(startDate,
                filename = glue("plots/{area}_{xyear}_to_{year}_no2_trend_.png"))
 }
 
-write.no2.trend.charts <- function(no2_trend_chart_tbl){
-    #plot the outputs to file
-    no2_trend_chart_tbl %>%
-        ungroup() %>% 
-        select(plot, filename) %>% 
-        pwalk(ggsave, width = 10, height = 7)
-}
-# PM2.5 chart
+# Write outputs ----
 
 make.pm25.trend.chart <- function(startDate){
     
@@ -1163,6 +1133,13 @@ make.pm25.trend.chart <- function(startDate){
     
     return(pm25_chart)
 }
+write.no2.trend.charts <- function(no2_trend_chart_tbl){
+    #plot the outputs to file
+    no2_trend_chart_tbl %>%
+        ungroup() %>% 
+        select(plot, filename) %>% 
+        pwalk(ggsave, width = 10, height = 7)
+}
 
 write.pm25.trend.chart <- function(pm25_trend_chart){
     
@@ -1177,5 +1154,25 @@ write.pm25.trend.chart <- function(pm25_trend_chart){
     return(glue("chart image file saved to {filename}"))
 }
 
+write.spreadsheets <- function(table_list,
+                               bias_site_list,
+                               ods_tubes_upload_tbl,
+                               startDate){
+    year <- year(startDate)
+    asr_dtpt_file = glue("data/asr_tables_{year}.xlsx")
+    bias_tube_file = glue("data/bias_input_tables_{year}.xlsx")
+    ods_tubes_upload_tbl_file = glue("data/ods_tubes_upload_{year}.csv")
+    
+    write_xlsx(table_list, file = asr_dtpt_file)
+    write_xlsx(bias_site_list, file = bias_tube_file)
+    write.csv2(ods_tubes_upload_tbl, ods_tubes_upload_tbl_file)
+    
+    print(glue("  files are saved /n
+               {bias_tube_file} /n
+               {asr_dtpt_file} /n
+               {ods_tubes_upload_tbl_file}")) %>% 
+        return()
+    
+}
 
 
