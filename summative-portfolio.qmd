@@ -224,6 +224,10 @@ source("word_table_extract.R")
 
 I am able to work on these projects concurrently and I believe they are all achievable by the end of the apprenticeship.
 
+I have created a [GitHub repository](https://github.com/stevecrawshaw/L4) for all the projects, and other work as part of the apprenticeship. This enables code sharing, version control and backup of work. I have found this very useful in being able to work on projects flexibly.
+
+All the projects have been mainly implemented using R. I selected R as the overarching computing environment mainly because I have greater experience in programming in R. Another key consideration is that R offers a powerful and comprehensive library for manipulation of air quality data, called `openair`, which is integral to the implementation of aspects of some of the projects.
+
 ## Project 1: A data processing pipeline for the statutory reporting of air quality data
 
 ### Introduction
@@ -266,22 +270,25 @@ Each operation was assigned to a function. Targets ensures that the functions ru
 
 #### Data Sources
 
-The data needed for the analysis are in four separate repositories:
+The data needed for the analysis are in five separate repositories:
 
 1. A corporate Azure SQL server database hosting BCC's continuous air quality data
 2. A Microsoft Access database for the diffusion tube data and monitoring site meta data
 3. The council's [open data portal](https://opendata.bristol.gov.uk/explore/?sort=modified)
 4. UK Government's [Air Information Resource](https://uk-air.defra.gov.uk/data/) which holds data for the air monitoring sites run by government as part of the Automated Urban and Rural Network (AURN). There are two of these sites in Bristol.
+5. The LAQM Portal (holds data for the calendar for changing diffusion tubes)
 
-Three of these repositories were used in the analysis. The open data portal was not used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.
+Four of these repositories were used in the analysis. The open data portal was not used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.
 
 ##### Data processing overview
 
-The data from databases was accessed using a combination of the `DBI`, `dplyr` and `odbc` packages. For the data that is hosted on the government's website, the `openair` package provides a helpful function called `importAURN`. Functions written using a combination of `tidyverse` and base R and controlled by `targets` implement the ETL processes. The dataframes are exported as csv files ready to be pasted directly into the spreadsheet template.
+The data from databases was accessed using a combination of the `DBI`, `dplyr` and `odbc` packages. Data from the LAQM Portal was retrieved and processed with the `rvest` package for web scaping. For the data that is hosted on the government's website, the `openair` package provides a helpful function called `importAURN`. Functions written using a combination of `tidyverse` and base R and controlled by `targets` implement the ETL processes. The dataframes are exported as csv files ready to be pasted directly into the spreadsheet template.
 
 For the generation of spatial output, the `sf` package is used to create shapefiles for use in ArcGIS and output graphics as png files.
 
+### Project 1: Business Benefits
 
+Project 1 clearly benefits the council's air quality team by standardising and automating the statutory reporting procedures for air quality monitoring. Rather than having to laboriously manually collate data from disparate data sources and summarise in a tool such as Excel, the entire process can run reproducibly and efficiently with a single process in R.
 
 ## Project 2: To develop a process for monthly diagnostics and QA reporting from air monitors and telemetry devices
 
@@ -311,6 +318,24 @@ The key outputs in the report are as follows.
 4. Charts showing the data use of airtime data allowances by routers. This can help identify excessive data use, which could indicate security breach or operating system problem. If data thresholds are exceeded, airtime can be cut which would inhibit our real time reporting of air quality measurements.
 5. Time series charts of instrument diagnostics. These are compared to high and low "normal operating characteristics" to show when instrument problems may be developing. This could for example be the sample pressure declining, indicating a leak in the system.
 
+Although the final reporting will be through an html rendered quarto document, some examples are shown below.
+
+<!-- :::{layout-ncol=2 layout-valign="center"} -->
+
+![Diagnostics plot: Brislington](project-2-diagnostics/qa_report_files/figure-html/diag_plot_1-1.png)
+
+<!-- :::{layout-ncol=2 layout-valign="center"} -->
+
+![Daily 4G data use](project-2-diagnostics/qa_report_files/figure-html/data_use_1-1.png)
+
+![Cumulative data use for period](project-2-diagnostics/qa_report_files/figure-html/cumulative_data_use-1.png)
+
+<!-- :::{layout-ncol=2 layout-valign="center"} -->
+
+![Calibration factors](images/cal_factors.png)
+
+
+![Span divergence](project-2-diagnostics/qa_report_files/figure-html/span_divergence-1.png)
 
 ## Project 3: To publish a dashboard to share the results of citizen science air monitoring for the Slow the Smoke Project
 

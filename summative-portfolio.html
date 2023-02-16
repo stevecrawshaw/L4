@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Steve Crawshaw">
-<meta name="dcterms.date" content="2023-02-15">
+<meta name="dcterms.date" content="2023-02-16">
 
 <title>Summative Portfolio: L4</title>
 <style>
@@ -78,7 +78,7 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#introduction-1" id="toc-introduction-1" class="nav-link" data-scroll-target="#introduction-1"><span class="toc-section-number">4.1.1</span>  Introduction</a></li>
   <li><a href="#the-laqm-regime" id="toc-the-laqm-regime" class="nav-link" data-scroll-target="#the-laqm-regime"><span class="toc-section-number">4.1.2</span>  The LAQM regime</a></li>
   <li><a href="#caz-reporting" id="toc-caz-reporting" class="nav-link" data-scroll-target="#caz-reporting"><span class="toc-section-number">4.1.3</span>  CAZ Reporting</a></li>
-  <li><a href="#proposed-analysis-and-processing-techniques" id="toc-proposed-analysis-and-processing-techniques" class="nav-link" data-scroll-target="#proposed-analysis-and-processing-techniques"><span class="toc-section-number">4.1.4</span>  Proposed analysis and processing techniques</a></li>
+  <li><a href="#analysis-and-processing-techniques" id="toc-analysis-and-processing-techniques" class="nav-link" data-scroll-target="#analysis-and-processing-techniques"><span class="toc-section-number">4.1.4</span>  Analysis and Processing Techniques</a></li>
   </ul></li>
   <li><a href="#project-2-to-develop-a-process-for-monthly-diagnostics-and-qa-reporting-from-air-monitors-and-telemetry-devices" id="toc-project-2-to-develop-a-process-for-monthly-diagnostics-and-qa-reporting-from-air-monitors-and-telemetry-devices" class="nav-link" data-scroll-target="#project-2-to-develop-a-process-for-monthly-diagnostics-and-qa-reporting-from-air-monitors-and-telemetry-devices"><span class="toc-section-number">4.2</span>  Project 2: To develop a process for monthly diagnostics and QA reporting from air monitors and telemetry devices</a>
   <ul class="collapse">
@@ -128,7 +128,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">February 15, 2023</p>
+      <p class="date">February 16, 2023</p>
     </div>
   </div>
   
@@ -336,6 +336,8 @@ ul.task-list li input[type="checkbox"] {
 <p><img src="images/Objective%201.png" class="img-fluid" alt="Objective 1"> <img src="images/Objective%202.png" class="img-fluid" alt="Objective 2"></p>
 <p><img src="images/Objective%203.png" class="img-fluid" alt="Objective 3"> <img src="images/Objective%204.png" class="img-fluid" alt="Objective 4"></p>
 <p>I am able to work on these projects concurrently and I believe they are all achievable by the end of the apprenticeship.</p>
+<p>I have created a <a href="https://github.com/stevecrawshaw/L4">GitHub repository</a> for all the projects, and other work as part of the apprenticeship. This enables code sharing, version control and backup of work. I have found this very useful in being able to work on projects flexibly.</p>
+<p>All the projects have been mainly implemented using R. I selected R as the overarching computing environment mainly because I have greater experience in programming in R. Another key consideration is that R offers a powerful and comprehensive library for manipulation of air quality data, called <code>openair</code>, which is integral to the implementation of aspects of some of the projects.</p>
 <section id="project-1-a-data-processing-pipeline-for-the-statutory-reporting-of-air-quality-data" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="project-1-a-data-processing-pipeline-for-the-statutory-reporting-of-air-quality-data"><span class="header-section-number">4.1</span> Project 1: A data processing pipeline for the statutory reporting of air quality data</h2>
 <section id="introduction-1" class="level3" data-number="4.1.1">
@@ -359,26 +361,29 @@ ul.task-list li input[type="checkbox"] {
 <p>The purpose of the CAZ is to reduce concentrations of one pollutant (NO<sub>2</sub>) to legal levels in the shortest time possible. Therefore the reporting is limited to NO<sub>2</sub>. However, the reporting on this single pollutant requires greater granularity than the LAQM reporting. This is partly because advanced techniques for analysing changes in time series air quality data will be used to assess the impact of a specific policy intervention (the CAZ) and therefore the hourly time series data need to be reported, not just the summary statistics. This analysis will be done by ITS using the <a href="https://cran.r-project.org/web/packages/AQEval/index.html">`AQEval’ R package</a> and the data for Bristol will be supplied by providing access to the open data portal <a href="https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location">dataset for continuous air quality data</a>.</p>
 <p>The reporting for diffusion tube data consists of providing data in a pre - formatted template quarterly. The data is a combination of meta - data for the measurement site, e.g.&nbsp;location, height, distance from a road and the “raw” monthly concentrations from the diffusion tube. The measurement technique for diffusion tubes and continuous analysers is described later on.</p>
 </section>
-<section id="proposed-analysis-and-processing-techniques" class="level3" data-number="4.1.4">
-<h3 data-number="4.1.4" class="anchored" data-anchor-id="proposed-analysis-and-processing-techniques"><span class="header-section-number">4.1.4</span> Proposed analysis and processing techniques</h3>
+<section id="analysis-and-processing-techniques" class="level3" data-number="4.1.4">
+<h3 data-number="4.1.4" class="anchored" data-anchor-id="analysis-and-processing-techniques"><span class="header-section-number">4.1.4</span> Analysis and Processing Techniques</h3>
 <section id="summary" class="level4">
 <h4 class="anchored" data-anchor-id="summary">Summary</h4>
-<p>The overall process will be controlled using the <a href="https://books.ropensci.org/targets/"><code>targets</code> R package</a>. This is a “Make” - like pipeline tool for Statistics and data science in R to help maintain a reproducible workflow. Targets learns how the pipeline fits together, skips costly runtime for tasks that are already up to date, runs only the necessary computation, supports implicit parallel computing, abstracts files as R objects, and shows tangible evidence that the results match the underlying code and data.</p>
-<p>Each operation will be assigned to a function. Targets will ensure that the functions run in the right order, and only when all pre - conditions are satisfied. (K3, K8, K10, K14, S2, S4, S15)</p>
+<p>The overall process was controlled using the <a href="https://books.ropensci.org/targets/"><code>targets</code> R package</a>. This is a “Make” - like pipeline tool for Statistics and data science in R to help maintain a reproducible workflow. Targets learns how the pipeline fits together, skips costly runtime for tasks that are already up to date, runs only the necessary computation, supports implicit parallel computing, abstracts files as R objects, and shows tangible evidence that the results match the underlying code and data.</p>
+<p>Each operation was assigned to a function. Targets ensures that the functions run in the right order, and only when all pre - conditions are satisfied. (K3, K8, K10, K14, S2, S4, S15)</p>
 </section>
 <section id="data-sources" class="level4">
 <h4 class="anchored" data-anchor-id="data-sources">Data Sources</h4>
-<p>The data needed for the analysis are in four separate repositories:</p>
+<p>The data needed for the analysis are in five separate repositories:</p>
 <ol type="1">
 <li>A corporate Azure SQL server database hosting BCC’s continuous air quality data</li>
 <li>A Microsoft Access database for the diffusion tube data and monitoring site meta data</li>
 <li>The council’s <a href="https://opendata.bristol.gov.uk/explore/?sort=modified">open data portal</a></li>
 <li>UK Government’s <a href="https://uk-air.defra.gov.uk/data/">Air Information Resource</a> which holds data for the air monitoring sites run by government as part of the Automated Urban and Rural Network (AURN). There are two of these sites in Bristol.</li>
+<li>The LAQM Portal (holds data for the calendar for changing diffusion tubes)</li>
 </ol>
-<p>Three of these repositories will be used in the analysis. The open data portal will not be used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.</p>
-<p>The data from databases will be accessed using a combination of the <code>DBI</code>, <code>dplyr</code> and <code>odbc</code> packages. For the data that is hosted on the government’s website, the <code>openair</code> package provides a helpful function called <code>importAURN</code>. Once the data is available in the R session, they will be manipulated using base R and tools from the <code>tidyverse</code> metapackage to produce dataframes to populate the tables in the required format. The dataframes will be exported as csv files and also pasted directly into the spreadsheet template.</p>
-<p>For the generation of spatial output, the <code>sf</code> and <code>osm</code> packages will be used to create shapefiles for use in ArcGIS and output graphics as png files.</p>
-<p>The <code>targets</code> package will control the processing pipeline and ensure efficient operation of the data manipulation steps.</p>
+<p>Four of these repositories were used in the analysis. The open data portal was not used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.</p>
+<section id="data-processing-overview" class="level5">
+<h5 class="anchored" data-anchor-id="data-processing-overview">Data processing overview</h5>
+<p>The data from databases was accessed using a combination of the <code>DBI</code>, <code>dplyr</code> and <code>odbc</code> packages. Data from the LAQM Portal was retrieved and processed with the <code>rvest</code> package for web scaping. For the data that is hosted on the government’s website, the <code>openair</code> package provides a helpful function called <code>importAURN</code>. Functions written using a combination of <code>tidyverse</code> and base R and controlled by <code>targets</code> implement the ETL processes. The dataframes are exported as csv files ready to be pasted directly into the spreadsheet template.</p>
+<p>For the generation of spatial output, the <code>sf</code> package is used to create shapefiles for use in ArcGIS and output graphics as png files.</p>
+</section>
 </section>
 </section>
 </section>
@@ -412,6 +417,40 @@ ul.task-list li input[type="checkbox"] {
 <li>Charts showing the data use of airtime data allowances by routers. This can help identify excessive data use, which could indicate security breach or operating system problem. If data thresholds are exceeded, airtime can be cut which would inhibit our real time reporting of air quality measurements.</li>
 <li>Time series charts of instrument diagnostics. These are compared to high and low “normal operating characteristics” to show when instrument problems may be developing. This could for example be the sample pressure declining, indicating a leak in the system.</li>
 </ol>
+<p>Although the final reporting will be through an html rendered quarto document, some examples are shown below.</p>
+<!-- :::{layout-ncol=2 layout-valign="center"} -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-2-diagnostics/qa_report_files/figure-html/diag_plot_1-1.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Diagnostics plot: Brislington</figcaption><p></p>
+</figure>
+</div>
+<!-- :::{layout-ncol=2 layout-valign="center"} -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-2-diagnostics/qa_report_files/figure-html/data_use_1-1.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Daily 4G data use</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-2-diagnostics/qa_report_files/figure-html/cumulative_data_use-1.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Cumulative data use for period</figcaption><p></p>
+</figure>
+</div>
+<!-- :::{layout-ncol=2 layout-valign="center"} -->
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/cal_factors.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Calibration factors</figcaption><p></p>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="project-2-diagnostics/qa_report_files/figure-html/span_divergence-1.png" class="img-fluid figure-img"></p>
+<p></p><figcaption class="figure-caption">Span divergence</figcaption><p></p>
+</figure>
+</div>
 </section>
 </section>
 <section id="project-3-to-publish-a-dashboard-to-share-the-results-of-citizen-science-air-monitoring-for-the-slow-the-smoke-project" class="level2" data-number="4.3">
@@ -584,12 +623,12 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="wqptrpysnn" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<div id="dxzhzowiyu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
 <style>html {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
 }
 
-:where(#wqptrpysnn) .gt_table {
+:where(#dxzhzowiyu) .gt_table {
   display: table;
   border-collapse: collapse;
   margin-left: auto;
@@ -614,7 +653,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-left-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_heading {
+:where(#dxzhzowiyu) .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -626,12 +665,12 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-right-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_caption {
+:where(#dxzhzowiyu) .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-:where(#wqptrpysnn) .gt_title {
+:where(#dxzhzowiyu) .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -643,7 +682,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-bottom-width: 0;
 }
 
-:where(#wqptrpysnn) .gt_subtitle {
+:where(#dxzhzowiyu) .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -655,13 +694,13 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-top-width: 0;
 }
 
-:where(#wqptrpysnn) .gt_bottom_border {
+:where(#dxzhzowiyu) .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_col_headings {
+:where(#dxzhzowiyu) .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -676,7 +715,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-right-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_col_heading {
+:where(#dxzhzowiyu) .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -696,7 +735,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   overflow-x: hidden;
 }
 
-:where(#wqptrpysnn) .gt_column_spanner_outer {
+:where(#dxzhzowiyu) .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -708,15 +747,15 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 4px;
 }
 
-:where(#wqptrpysnn) .gt_column_spanner_outer:first-child {
+:where(#dxzhzowiyu) .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-:where(#wqptrpysnn) .gt_column_spanner_outer:last-child {
+:where(#dxzhzowiyu) .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-:where(#wqptrpysnn) .gt_column_spanner {
+:where(#dxzhzowiyu) .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -728,7 +767,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   width: 100%;
 }
 
-:where(#wqptrpysnn) .gt_group_heading {
+:where(#dxzhzowiyu) .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -754,7 +793,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   text-align: left;
 }
 
-:where(#wqptrpysnn) .gt_empty_group_heading {
+:where(#dxzhzowiyu) .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -769,15 +808,15 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   vertical-align: middle;
 }
 
-:where(#wqptrpysnn) .gt_from_md > :first-child {
+:where(#dxzhzowiyu) .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-:where(#wqptrpysnn) .gt_from_md > :last-child {
+:where(#dxzhzowiyu) .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-:where(#wqptrpysnn) .gt_row {
+:where(#dxzhzowiyu) .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -796,7 +835,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   overflow-x: hidden;
 }
 
-:where(#wqptrpysnn) .gt_stub {
+:where(#dxzhzowiyu) .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -809,7 +848,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#wqptrpysnn) .gt_stub_row_group {
+:where(#dxzhzowiyu) .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -823,11 +862,11 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   vertical-align: top;
 }
 
-:where(#wqptrpysnn) .gt_row_group_first td {
+:where(#dxzhzowiyu) .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-:where(#wqptrpysnn) .gt_summary_row {
+:where(#dxzhzowiyu) .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -837,16 +876,16 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#wqptrpysnn) .gt_first_summary_row {
+:where(#dxzhzowiyu) .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_first_summary_row.thick {
+:where(#dxzhzowiyu) .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-:where(#wqptrpysnn) .gt_last_summary_row {
+:where(#dxzhzowiyu) .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -856,7 +895,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-bottom-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_grand_summary_row {
+:where(#dxzhzowiyu) .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -866,7 +905,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#wqptrpysnn) .gt_first_grand_summary_row {
+:where(#dxzhzowiyu) .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -876,11 +915,11 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-top-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_striped {
+:where(#dxzhzowiyu) .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-:where(#wqptrpysnn) .gt_table_body {
+:where(#dxzhzowiyu) .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -889,7 +928,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-bottom-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_footnotes {
+:where(#dxzhzowiyu) .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -903,7 +942,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-right-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_footnote {
+:where(#dxzhzowiyu) .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-left: 4px;
@@ -912,7 +951,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#wqptrpysnn) .gt_sourcenotes {
+:where(#dxzhzowiyu) .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -926,7 +965,7 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   border-right-color: #D3D3D3;
 }
 
-:where(#wqptrpysnn) .gt_sourcenote {
+:where(#dxzhzowiyu) .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -934,64 +973,64 @@ The <a href="https://opendata.bristol.gov.uk/pages/making_sense_of_data/">learni
   padding-right: 5px;
 }
 
-:where(#wqptrpysnn) .gt_left {
+:where(#dxzhzowiyu) .gt_left {
   text-align: left;
 }
 
-:where(#wqptrpysnn) .gt_center {
+:where(#dxzhzowiyu) .gt_center {
   text-align: center;
 }
 
-:where(#wqptrpysnn) .gt_right {
+:where(#dxzhzowiyu) .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-:where(#wqptrpysnn) .gt_font_normal {
+:where(#dxzhzowiyu) .gt_font_normal {
   font-weight: normal;
 }
 
-:where(#wqptrpysnn) .gt_font_bold {
+:where(#dxzhzowiyu) .gt_font_bold {
   font-weight: bold;
 }
 
-:where(#wqptrpysnn) .gt_font_italic {
+:where(#dxzhzowiyu) .gt_font_italic {
   font-style: italic;
 }
 
-:where(#wqptrpysnn) .gt_super {
+:where(#dxzhzowiyu) .gt_super {
   font-size: 65%;
 }
 
-:where(#wqptrpysnn) .gt_footnote_marks {
+:where(#dxzhzowiyu) .gt_footnote_marks {
   font-style: italic;
   font-weight: normal;
   font-size: 75%;
   vertical-align: 0.4em;
 }
 
-:where(#wqptrpysnn) .gt_asterisk {
+:where(#dxzhzowiyu) .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-:where(#wqptrpysnn) .gt_indent_1 {
+:where(#dxzhzowiyu) .gt_indent_1 {
   text-indent: 5px;
 }
 
-:where(#wqptrpysnn) .gt_indent_2 {
+:where(#dxzhzowiyu) .gt_indent_2 {
   text-indent: 10px;
 }
 
-:where(#wqptrpysnn) .gt_indent_3 {
+:where(#dxzhzowiyu) .gt_indent_3 {
   text-indent: 15px;
 }
 
-:where(#wqptrpysnn) .gt_indent_4 {
+:where(#dxzhzowiyu) .gt_indent_4 {
   text-indent: 20px;
 }
 
-:where(#wqptrpysnn) .gt_indent_5 {
+:where(#dxzhzowiyu) .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
