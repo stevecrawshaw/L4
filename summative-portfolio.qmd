@@ -1,7 +1,9 @@
 ---
 title: "Summative Portfolio: L4"
 author: "Steve Crawshaw"
-format: html
+format:
+    html:
+        embed-resources: true
 date: "`r Sys.Date()`"
 toc: true
 toc-title: "Table of Contents"

@@ -62,6 +62,7 @@ project-4-colocation-study/plots/*.png
 project-4-colocation-study/data/*.rds
 project-1-reporting-pipeline/plots/*.png
 project-1-reporting-pipeline/data/*.xlsx
+project-1-reporting-pipeline/data/*.xlsb
 project-1-reporting-pipeline/data/*.csv
 /project-3-dashboard/images
 project-3-dashboard/openair_map.html
@@ -73,6 +74,7 @@ project-2-diagnostics/qa_report_files/
 project-2-diagnostics/qa_report.html
 summative-portfolio_files/
 summative-portfolio.html
+
 
 #SP Word
 summative-portfolio.docx
