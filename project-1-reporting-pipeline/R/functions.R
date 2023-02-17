@@ -21,7 +21,7 @@ p <-
       "ggtext",
       "sf"
       )
-# p_load(char = p) # Uncomment to test- 
+# p_load(char = p) # Uncomment to test-
 
 # Variables ----
 
@@ -104,7 +104,15 @@ return(dates_tbl)
 
 # Utility functions ---- 
 
-# ggtheme
+clean.siteid <- function(siteid_dirty) {
+    if (str_detect(siteid_dirty, ",")) {
+        str_split_i(siteid_dirty, ",", 1) %>%
+            str_split_i("_", 1) %>%
+            return()
+    } else {
+        return(siteid_dirty)
+    }
+}
 
 theme_web_bw <- function() {
     theme_bw() + # note ggplot2 theme is used as a basis
@@ -786,56 +794,7 @@ make.table.a4 <- function(annual_tube_data_4years_tbl,
 }
 
 
-make.ods.upload.tube.tbl <- function(con,
-                                     count_tubes_tbl,
-                                     path,
-                                     startDate){
-    # the path 
-    # references the a copy of the data calculated as
-    # final concs in Table A4 as readxl won't open .xlsb. bah!
-    
-    year <- year(startDate)
-    
-    annual_tube_data_all_tbl <- tbl(con, "tbl_final_ba_annual") %>% 
-        filter(dYear >= 2010) %>%
-         #filter for current yr
-        select(year = dYear,
-               siteid = LocID,
-               conc_ugm3 = final_adjusted_conc) %>%
-        collect() %>% 
-        filter(year != {{year}} %>% as.integer())
-    
-    re_siteid <- function(siteid_dirty){
-        if(str_detect(siteid_dirty, "_")){
-            return(str_sub(siteid_dirty, 1, 3))
-        } else {
-            return(siteid_dirty)
-        }
-    }
-    
-    from_a4_tbl <- readxl::read_xlsx(path = path,
-                             sheet = "Sheet1",
-                             range = "A1:B500") %>% 
-        drop_na() %>% 
-        filter(!conc_ugm3 == "-") %>% # filter out sites with low DC
-        mutate(siteid = siteid %>%
-                   map_chr( ~re_siteid(.x)) %>%
-                   as.integer(),
-               conc_ugm3 = as.double(conc_ugm3))
-    
-    ods_tube_upload_tbl <- from_a4_tbl %>%
-        mutate(year = !!year %>% as.integer()) %>% 
-                relocate(year, siteid, conc_ugm3) %>% 
-        bind_rows(annual_tube_data_all_tbl) %>%
-                      inner_join(count_tubes_tbl,
-                                 by = c("siteid" = "siteid",
-                                        "year" = "year")) %>% 
-        arrange(desc(year), siteid)
-    
-    return(ods_tube_upload_tbl)
-    
-    
-}
+
 
 make.table.a1 <- function(aqms_tbl){
 
@@ -1055,6 +1014,66 @@ make.plotareas_tbl <- function(){
     return(plotareas_tbl)
 }
 
+make.annual.tube.append.tbl <- function(dtdes_path, startDate){
+    year <- year(startDate)
+    
+annual_tube_data_append_tbl <- read_xlsx(dtdes_path) %>%
+    as_tibble() %>%
+    filter(!is.na(`Site ID`)) %>%
+    transmute(
+        dYear = {
+            {
+                year
+            }
+        },
+        LocID = map_chr(`Site ID`, ~ clean.siteid(.x)) %>%
+            as.integer(),
+        concentration = `Raw Annual Mean (µg/m3)`,
+        BAFconc = NA_real_,
+        annualised_ba_conc_ugm3 = NA_real_,
+        final_adjusted_conc = `Bias Adjusted and Annualised Annual Mean (µg/m3)`,
+        distance_corrected_conc = `Distance Corrected Annual Mean (µg/m3)`
+    )
+return(annual_tube_data_append_tbl)
+
+}
+
+make.ods.upload.tube.tbl <- function(con,
+                                     count_tubes_tbl,
+                                     annual_tube_data_append_tbl,
+                                     startDate){
+
+    year <- year(startDate)
+    
+    annual_tube_data_all_tbl <- tbl(con, "tbl_final_ba_annual") %>% 
+        filter(dYear >= 2010) %>%
+         #filter for current yr
+        select(year = dYear,
+               siteid = LocID,
+               conc_ugm3 = final_adjusted_conc) %>%
+        collect() %>% 
+        filter(year != {{year}} %>% as.integer())
+    
+
+    to_append_tbl <- annual_tube_data_append_tbl %>%
+        select(year = dYear,
+               siteid = LocID,
+               conc_ugm3 = final_adjusted_conc) 
+    
+    ods_tube_upload_tbl <- to_append_tbl %>%
+        mutate(year = !!year %>% as.integer()) %>% 
+                relocate(year, siteid, conc_ugm3) %>% 
+        bind_rows(annual_tube_data_all_tbl) %>%
+                      inner_join(count_tubes_tbl,
+                                 by = c("siteid" = "siteid",
+                                        "year" = "year")) %>% 
+        arrange(desc(year), siteid)
+    
+    return(ods_tube_upload_tbl)
+    
+    
+}
+
 make.no2.trend.chart.tbl <- function(startDate,
                                      ods_tubes_upload_tbl,
                                      plotareas_tbl,
@@ -1156,21 +1175,19 @@ write.pm25.trend.chart <- function(pm25_trend_chart){
 
 write.spreadsheets <- function(table_list,
                                bias_site_list,
-                               ods_tubes_upload_tbl,
                                startDate){
     year <- year(startDate)
     asr_dtpt_file = glue("data/asr_tables_{year}.xlsx")
     bias_tube_file = glue("data/bias_input_tables_{year}.xlsx")
-    ods_tubes_upload_tbl_file = glue("data/ods_tubes_upload_{year}.csv")
+
     
     write_xlsx(table_list, file = asr_dtpt_file)
     write_xlsx(bias_site_list, file = bias_tube_file)
-    write.csv2(ods_tubes_upload_tbl, ods_tubes_upload_tbl_file)
     
-    print(glue("  files are saved /n
-               {bias_tube_file} /n
-               {asr_dtpt_file} /n
-               {ods_tubes_upload_tbl_file}")) %>% 
+    
+    print(glue("files are saved 
+               {bias_tube_file} 
+               {asr_dtpt_file} ")) %>% 
         return()
     
 }

@@ -117,13 +117,13 @@ list(
       name = count_tubes_tbl,
       command = get.count.tubes.tbl(connect.access())
   ),
-  tar_target(
-      name = ods_tubes_upload_tbl,
-      command =  make.ods.upload.tube.tbl(connect.access(),
-                                          count_tubes_tbl,
-                                          path = "S:/SUSTAIN/Sustain-Common/SCCCS/write_gis_r/R Projects/tubes/data/read_dt_data.xlsx",
-                                          startDate = startDate)
-  ),
+  # tar_target(
+  #     name = ods_tubes_upload_tbl,
+  #     command =  make.ods.upload.tube.tbl(connect.access(),
+  #                                         count_tubes_tbl,
+  #                                         path = "S:/SUSTAIN/Sustain-Common/SCCCS/write_gis_r/R Projects/tubes/data/read_dt_data.xlsx",
+  #                                         startDate = startDate)
+  # ),
   tar_target(
       name = contin_4yrs_tbl,
       command = get.aq.data.all(startDate = as.Date(startDate) - years(4), endDate = endDate)
@@ -214,31 +214,30 @@ list(
       name = write_spreadsheets,
       command = write.spreadsheets(table_list,
                                    bias_site_list,
-                                   ods_tubes_upload_tbl,
                                    startDate)
-  ),
-  tar_target(
-      name = plotareas_tbl,
-      command = make.plotareas_tbl()
-  ),
-  tar_target(
-      name = no2_trend_chart_tbl,
-      command = make.no2.trend.chart.tbl(startDate,
-                                         ods_tubes_upload_tbl,
-                                         plotareas_tbl,
-                                         aqms_tbl)
-  ),
-  tar_target(
-      name = pm25_trend_chart,
-      command = make.pm25.trend.chart(startDate)
-  ),
-  tar_target(
-      name = write_no2_trend_charts,
-      command = write.no2.trend.charts(no2_trend_chart_tbl)
-  ),
-  tar_target(
-      name = write_pm25_trend_chart,
-      command = write.pm25.trend.chart(pm25_trend_chart)
-  )
+  )#,
+  # tar_target(
+  #     name = plotareas_tbl,
+  #     command = make.plotareas_tbl()
+  # ),
+  # tar_target(
+  #     name = no2_trend_chart_tbl,
+  #     command = make.no2.trend.chart.tbl(startDate,
+  #                                        ods_tubes_upload_tbl,
+  #                                        plotareas_tbl,
+  #                                        aqms_tbl)
+  # ),
+  # tar_target(
+  #     name = pm25_trend_chart,
+  #     command = make.pm25.trend.chart(startDate)
+  # ),
+  # tar_target(
+  #     name = write_no2_trend_charts,
+  #     command = write.no2.trend.charts(no2_trend_chart_tbl)
+  # ),
+  # tar_target(
+  #     name = write_pm25_trend_chart,
+  #     command = write.pm25.trend.chart(pm25_trend_chart)
+  # )
     
 )

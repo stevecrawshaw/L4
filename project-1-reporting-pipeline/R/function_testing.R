@@ -21,12 +21,7 @@ data_cap_period_tbl <- make.data.cap.period.tbl(coloc_divisor_tbl,
 annual_tube_data_4years_tbl <- get.annual.tube.data.4yrs.tbl(con, startDate)
 count_tubes_tbl <- get.count.tubes.tbl(con)
 
-# con <- connect.access()
-ods_tubes_upload_tbl <- 
-    make.ods.upload.tube.tbl(con,
-                             count_tubes_tbl,
-                             path = "data/read_dt_data.xlsx",
-                             startDate = startDate)
+
 bias_site_list <- make.bias.site.list(aqms_tbl, no2_data)
 dbDisconnect(con)
 con <- connect.envista()
@@ -62,21 +57,13 @@ table_list <- make.table.list(step_2_tbl,
                               table_a5,
                               table_a6,
                               table_a7,
-                              table_a8,
-                              ods_tubes_upload_tbl)
+                              table_a8)
 
 
-write.spreadsheets(table_list, bias_site_list, ods_tubes_upload_tbl, startDate)
+write.spreadsheets(table_list, bias_site_list, startDate)
 
 
-plotareas_tbl <- make.plotareas_tbl()
 
-no2_trend_chart_tbl <- make.no2.trend.chart.tbl(startDate,
-                                                ods_tubes_upload_tbl,
-                                                plotareas_tbl,
-                                                aqms_tbl)
-
-pm25_trend_chart <- make.pm25.trend.chart(startDate)
 
 
 
