@@ -8,6 +8,9 @@
 source("R/functions.R")
 p_load(char = p)
 
+sites <- importMeta(all = TRUE)
+
+
 dtdes_path <-
     choose.files(
         default = here("data", "dtdes_test.xlsx"),
@@ -23,15 +26,16 @@ if (exists("con")) {
 con <- connect.access()
 }
 
-annual_tube_data_append_tbl <- annual_tube_data_append_tbl(dtdes_path)
+annual_tube_data_append_tbl <- make.annual.tube.append.tbl(dtdes_path, 
+                                                           startDate = startDate)
 
 count_tubes_tbl <- get.count.tubes.tbl(con)
 
 ods_tubes_upload_tbl <-
     make.ods.upload.tube.tbl(con,
-                                     count_tubes_tbl,
-                                     annual_tube_data_append_tbl,
-                                     startDate)
+                             count_tubes_tbl,
+                             annual_tube_data_append_tbl,
+                             startDate)
 
 plotareas_tbl <- make.plotareas_tbl()
 aqms_tbl <- get.aqms(con)
@@ -59,6 +63,11 @@ write.csv2(ods_tubes_upload_tbl, ods_tubes_upload_tbl_file)
 
 write.no2.trend.charts(no2_trend_chart_tbl)
 write.pm25.trend.chart(pm25_trend_chart)
+
+annual_tubes_tbl <- make.annual.tubes.tbl(aqms_tbl,
+                                  annual_tube_data_append_tbl)
+
+write.tube.shapefile.year(annual_tubes_tbl, startDate)
 
 
 con %>% dbDisconnect()

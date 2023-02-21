@@ -1192,4 +1192,37 @@ write.spreadsheets <- function(table_list,
     
 }
 
+make.annual.tubes.tbl <- function(aqms_tbl,
+                                  annual_tube_data_append_tbl){
+    # this makes the tbl to be used as shapefile for plotting
+annual_tubes_tbl <- aqms_tbl %>% 
+    inner_join(annual_tube_data_append_tbl,
+               by = join_by(siteid == LocID)) %>% 
+    mutate(no2_dist =
+               coalesce(distance_corrected_conc,
+                        final_adjusted_conc
+                        )) %>% 
+    select(location,
+           siteid,
+           x = easting, 
+           y = northing, 
+           no2 = final_adjusted_conc,
+           no2_dist
+           ) 
+return(annual_tubes_tbl)
+}
+
+write.tube.shapefile.year <- function(annual_tubes_tbl, startDate){
+
+year <- year(startDate)
+outfile = glue("data/tubes_{year}.shp")
+annual_tubes_tbl %>% 
+    st_as_sf(coords = c("x", "y"), crs = 27700) %>% 
+    # st_transform(crs = 4326)
+    st_write(outfile, delete_layer = TRUE)
+
+return(print(glue("shapefile written to {outfile}. Copy to ASR folder")))
+    
+}
+
 
