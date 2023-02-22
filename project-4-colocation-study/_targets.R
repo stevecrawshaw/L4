@@ -3,8 +3,7 @@
 # Load packages required to define the pipeline:
 library(targets)
 # library(tarchetypes) # Load other packages as needed. # nolint
-library(pacman)
-p_load(char = c(
+packages <-  c(
        "tidyverse",
        "lubridate",
        "httr2",
@@ -22,24 +21,22 @@ p_load(char = c(
        "easystats",
        "gtsummary",
        "webshot2")
-    )
 
-tar_option_set(
-  format = "rds" # default storage format
+tar_option_set(packages = packages,
+  format = "rds"
 )
 # Variables ----
-start_date <- "2022-05-01" # BTW started operating
-# tar_make_clustermq() configuration (okay to leave alone):
+
 options(clustermq.scheduler = "multicore")
 
 # tar_make_future() configuration (okay to leave alone):
 # Install packages {{future}}, {{future.callr}}, and {{future.batchtools}} to allow use_targets() to configure tar_make_future() options.
 
 # Run the R scripts in the R/ folder with your custom functions:
-tar_source()
-# source("other_functions.R") # Source other scripts as needed. # nolint
-source("../../airquality_GIT/ods-import-httr2.R")
-source("../../airquality_GIT/gg_themes.R")
+tar_source(c("../../airquality_GIT/ods-import-httr2.R",
+  "../../airquality_GIT/gg_themes.R",
+  "R"))
+
 # Replace the target list below with your own:
 list(
   tar_target(
@@ -47,13 +44,15 @@ list(
     command = get.zip.file.urls(
         data_root_url = "https://api-rrd.madavi.de/data_csv/",
         sensor = "esp8266-6496445",
-        start_date)
+        start_date = start_date,
+        end_date = end_date)
   ),
   tar_target(
     name = daily_csv_urls,
     command = get.daily.csv.urls(
         data_root_url = "https://api-rrd.madavi.de/data_csv/",
-        sensor = "esp8266-6496445")
+        sensor = "esp8266-6496445",
+        end_date = end_date)
   ),
    tar_target(
     name = daily_files_tbl,
@@ -66,15 +65,19 @@ list(
   tar_target(
     name = temple_way_sds_hr_tbl,
     command = make.temple.way.sds.hr.tbl(daily_files_tbl,
-                                         monthly_files_tbl)
+                                         monthly_files_tbl,
+                                         start_date = start_date,
+                                         end_date = end_date)
   ),
   tar_target(
     name = parson_st_sds_hr_tbl,
-    command = get.parson.st.sds.hr.tbl(start_date)
+    command = get.parson.st.sds.hr.tbl(start_date = start_date,
+                                       end_date = end_date)
   ),
   tar_target(
     name = ref_tbl,
-    command = get.ref.tbl(start_date)
+    command = get.ref.tbl(start_date = start_date,
+                          end_date = end_date)
   ),
   tar_target(
     name = combined_long_tbl,

@@ -1,33 +1,3 @@
-# Libraries - move to _targets ----
-# 
-# library(pacman)
-# p_load(char = c(
-#        "data.table",
-#        "tidyverse",
-#        "gt",
-#        "lubridate",
-#        "httr2",
-#        "jsonlite",
-#        "glue",
-#        "janitor",
-#        "fs",
-#        "padr",
-#        "fs",
-#        "tidymodels",
-#        "ggside",   # side plots of density
-#        "ggpubr",   # easy labelling of equations on the plot
-#        "openair",
-#        "easystats",
-#        "gtsummary",
-#        "webshot2")
-#     )
-# 
-# # Source other functions
-# 
-# source("../../airquality_GIT/ods-import-httr2.R")
-# source("../../airquality_GIT/gg_themes.R")
-# 
-
 # Variables ----
 start_date <- "2022-05-01" # BTW started operating
 end_date <- "2022-12-31"
@@ -42,11 +12,11 @@ end_date <- "2022-12-31"
 get.zip.file.urls <- function(
         data_root_url = "https://api-rrd.madavi.de/data_csv/",
         sensor = "esp8266-6496445",
-        start_date) {
-    previous_month <- (Sys.Date() - months(1)) %>% as.Date()
+        start_date,
+        end_date) {
     
     seq_dates <- seq.Date(from = start_date %>% as.Date(),
-                          to = previous_month,
+                          to = end_date %>% as.Date(),
                           by = "month")
     
     zip_months <- strftime(seq_dates, "%m")
@@ -60,11 +30,17 @@ get.zip.file.urls <- function(
     return(zip_file_urls)
 }
 
+
 get.daily.csv.urls <- function(
         data_root_url = "https://api-rrd.madavi.de/data_csv/",
-        sensor = "esp8266-6496445") {
+        sensor = "esp8266-6496445",
+        end_date) {
+    
+    
     first_of_month <- strftime(Sys.Date(), "%Y-%m-01") %>%
         as.Date()
+    
+    if (as.Date(end_date) > first_of_month) { #if daily csv data required 
     
     seq_dates_curr_month <- seq.Date(from = first_of_month,
                                      to = Sys.Date(),
@@ -74,6 +50,9 @@ get.daily.csv.urls <- function(
         "{data_root_url}csv-files/{seq_dates_curr_month}/data-{sensor}-{seq_dates_curr_month}.csv"
     )
     return(daily_csv_urls)
+    } else {
+        return(NULL)
+    }
 }
 # read the daily csv files
 get.sds.csv.tbl <- function(filename) {
@@ -96,10 +75,13 @@ get.sds.csv.tbl <- function(filename) {
 
 get.daily.files.tbl <- function(daily_csv_urls){
     
+    if (!is.null(daily_csv_urls)){
         daily_files_tbl <- daily_csv_urls %>%
         map_df(~ get.sds.csv.tbl(.x))
         return(daily_files_tbl)
-    
+    } else {
+        return(NULL)
+    }
 }
 
 get.monthly.files.tbl <- function(zip_file_urls){
@@ -131,50 +113,68 @@ get.sds.zip.tbl <- function(zip_url) {
 
 
 make.temple.way.sds.hr.tbl <- function(daily_files_tbl,
-                                      monthly_files_tbl) {
-    
-   
-    madavi_combined_tbl <- daily_files_tbl %>%
-        bind_rows(monthly_files_tbl) %>%
+                                      monthly_files_tbl,
+                                      start_date, 
+                                      end_date) {
+process_sds <- function(sds_tbl){
+    sds_tbl %>% 
         group_by(date = ceiling_date(Time, unit = "hour")) %>%
         summarise(pm10 = mean(SDS_P1, na.rm = TRUE),
                   .groups = "drop") %>%
-        filter(date >= as.POSIXct(start_date))
-    
-    return(madavi_combined_tbl)
+        filter(date >= as.POSIXct(start_date),
+               date <= as.POSIXct(end_date)) %>% 
+        return()
 }
 
+if(!is.null(daily_files_tbl)){
+    
+    daily_files_tbl %>%
+        bind_rows(monthly_files_tbl) %>% 
+        process_sds() %>%
+        return()
+} else {
+        monthly_files_tbl %>% 
+        process_sds() %>% 
+        return
+    }
+}
 
 # 3.1.2 Get sensor data from the sensor at Parson Street which is registered on sensor.community and also on the open data portal
 
-get.parson.st.sds.hr.tbl <- function(start_date) {
+get.parson.st.sds.hr.tbl <- function(start_date,
+                                     end_date) {
     parson_st_tbl <- import_ods(
         select = "sensor_id, date, pm2_5",
         where = "sensor_id = 71552",
         date_col = "date",
         dateon = start_date,
-        dateoff = Sys.Date(),
+        dateoff = end_date,
         dataset = "luftdaten_pm_bristol",
         order_by = "date") %>%
         select(date, pm2.5 = pm2_5) %>%
-        filter(date > start_date %>% as.POSIXct())
+        filter(date > start_date %>% as.POSIXct(),
+               date <= end_date %>% as.POSIXct())
 
         return(parson_st_tbl)
 }
 
 #   Get Reference Data ----
 
-get.ref.tbl <- function(start_date) {
+get.ref.tbl <- function(start_date, end_date) {
     raw_ref_tbl <-
         import_ods(
-            "air-quality-data-continuous",
+            dataset = "air-quality-data-continuous",
             select = "siteid, date_time, pm25, pm10",
-            where = "(siteid = 215 OR siteid = 500) AND date_time IN [date'2022'..date'2022']",
+            where = "siteid = 215 OR siteid = 500",
+            date_col = "date_time",
+            dateon = start_date,
+            dateoff = end_date,
             order_by = "siteid, date_time"
         )
     
     ref_tbl <- raw_ref_tbl %>%
-        filter(date_time >= start_date) %>%
+        filter(date_time >= start_date %>% as.Date(),
+               date_time <= end_date%>% as.Date()) %>%
         rename(date = date_time,
                pm2.5 = pm25) 
     
