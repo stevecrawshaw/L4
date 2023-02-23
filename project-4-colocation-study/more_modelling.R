@@ -1,24 +1,105 @@
-pacman::p_load(tidyverse, openair, fastverse, janitor, glue, lubridate)
+#pacman::p_load(tidyverse, openair, fastverse, janitor, glue, lubridate)
 pacman::p_load(char = packages)
 model_data_tbl <- readRDS("data/model_data_tbl.rds")
 
-test_pm25_tbl <- model_data_tbl$md_wide[[2]]
+make.daily.site.tbl <- function(model_data_tbl, siteid = 215){
+
+daily_site_tbl <- model_data_tbl %>%
+    ungroup() %>% 
+    filter(siteid == {{siteid}}) %>% 
+    select(md_wide) %>% 
+    pluck(1, 1) %>% 
+    group_by(date = as.Date(date)) %>% 
+    summarise(across(c(low_cost, reference),
+                     \(x)mean(x, na.rm = TRUE)))
+
+return(daily_site_tbl)
+}
+    
+make.lm.monthly.tbl <- function(daily_site_tbl){
+
+lm_monthly_tbl <- daily_site_tbl %>% 
+    na.omit() %>% 
+    mutate(month = lubridate::month(date)) %>% 
+    nest(data = -month) %>% 
+    mutate(
+        fit = map(data, ~lm(reference ~ low_cost, data = .x)),
+        tidied = map(fit, tidy),
+        glanced = map(fit, glance),
+        augmented = map(fit, augment)
+    )
+
+return(lm_monthly_tbl)
+}
 
 
-lms <- test_pm25_tbl %>% 
-    na_omit() %>%
+plot.fitted.lm <- function(lm_monthly_tbl){
+
+fitted_lm_plot <- lm_monthly_tbl %>% 
+    unnest(c(augmented, data), names_sep = "_") %>% 
+    select(month,
+           date = data_date, 
+           low_cost = data_low_cost,
+           reference = data_reference,
+           fitted = augmented_.fitted) %>% 
+    pivot_longer(cols = low_cost:fitted,
+                 names_to = "variable",
+                 values_to = "value") %>% #view()
+    ggplot() +
+    geom_line(aes(x = date, y = value, colour = variable), linewidth = 1)
+
+return(fitted_lm_plot)    
+
+}
+
+
+daily_site_tbl <- make.daily.site.tbl(model_data_tbl = model_data_tbl)
+
+lm_monthly_tbl <- make.lm.monthly.tbl(daily_site_tbl)
+
+fitted_lm_plot <- plot.fitted.lm(lm_monthly_tbl = lm_monthly_tbl)
+
+
+fitted_lm_plot
+
+lm_monthly_tbl %>% 
+    unnest(tidied)
+
+lm_monthly_tbl %>% 
+    unnest(glanced)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+lms <- test_tbl %>% 
+    na.omit() %>%
     nest_by(month = lubridate::month(date)) %>% 
    mutate(lm = list(lm(low_cost ~ reference, data = data)))
+
+lms %>% 
+    reframe(tidy(lm))
 
 lms %>% 
     summarise(glance(lm))
 
 lms %>% 
-    reframe(augment(lm)) %>% 
-    
-
-test_pm25_tbl %>% 
-    group_by(month = month(date)) %>% 
-    summarise(mean = mean(low_cost, na.rm = TRUE)) %>% 
-    ggplot(aes(x = month, y = mean) )+
-    geom_line()
+    reframe(augment(lm))

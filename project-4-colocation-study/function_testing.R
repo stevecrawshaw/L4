@@ -36,7 +36,7 @@ parson_st_sds_hr_tbl <-
 
 ref_tbl <- get.ref.tbl(start_date = start_date,
                        end_date = end_date) # BAM data from both sites
-
+# temple way missing a lot of data from May to July 2022
 combined_long_tbl <- make.combined.long.tbl(ref_tbl,
                                    temple_way_sds_hr_tbl,
                                    parson_st_sds_hr_tbl)
@@ -45,6 +45,7 @@ model_data_tbl <- make.model.data.tbl(combined_long_tbl)
 
 model_data_tbl %>% 
     saveRDS(file = "data/model_data_tbl.rds")
+
 
 # Plotting Tests ----
 

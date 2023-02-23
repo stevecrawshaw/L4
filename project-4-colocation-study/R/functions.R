@@ -518,7 +518,7 @@ make.model.perf.tbl.gt <- function(model_output_tbl){
 
 save.model.perf.tbl.gt <- function(model_perf_tbl_gt){
     
-    filename = "plots/model_perf_tbl_gt."
+    filename = "plots/model_perf_tbl_gt"
     fhtml <- glue("{filename}.html")
     fpng <- glue("{filename}.png")
         
