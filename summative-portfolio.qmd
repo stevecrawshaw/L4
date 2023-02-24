@@ -92,7 +92,7 @@ No specific document exists about BCC's data architecture, however there is an i
 
 ![Information Asset Taxonomy](images/Info_Asset_Taxonomy_2017.png)
 
-Much of this data architecture is not of direct relevance to my work as it pertains to other departments and functions. In my own work area, the main data architecture which I design,,m maintain and operate is summarised as follows:
+Much of this data architecture is not of direct relevance to my work as it pertains to other departments and functions. In my own work area, the main data architecture which I design, maintain and operate is summarised as follows:
 
 * 182 passive samplers (Diffusion tubes) providing monthly concentrations of pollutants (NO~2~)
 * MS Access database (K6) to hold diffusion tube and monitoring network meta data
@@ -389,16 +389,19 @@ The [learning resources](https://opendata.bristol.gov.uk/pages/making_sense_of_d
 1. Interactive leaflet maps showing locations of the sensors
 2. Time series interactive charts (vega) showing hourly and daily sensor data
 3. Polar plots showing dominant wind speeds and directions for different levels of pollutants
-3. Animated gif images of polar plots showing how pollution varies with time and highlighting weather features that affect air pollution.
+4. Animated gif images of polar plots showing how pollution varies with time and highlighting weather features that affect air pollution.
+5. A [short video](https://knowlewestmediacentre-my.sharepoint.com/personal/annali_grimes_kwmc_org_uk/_layouts/15/stream.aspx?id=%2Fpersonal%2Fannali%5Fgrimes%5Fkwmc%5Forg%5Fuk%2FDocuments%2FSlow%20the%20Smoke%2FCitizen%20Sensing%2Fworkshops%2FIntro%20to%20Bristol%20Open%20Data%2Fintro%5Faq%5Fopen%5Fdata%2Emp4&ga=1) introducing the open data portal and explaining how to query, analyse, map and interpret the low cost sensor air quality data using the tools on the open data platform.
 
 
-:::{layout-ncol=3 layout-valign="center"}
+:::{layout-ncol=1 layout-valign="center"}
 
 ![Making Sense of Data - screenshot 1](images/msod_1.png)
 
 ![Making Sense of Data - screenshot 2](images/msod_2.png)
 
 ![Making Sense of Data - screenshot 3](images/msod_3.png)
+![Making Sense of Data - video screenshot](images/project_3_video.png)
+
 :::
 
 #### Sensor Dashboard
