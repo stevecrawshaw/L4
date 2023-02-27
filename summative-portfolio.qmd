@@ -461,8 +461,8 @@ In order to provide deeper insight into this issue, further analysis was conduct
 
 The [`openair`](https://davidcarslaw.github.io/openair/) package in R provides open source tools for the analysis of air quality data. Several bespoke visualisations are available to reveal patterns in air quality data such as summary plots, heat maps and polar plots, as used in the "Making Sense of Data" materials. A separate package [`openairmaps`](https://github.com/davidcarslaw/openairmaps) implements polar plots superimposed on an interactive Leaflet base map.
 
-> The openairmaps package has been designed to create interactive HTML air quality > maps. These are useful to understand the geospatial context of openair-type
-> analysis, and to present data in an engaging way in dashboards and websites.
+> The openairmaps package has been designed to create interactive HTML air quality maps. These are useful to understand the geospatial context of openair-type
+analysis, and to present data in an engaging way in dashboards and websites.
 
 The advantages of visualising air quality data in this way are as follows:
 
@@ -526,15 +526,17 @@ pm_tbl %>%
     cols_label(description = "Site description", pollutants = "Pollutants")
 ```
 
-The co - location study used two of these sites; Parson Street School and Temple Way. This is because these sites are both operated by the council. Using the AURN St Pauls site would have required permissions from the Environment Agency which would have been a time consuming and uncertain process.  
+The co - location study used two of these sites; Parson Street School and Temple Way. These sites are both operated by the council. Using the AURN St Pauls site would have required permissions from the Environment Agency which would have been a time consuming and uncertain process.  
 
 The [airrohr SDS011 fine dust sensors](https://sensor.community/en/sensors/airrohr/) require a wifi signal in order to push data to a server. The Bristol City Council sites did not previously have wifi access available. The telemetry at our air monitoring sites was a combination of 3G modems and analogue land lines in 2021. In order to accommodate the co - location study and also for the purposes of virtualising our data collection machine, I procured, configured and installed Teltonika RUT950 or RUT955 4G LTE routers at all of our monitoring sites. This enabled 4G TCP/IP access to the data loggers or instruments at all of the sites, and also provided a wifi hotspot to enable the SDS011 sensors to send data.
 
-The physical installation of the SDS011 at both sites was complete in early May 2022.
+The physical installation of the SDS011 sensors at both sites was complete in early May 2022.
 
 #### Colocation Study: Concept
 
 The aim of the colocation study is to compare the performance of the low cost sensors with the performance of reference method instruments measuring the same pollutant. The method of implementing this comparison was to collect hourly data for the two co - located  devices and establish the linearity of the response using a linear model to report coefficients and r^2^.
+
+Some of the methods for testing the performance of the sensors have been adopted from the [United States Environmental Protection Agency (USEPA) report on the Performance Testing Protocols, Metrics and Target Values for Fine Particulate Matter Air Sensors](https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=544837&Lab=CEMM). 
 
 Within this study it was not possible to compare the responses of multiple low cost sensors with each other as there was not a budget to purchase additional devices for this purpose.
 
@@ -630,7 +632,7 @@ The data for the low cost sensor at Temple Way are not published on the council'
 #### Data Processing Pipeline
 
 Initially the data processing pipeline was split into three R scripts, one for retrieving and preparing the data, one for plotting, and one for modelling the data. However, while developing this approach, it became apparent that there were significant problems with this method. Tracking the operations across three different scripts became confusing, and testing and debugging was sub - optimal and resulted in errors when running the scripts if they weren't called in order. 
-Researching this issue identified a possible solution, which was eventually used for this project. The [`targets`](https://books.ropensci.org/targets/) R package by Will Landau is a "Make" - like pipeline tool for data science in R. It helps to maintain a reproducible workflow, minimising repetition, running only necessary code, and forces a functional approach to code and pipeline development.
+Researching this issue identified a possible solution, which was eventually used for this project. The [`targets`](https://books.ropensci.org/targets/) R package is a "Make" - like pipeline tool for data science in R. It helps to maintain a reproducible workflow, minimising repetition, running only necessary code, and forces a functional approach to code and pipeline development.
 
 (B7, B6, S15, K11)
 
@@ -669,7 +671,7 @@ The model data tibble previously created is used as input to a function to run a
 
 ### Results
 
-The colocated data were first plotted using the summaryPlot function from the `openair` package. This gives a schematic overview of the time series, distribution, and summary statistics for the data. It can be immediately seen that the distributions differ, with the low cost sensor data being markedly more right - skewed than the reference data, but with lower overall concentrations than the reference data.
+The colocated data were first plotted using the summaryPlot function from the `openair` package. This gives a schematic overview of the time series, distribution, and summary statistics for the data. It can be immediately seen that the distributions differ, with the low cost sensor data being markedly more right - skewed than the reference data, but with lower overall concentrations than the reference data. It is also notable that significant quantities of data are missing from the reference PM~10~ instrument at Temple Way. This is because data were removed by the Environment Agency due to data quality issues. This is unfortunately likely to affect the performance of future modelling.
 
 :::{layout-ncol=2 layout-valign="center"}
 
