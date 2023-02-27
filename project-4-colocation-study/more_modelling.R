@@ -1,4 +1,6 @@
 #pacman::p_load(tidyverse, openair, fastverse, janitor, glue, lubridate)
+
+# testing whether should use month in the lm
 pacman::p_load(char = packages)
 model_data_tbl <- readRDS("data/model_data_tbl.rds")
 
@@ -10,14 +12,14 @@ daily_site_tbl <- model_data_tbl %>%
     select(md_wide) %>% 
     pluck(1, 1) %>% 
     group_by(date = as.Date(date)) %>% 
-    summarise(across(c(low_cost, reference),
+    summarise(across(everything(),
                      \(x)mean(x, na.rm = TRUE)))
 
 return(daily_site_tbl)
 }
     
 make.lm.monthly.tbl <- function(daily_site_tbl){
-
+# nest by month and run lm for each month's data
 lm_monthly_tbl <- daily_site_tbl %>% 
     na.omit() %>% 
     mutate(month = lubridate::month(date)) %>% 

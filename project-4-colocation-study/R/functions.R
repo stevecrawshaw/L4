@@ -158,6 +158,50 @@ get.parson.st.sds.hr.tbl <- function(start_date,
         return(parson_st_tbl)
 }
 
+# get temp and RH data
+
+get.temp.rh.raw.tbl <-
+    function(start_date, end_date, sensor_id = "71553") {
+        col_spec = cols(
+            sensor_id = col_double(),
+            sensor_type = col_character(),
+            location = col_double(),
+            lat = col_double(),
+            lon = col_double(),
+            timestamp = col_datetime(format = ""),
+            temperature = col_double(),
+            humidity = col_double()
+        )
+        
+        dates <- seq.Date(
+            from = as.Date(start_date),
+            to = as.Date(end_date),
+            by = "day"
+        ) %>%
+            as.character()
+        
+        filenames = glue(
+            "https://archive.sensor.community/{dates}/{dates}_dht22_sensor_{sensor_id}.csv"
+        )
+        
+        rh_temp_tbl_raw <- map_dfr(filenames, \(x) read_delim(x,
+                                                              delim = ";",
+                                                              col_types = col_spec))
+        return(rh_temp_tbl_raw)
+        
+    }
+# make hourly mean temp and rh data
+make.temp.rh.tbl <- function(temp_rh_tbl_raw) {
+    temp_rh_tbl <- temp_rh_tbl_raw %>%
+        group_by(date = lubridate::ceiling_date(timestamp, unit = "hour")) %>%
+        summarise(
+            temperature = mean(temperature, na.rm = TRUE),
+            humidity = mean(humidity, na.rm = TRUE)
+        )
+    
+    return(temp_rh_tbl)
+}
+
 #   Get Reference Data ----
 
 get.ref.tbl <- function(start_date, end_date) {
@@ -185,7 +229,8 @@ get.ref.tbl <- function(start_date, end_date) {
 # removing data due to faults and assigning siteids manually
 make.combined.long.tbl <- function(ref_tbl,
                                    temple_way_sds_hr_tbl,
-                                   parson_st_sds_hr_tbl){
+                                   parson_st_sds_hr_tbl,
+                                   temp_rh_tbl){
 
 combined_long_tbl <- ref_tbl %>%
     mutate(type = "reference") %>%
@@ -201,7 +246,10 @@ combined_long_tbl <- ref_tbl %>%
                       siteid = 215L,
                       type = "low_cost",
                       pm10 = NA
-                  ))
+                  )) %>% 
+    left_join(temp_rh_tbl, by = join_by(date == date))
+
+
 return(combined_long_tbl)
 
 }
@@ -222,7 +270,7 @@ make.model.data.tbl <- function(combined_long_tbl){
             md,
             ~ pluck(.x) %>%
                 pivot_wider(
-                    id_cols = date,
+                    id_cols = c(date, temperature, humidity),
                     names_from = type,
                     values_from = starts_with("pm")
                 ) 
@@ -431,7 +479,7 @@ make.model.output.tbl <- function(model_data_tbl){
     model_output_tbl <- model_data_tbl %>%
         mutate(
             model_obj = map(md_wide, ~pluck(.x) %>% 
-                                lm(low_cost ~ reference, data = .)),
+                                lm(reference ~ low_cost, data = .)),
             coefs = map(model_obj, ~ pluck(.x) %>%
                             tidy()),
             perf = map(model_obj, ~ pluck(.x) %>%
