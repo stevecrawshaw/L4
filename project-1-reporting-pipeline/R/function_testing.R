@@ -21,8 +21,12 @@ data_cap_period_tbl <- make.data.cap.period.tbl(coloc_divisor_tbl,
 annual_tube_data_4years_tbl <- get.annual.tube.data.4yrs.tbl(con, startDate)
 count_tubes_tbl <- get.count.tubes.tbl(con)
 
+bias_no2_tube_tbl <- make.bias.no2.tube.tbl(aqms_tbl, no2_data)
 
-bias_site_list <- make.bias.site.list(aqms_tbl, no2_data)
+contin_bias_data_tbl <- make.contin.bias.data.tbl(contin_4yrs_tbl, bias_no2_tube_tbl)
+
+bias_site_list <- make.bias.site.list(bias_no2_tube_tbl, contin_bias_data_tbl, aqms_tbl)
+
 dbDisconnect(con)
 con <- connect.envista()
 

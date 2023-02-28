@@ -21,7 +21,7 @@ p <-
       "ggtext",
       "sf"
       )
-# p_load(char = p) # Uncomment to test-
+p_load(char = p) # Uncomment to test-
 
 # Variables ----
 
@@ -664,63 +664,89 @@ make.step.2.table <- function(aqms_tbl,
     return(step_2_table)
 }
 
-make.bias.site.list <- function(aqms_tbl, no2_data){
-#subset monitor data to colocated sites
+make.bias.no2.tube.tbl <- function(aqms_tbl, no2_data) {
+    #subset monitor data to colocated sites
     
-    renameTube <- function(x) {
-        paste0("Tube", str_sub(x, -1, -1))
-    }
-
-join_table <- aqms_tbl %>%
-    filter(!is.na(colocated)) %>%
-    select(siteid, contin_siteid = colocated) %>%
-    inner_join(aqms_tbl, by = c("contin_siteid" = "siteid")) %>%
-    select(site = location, contin_siteid, siteid)
-
-# just colocated tube data
-
-colocated_tbl <- no2_data %>%
-    inner_join(join_table, by ="siteid") %>%
-    arrange(siteid, mid_date)
-year <- year(median(no2_data$mid_date, na.rm = TRUE))
-# 
-# # colocated_tbl %>% 
-# #     write_csv(glue("data/{year}_colocated_tube_data.csv"))
-# #make the table
-# tubes_report <- 
-#     no2_data %>% 
-#     filter(siteid %in% join_table$siteid) %>%
-#     inner_join(join_table, by = "siteid") %>% 
-#     transmute(site, month = month(mid_date), concentration) %>%
-#     group_by(site, month) %>% 
-#     nest() %>% 
-#     unnest_wider(data) %>%
-#     unnest_wider(concentration) %>% 
-#     rename_with(renameTube, starts_with("..")) %>%
-#     arrange(site, month) %>% 
-#     ungroup() %>% 
-#     nest_by(site) %>% 
-#     mutate(path = glue("{here::here('data')}/{site}_tubes.csv")) %>% 
-#     ungroup() %>% 
-#     select(x = data, path) 
-bias_site_list <- no2_data %>% 
-        filter(siteid %in% join_table$siteid) %>%
-        inner_join(join_table, by = "siteid") %>% 
-        transmute(site, month = month(mid_date),
-                  concentration) %>%
-        group_by(site, month) %>% 
-        nest() %>% 
+    join_tbl <- aqms_tbl %>%
+        filter(!is.na(colocated)) %>%
+        select(siteid, contin_siteid = colocated) %>%
+        inner_join(aqms_tbl, by = c("contin_siteid" = "siteid")) %>%
+        select(site = location, contin_siteid, siteid)
+    
+    bias_no2_tube_tbl <-  no2_data %>%
+        filter(siteid %in% join_tbl$siteid) %>%
+        inner_join(join_tbl, by = "siteid") %>%
+        transmute(siteid, contin_siteid,
+                  concentration,
+                  dateon, dateoff) %>%
+        group_by(contin_siteid, siteid, dateon, dateoff) %>%
+        nest() %>%
         unnest_wider(data) %>%
-        unnest_wider(concentration, names_sep = "_") %>% 
-        # rename_with(renameTube, starts_with("..")) %>%
-        arrange(site, month) %>% 
-        ungroup() %>% 
-        split(as_factor(.$site))
-
-# use pwalk to iteratively save the csvs
-
-return(bias_site_list)
+        unnest_wider(concentration, names_sep = "_") %>%
+        arrange(siteid, dateon) %>%
+        ungroup() %>%
+        mutate(
+            dateon = dateon + hours(12),
+            dateoff = dateoff + hours(12),
+            id = row_number()
+        )
+    
+    return(bias_no2_tube_tbl)
+    
 }
+
+
+make.contin.bias.data.tbl <- function(contin_4yrs_tbl, bias_no2_tube_tbl){
+    
+    site_dates_tbl <- bias_no2_tube_tbl %>% 
+    select(contin_siteid, dateon, dateoff, id)
+ 
+get.mean.no2 <- function(contin_siteid, dateon, dateoff, id){
+
+    contin_4yrs_tbl %>%
+    filter(between(date, {{dateon}}, {{dateoff}}),
+           siteid == {{contin_siteid}}) %>% 
+    summarise(no2_mean = mean(no2, na.rm = TRUE),
+              datacap =  (sum(!is.na(no2)) * 100) / n(),
+              id = {{id}})
+
+}
+
+contin_bias_data_tbl <- pmap_dfr(site_dates_tbl, get.mean.no2)
+return(contin_bias_data_tbl)
+    
+}
+
+
+
+
+# contin_bias_data_tbl
+
+make.bias.site.list <- function(bias_no2_tube_tbl, contin_bias_data_tbl, aqms_tbl){
+    
+joined_bias_tbl <- bias_no2_tube_tbl %>% 
+        inner_join(contin_bias_data_tbl, by = join_by(id == id)) %>% 
+    inner_join(aqms_tbl %>% 
+                   select(siteid, location), by = join_by(contin_siteid == siteid)) %>% 
+    transmute(location,
+              start_date = strftime(dateon, "%d/%m/%Y"),
+              end_date = strftime(dateoff, "%d/%m/%Y"),
+              concentration_1,
+              concentration_2,
+              concentration_3,
+              no2_mean, 
+              datacap) %>%
+    rename(Tube_1 = concentration_1,
+           Tube_2 = concentration_2,
+           Tube_3 = concentration_3)
+        
+joined_bias_tbl %>% 
+    split(.$location) %>% 
+    return()
+    
+}
+
+
 
 make.contin.no2.nested <- function(contin_data, aqms_tbl){
 

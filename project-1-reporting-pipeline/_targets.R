@@ -96,8 +96,16 @@ list(
       command = get.background.data(no2_data)
   ),
   tar_target(
+      name = bias_no2_tube_tbl,
+      command = make.bias.no2.tube.tbl(aqms_tbl, no2_data)
+  ),
+  tar_target(
+      name = contin_bias_data_tbl ,
+      command = make.contin.bias.data.tbl(contin_4yrs_tbl, bias_no2_tube_tbl)
+  ),
+  tar_target(
       name = bias_site_list,
-      command = make.bias.site.list(aqms_tbl, no2_data)
+      command = make.bias.site.list(bias_no2_tube_tbl, contin_bias_data_tbl, aqms_tbl)
   ),
   tar_target(
       name = coloc_divisor_tbl,
@@ -117,14 +125,7 @@ list(
       name = count_tubes_tbl,
       command = get.count.tubes.tbl(connect.access())
   ),
-  # tar_target(
-  #     name = ods_tubes_upload_tbl,
-  #     command =  make.ods.upload.tube.tbl(connect.access(),
-  #                                         count_tubes_tbl,
-  #                                         path = "S:/SUSTAIN/Sustain-Common/SCCCS/write_gis_r/R Projects/tubes/data/read_dt_data.xlsx",
-  #                                         startDate = startDate)
-  # ),
-  tar_target(
+   tar_target(
       name = contin_4yrs_tbl,
       command = get.aq.data.all(startDate = as.Date(startDate) - years(4), endDate = endDate)
   ),
@@ -215,29 +216,6 @@ list(
       command = write.spreadsheets(table_list,
                                    bias_site_list,
                                    startDate)
-  )#,
-  # tar_target(
-  #     name = plotareas_tbl,
-  #     command = make.plotareas_tbl()
-  # ),
-  # tar_target(
-  #     name = no2_trend_chart_tbl,
-  #     command = make.no2.trend.chart.tbl(startDate,
-  #                                        ods_tubes_upload_tbl,
-  #                                        plotareas_tbl,
-  #                                        aqms_tbl)
-  # ),
-  # tar_target(
-  #     name = pm25_trend_chart,
-  #     command = make.pm25.trend.chart(startDate)
-  # ),
-  # tar_target(
-  #     name = write_no2_trend_charts,
-  #     command = write.no2.trend.charts(no2_trend_chart_tbl)
-  # ),
-  # tar_target(
-  #     name = write_pm25_trend_chart,
-  #     command = write.pm25.trend.chart(pm25_trend_chart)
-  # )
+  )
     
 )

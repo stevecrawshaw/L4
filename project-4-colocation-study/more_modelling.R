@@ -26,6 +26,7 @@ lm_monthly_tbl <- daily_site_tbl %>%
     nest(data = -month) %>% 
     mutate(
         fit = map(data, ~lm(reference ~ low_cost + humidity + temperature, data = .x)),
+        # fit = map(data, ~lm(reference ~ low_cost, data = .x)),
         tidied = map(fit, tidy),
         glanced = map(fit, glance),
         augmented = map(fit, augment)
@@ -60,6 +61,32 @@ daily_site_tbl <- make.daily.site.tbl(model_data_tbl = model_data_tbl, siteid = 
 lm_monthly_tbl <- make.lm.monthly.tbl(daily_site_tbl)
 
 fitted_lm_plot <- plot.fitted.lm(lm_monthly_tbl = lm_monthly_tbl)
+
+fitted_lm_plot %>% 
+    plotly::ggplotly()
+
+
+print(fitted_lm_plot)
+print(lm_plot_lc_ref_only)
+# the one that includes temp and humidity seems better
+
+lm_plot_lc_ref_only <- fitted_lm_plot
+
+
+daily_site_tbl %>% 
+   mutate(across(temperature:low_cost, \(x) x / max(x, na.rm = TRUE))) %>% 
+    pivot_longer(cols = - date) %>% 
+    ggplot() +
+    geom_line(aes(x = date, y = value, color = name))
+    
+
+
+
+
+
+
+
+
 
 
 fitted_lm_plot
