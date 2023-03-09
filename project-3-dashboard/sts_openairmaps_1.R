@@ -8,6 +8,7 @@ pacman::p_load(
         ggExtra,
         openairmaps,
         htmlwidgets,
+        tidyquant,
         fs
     )
 # get the data with functions from this script
