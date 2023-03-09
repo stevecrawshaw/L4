@@ -1,6 +1,6 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
 .Random.seed|object|db687ba3084560d6|||||||||||||||
-combined_long_tbl|stem|3c6869957df1a042|4ee93c4b85f1714d|751e0c800706eea4|1619989325||t19410.5939249497s|d64a9920b9c6d00b|132251|rds|local|vector|||0.06||
+combined_long_tbl|stem|3c6869957df1a042|4ee93c4b85f1714d|c0f511f856947e27|1619989325||t19410.5939249497s||132251|rds|local|vector|||0.03||argument temp_rh_tbl is missing, with no default
 daily_csv_urls|stem|15d7f6b08f6e9a66|f1806390221f764c|93f268115a3059b2|7468504||t19410.5935160304s|a1c456b03adbfbf8|44|rds|local|vector|||7.91||
 daily_files_tbl|stem|15d7f6b08f6e9a66|b0985a283c27babc|5cf48f0ecb0760ee|104738191||t19410.5935914602s|a1c456b03adbfbf8|44|rds|local|vector|||0||
 dashboard|stem||aab84428fd5d82f2|b6c6711411e2e03f|951390599||t19353.7613193736s||0|file|local|vector|||0.004||object siteid not found
@@ -17,18 +17,20 @@ get.parson.st.sds.hr.tbl|function|71f53e9673910e7e|||||||||||||||
 get.ref.tbl|function|9e8c193530eafbd8|||||||||||||||
 get.sds.csv.tbl|function|7e3362f269faa71a|||||||||||||||
 get.sds.zip.tbl|function|84f696c665c5ee2b|||||||||||||||
+get.temp.rh.raw.tbl|function|74ef32d1f37c3ea5|||||||||||||||
 get.title|function|3b04b72c42d7078a|||||||||||||||
 get.zip.file.urls|function|772d1ea99f9e51cf|||||||||||||||
 get_col_types_fnc|function|4a04d33f20e09306|||||||||||||||
 get_fields_fnc|function|6e9f29305a639417|||||||||||||||
 has|object|909013909b1f03d4|||||||||||||||
 import_ods|function|22f18d0fae7e2dd2|||||||||||||||
-make.combined.long.tbl|function|36501ee93c047a66|||||||||||||||
+make.combined.long.tbl|function|8b2f5fbbdcd30532|||||||||||||||
 make.dashboard|function|a4454de955f71d6b|||||||||||||||
-make.model.data.tbl|function|2fb90c846d0c07de|||||||||||||||
-make.model.output.tbl|function|73b66e4c9c5e7336|||||||||||||||
+make.model.data.tbl|function|b1eda5034dc415d7|||||||||||||||
+make.model.output.tbl|function|713b4aebcba52299|||||||||||||||
 make.model.perf.tbl|function|36f168081f11ca6d|||||||||||||||
 make.model.perf.tbl.gt|function|2eb9c66218462b1d|||||||||||||||
+make.temp.rh.tbl|function|74ae40dd9ca39e06|||||||||||||||
 make.temple.way.sds.hr.tbl|function|76b6af850af5fd32|||||||||||||||
 model_data_tbl|stem|414cdcbdb416282c|6c074ff6818890a8|51fd1438f6a0e6ac|-430755439||t19410.5939290238s|fc95d9995fa19d0b|368974|rds|local|vector|||0.16||
 model_output_tbl|stem|6e5e3db0ec397aaf|9383e9a435bd5ef6|635d5b92c21767c0|1940538993||t19410.5939730632s|7469fa6ad1cacb3b|8114719|rds|local|vector|||0.89|1m22mThere was 1 warning in mutate.1m22m36mℹ39m In argument plot  map....36mℹ39m In group 1 siteid  215.Caused by warning1m22m33m39m Using size aesthetic for lines was deprecated in ggplot2 3.4.0.36mℹ39m Please use linewidth instead.|
