@@ -1,6 +1,6 @@
 # Variables ----
 start_date <- "2022-05-01" # BTW started operating
-end_date <- "2022-12-31"
+end_date <- "2023-02-28"
 
 # Functions ----
 
@@ -183,15 +183,21 @@ get.temp.rh.raw.tbl <-
         filenames = glue(
             "https://archive.sensor.community/{dates}/{dates}_dht22_sensor_{sensor_id}.csv"
         )
-        
-        rh_temp_tbl_raw <- map_dfr(filenames, \(x) read_delim(x,
-                                                              delim = ";",
-                                                              col_types = col_spec))
-        return(rh_temp_tbl_raw)
+        browser()
+        rh_temp_raw_tbl <- map_dfr(filenames,
+                                   \(x) read_delim(x,
+                                                   delim = ";",
+                                                   col_types = col_spec))
+        return(rh_temp_raw_tbl)
         
     }
+
+rh_temp_raw_tbl <- get.temp.rh.raw.tbl(start_date = start_date,
+                                       end_date = end_date,
+                                       sensor_id = "71553")
+
 # make hourly mean temp and rh data
-make.temp.rh.tbl <- function(temp_rh_tbl_raw) {
+make.temp.rh.tbl <- function(rh_temp_raw_tbl) {
     temp_rh_tbl <- temp_rh_tbl_raw %>%
         group_by(date = lubridate::ceiling_date(timestamp, unit = "hour")) %>%
         summarise(
