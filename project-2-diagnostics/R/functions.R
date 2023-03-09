@@ -17,8 +17,8 @@ pacman::p_load(odbc,
 
 # 1.0 Global Variables ----
 
-dateon <-  "2022-12-01"
-dateoff <-  "2022-12-31"
+dateon <-  "2023-02-01"
+dateoff <-  "2023-02-28"
 testing <- FALSE
 google_config <- config::get(file = here::here("config.yml"),
                              config = "google_cal")
