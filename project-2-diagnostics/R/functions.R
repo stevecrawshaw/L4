@@ -303,8 +303,16 @@ make.date.list <- function(dateon, dateoff){
 }
 
 plot.span.diff <- function(cal_plot_tbl, date_list){
+    # check to see there are two spans to compare
+    cals_twice_month_tbl <- cal_plot_tbl %>%
+        filter(calibration == "NOx_NO_span_delta") %>% 
+    add_count(site, calibration) %>% 
+    filter(n > 1) 
     
-    span_diff_plot <- cal_plot_tbl %>% 
+    if (nrow(cals_twice_month_tbl) > 0){
+
+    
+    span_diff_plot <- cals_twice_month_tbl %>% 
         filter(calibration == "NOx_NO_span_delta") %>% 
         ggplot(aes(x = date, y = value)) +
         geom_line(linewidth = 1, colour = "#3200D1") +
@@ -314,7 +322,7 @@ plot.span.diff <- function(cal_plot_tbl, date_list){
         scale_x_date(date_breaks = date_list$breaks,
                      date_labels = date_list$labels) +
         facet_wrap(~site, ncol = 2) +
-        labs(title = "NOx and NO Span Value Divergence",
+        labs(title = "Divergence between NOx and NO Span Value",
              subtitle = glue("Between {date_list$dateon} and {date_list$dateoff}"),
              y = "% difference",
              x = "Date",
@@ -326,7 +334,10 @@ plot.span.diff <- function(cal_plot_tbl, date_list){
         theme(strip.text = element_text(face = "bold",
                                         size = 12))
     
-    return(span_diff_plot)
+    return(span_diff_plot)} else {
+        
+        return("Twice monthly calibration data does not exist to make span plot")
+    }
     
 } ##
 
@@ -641,7 +652,7 @@ getData <- function(value,
 }
 
 output <- map_dfr(site_list,
-                  ~pmap_dfr(.l = all_of(.x),
+                  ~pmap_dfr(.l = .x,
                             .f = getData),
                   .id = "table_site")
 
@@ -718,7 +729,8 @@ clean_long_diag_tbl <- make.clean.long.diag.tbl(long_diag_tbl,
                                                 limits_tbl,
                                                 station_site_tbl)
 
-all_sites_plots_tbl <- make.all.sites.plots.tbl(clean_long_diag_tbl, dateon, dateoff)
+datelabel = make.datelabel(dateon, dateoff)
+all_sites_plots_tbl <- make.all.sites.plots.tbl(clean_long_diag_tbl, datelabel)
 
 # all_sites_plots_tbl$plot
 
@@ -739,7 +751,6 @@ cal_factor_gt <- make.cal.factor.gt(cal_plot_tbl, date_list)
 cal_factor_gt
 
 
-
 #------------------Routers -------------------
 
 pat <- get.router.pat()
@@ -753,7 +764,6 @@ data_use_tbl <- get.data.use(dateon, dateoff, device_url, pat, device_id_tbl)
 
 daily_data_tbl <- make.daily.data.tbl(data_use_tbl = data_use_tbl,
                                       device_id_tbl = device_id_tbl)
-datelabel = make.datelabel(dateon, dateoff)
 
 daily_use_plot <- make.daily.data.use.plot(daily_data_tbl = daily_data_tbl)
 cumulative_tbl <- make.cumulative.tbl(daily_data_tbl = daily_data_tbl)

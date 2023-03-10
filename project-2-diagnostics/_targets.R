@@ -10,7 +10,8 @@ library(targets)
 # Set target options:
 tar_option_set(
   packages = c("tibble"), # packages that your targets need to run
-  format = "rds" # default storage format
+  format = "rds",
+  workspace_on_error = TRUE# https://books.ropensci.org/targets/debugging.html
   # Set other options as needed.
 )
 
