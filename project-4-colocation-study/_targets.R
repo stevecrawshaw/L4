@@ -80,10 +80,28 @@ list(
                           end_date = end_date)
   ),
   tar_target(
+      name = temp_rh_raw_tbl,
+      command = get.temp.rh.raw.tbl(start_date, end_date, sensor_id = "71553")
+  ),
+  tar_target(
+      name = temp_rh_tbl,
+      command = make.temp.rh.tbl(temp_rh_raw_tbl)
+  ),
+  # tar_target(
+  #     name = ,
+  #     command = 
+  # ),
+  # tar_target(
+  #     name = ,
+  #     command = 
+  # )
+  
+  tar_target(
     name = combined_long_tbl,
     command = make.combined.long.tbl(ref_tbl,
                                      temple_way_sds_hr_tbl,
-                                     parson_st_sds_hr_tbl)
+                                     parson_st_sds_hr_tbl,
+                                     temp_rh_tbl)
   ),
   tar_target(
     name = model_data_tbl,
