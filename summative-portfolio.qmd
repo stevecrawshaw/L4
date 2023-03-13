@@ -1,9 +1,8 @@
 ---
 title: "Summative Portfolio: L4"
 author: "Steve Crawshaw"
-format:
-    html:
-        embed-resources: true
+format: html:
+    embed-resources: true
 date: "`r Sys.Date()`"
 toc: true
 toc-title: "Table of Contents"
@@ -13,9 +12,10 @@ number-depth: 3
 execute:
   echo: false
   warning: false
-
 ---
+
 <!-- failing to render to word on W10 -->
+
 <!-- https://github.com/quarto-dev/quarto-cli/issues/403 -->
 
 ```{r 'libraries', echo = FALSE, include = FALSE}
@@ -26,7 +26,6 @@ wikipediapreview::wp_init()
 source("../airquality_GIT/ods-import-httr2.R")
 
 ```
-
 
 # Introduction
 
@@ -40,31 +39,31 @@ I have worked for Bristol City Council (BCC) since 1998 in essentially the same 
 
 ## Goals, Vision and Values
 
-Bristol City Council's [Corporate Strategy](https://www.bristol.gov.uk/policies-plans-strategies/corporate-strategy) outlines a vision of driving an inclusive, sustainable and healthy city of hope and aspiration where everyone can share the city’s success. It also describes the activities required by law.
+Bristol City Council's [Corporate Strategy](https://www.bristol.gov.uk/policies-plans-strategies/corporate-strategy) outlines a vision of driving an inclusive, sustainable and healthy city of hope and aspiration where everyone can share the city's success. It also describes the activities required by law.
 
-The Corporate Strategy’s main priorities are informed by 5 key principles.
+The Corporate Strategy's main priorities are informed by 5 key principles.
 
-* Development and delivery
-* Environmental sustainability
-* Equality and inclusion
-* Resilience
-* World-class employment
+-   Development and delivery
+-   Environmental sustainability
+-   Equality and inclusion
+-   Resilience
+-   World-class employment
 
 It's also arranged around 7 main themes:
 
-* **Children and young people:** A city where every child belongs and every child gets the best start in life, whatever circumstances they were born into.
- 
-* **Economy and skills:** Economic growth that builds inclusive and resilient communities, decarbonises the city and offers equity of opportunity.
- 
-* **Environment and sustainability:** Decarbonise the city, support the * recovery of nature and lead a just transition to a low-carbon future.
- 
-* **Health, care and wellbeing:** Tackle health inequalities to help people stay healthier and happier throughout their lives.
- 
-* **Homes and communities:** Healthy, resilient, and inclusive neighbourhoods with fair access to decent, affordable homes.
- 
-* **Transport and connectivity:** A more efficient, sustainable, and inclusive connection of people to people, people to jobs and people to opportunity.
- 
-* **Effective development organisation:** From city government to city governance: creating a focussed council that empowers individuals, communities, and partners to flourish and lead.
+-   **Children and young people:** A city where every child belongs and every child gets the best start in life, whatever circumstances they were born into.
+
+-   **Economy and skills:** Economic growth that builds inclusive and resilient communities, decarbonises the city and offers equity of opportunity.
+
+-   **Environment and sustainability:** Decarbonise the city, support the \* recovery of nature and lead a just transition to a low-carbon future.
+
+-   **Health, care and wellbeing:** Tackle health inequalities to help people stay healthier and happier throughout their lives.
+
+-   **Homes and communities:** Healthy, resilient, and inclusive neighbourhoods with fair access to decent, affordable homes.
+
+-   **Transport and connectivity:** A more efficient, sustainable, and inclusive connection of people to people, people to jobs and people to opportunity.
+
+-   **Effective development organisation:** From city government to city governance: creating a focussed council that empowers individuals, communities, and partners to flourish and lead.
 
 Bristol City Council is currently a mayoral - led authority. The current Mayor, [Marvin Rees](https://en.wikipedia.org/wiki/Marvin_Rees) has set out values for the organisation as shown below.
 
@@ -76,15 +75,17 @@ BCC is a large and complex organisation dealing with a wide range of functions, 
 
 A recently published ["Data, Insight and Information Strategy"](https://democracy.bristol.gov.uk/documents/s64321/DII%20Strategy%20Final.pdf) sets out the strategic direction and objectives for the council in this area as follows:
 
-* Objective 1 - Create the right culture and environment for great collaboration amongst teams and partners
+-   Objective 1 - Create the right culture and environment for great collaboration amongst teams and partners
 
-* Objective 2 - Become an insight - rich data driven organisation to improve performance
-* Objective 3 - Manage our information safely, securely and appropriately
-* Objective 4 - Create a more efficient and effective approach to the use of data
-* Objective 2 - Establish the supply and use of data as a key enabler of a more connected, smarter city
+-   Objective 2 - Become an insight - rich data driven organisation to improve performance
+
+-   Objective 3 - Manage our information safely, securely and appropriately
+
+-   Objective 4 - Create a more efficient and effective approach to the use of data
+
+-   Objective 2 - Establish the supply and use of data as a key enabler of a more connected, smarter city
 
 The strategy aims to deliver these objectives by developing a single analytics team to deliver insights across the organisation and by consolidating the disparate and distributed datasets across the council into a corporate data lake with analysis being done on one data analytics platform (Power BI). Several projects are under way to deliver this change.
-
 
 ## Data Architecture
 
@@ -94,44 +95,44 @@ No specific document exists about BCC's data architecture, however there is an i
 
 Much of this data architecture is not of direct relevance to my work as it pertains to other departments and functions. In my own work area, the main data architecture which I design, maintain and operate is summarised as follows:
 
-* 182 passive samplers (Diffusion tubes) providing monthly concentrations of pollutants (NO~2~)
-* MS Access database (K6) to hold diffusion tube and monitoring network meta data
-* A network of 8 real time air quality monitors (analysers)
-* A fleet of 4G routers providing telemetry to connect these devices to:
-* A proprietary communications software suite (Envista Commcentre)
-* A database client and analytics program (Envista ARM) (K6)
-* A SQL server database hosted on Azure (K6)
-* An open data (OD) platform provided by Opendatasoft (K4)
-* FME and FME Server processes to Extract, Transform and Load (ETL) air quality data to the open data platform (K10)
-* Dashboards, visualisation and analytics delivered through the OD platform (S14)
-* Bespoke reporting and ETL pipelines delivered through R, sourcing data through the OD portal and the Envista database (S14, S10, S2, K14, K7)
+-   182 passive samplers (Diffusion tubes) providing monthly concentrations of pollutants (NO~2~)
+-   MS Access database (K6) to hold diffusion tube and monitoring network meta data
+-   A network of 8 real time air quality monitors (analysers)
+-   A fleet of 4G routers providing telemetry to connect these devices to:
+-   A proprietary communications software suite (Envista Commcentre)
+-   A database client and analytics program (Envista ARM) (K6)
+-   A SQL server database hosted on Azure (K6)
+-   An open data (OD) platform provided by Opendatasoft (K4)
+-   FME and FME Server processes to Extract, Transform and Load (ETL) air quality data to the open data platform (K10)
+-   Dashboards, visualisation and analytics delivered through the OD platform (S14)
+-   Bespoke reporting and ETL pipelines delivered through R, sourcing data through the OD portal and the Envista database (S14, S10, S2, K14, K7)
 
 ## Security Standards and Policies
 
-The over - arching Information Governance Framework  outlines roles and responsibilities, policies and procedures, along with best practice and standards for managing the Council’s information assets. This has been developed to take account of the standards set by external organisations, such as the NHS in respect of the transition of Public Health to the Council and the requirements of the Public Sector Network (PSN) Code of Connection (CoCo).
+The over - arching Information Governance Framework outlines roles and responsibilities, policies and procedures, along with best practice and standards for managing the Council's information assets. This has been developed to take account of the standards set by external organisations, such as the NHS in respect of the transition of Public Health to the Council and the requirements of the Public Sector Network (PSN) Code of Connection (CoCo).
 
 The framework consists of the following areas:
 
-1. IGF Principles
-2. The Information Governance Strategy.
-3. Appropriate Information Governance Responsibilities.
-4. Information Asset Ownership
-5. An Information Governance Structure.
-6. Effective Information Governance policies and procedures.
-7. An Information Asset Register 
-8. An Information Risk Register
-9. Information Governance communication and training.
+1.  IGF Principles
+2.  The Information Governance Strategy.
+3.  Appropriate Information Governance Responsibilities.
+4.  Information Asset Ownership
+5.  An Information Governance Structure.
+6.  Effective Information Governance policies and procedures.
+7.  An Information Asset Register
+8.  An Information Risk Register
+9.  Information Governance communication and training.
 
 There are a number of policies and procedures in the framework which deliver the outcomes of the Information Governance Strategy, including:
 
-1. Instant Messaging Policy
-2. Acceptable Use Policy
-3. Training, Awareness and Development Procedure
-4. Agile or Teleworking Policy
-5. Logical Access Control Policy
-6. Physical Access Control Policy
-7. Information Security Incident Reporting Policy
-8. Subject Access Request Policy
+1.  Instant Messaging Policy
+2.  Acceptable Use Policy
+3.  Training, Awareness and Development Procedure
+4.  Agile or Teleworking Policy
+5.  Logical Access Control Policy
+6.  Physical Access Control Policy
+7.  Information Security Incident Reporting Policy
+8.  Subject Access Request Policy
 
 All the policies and procedures are hosted on a "metacompliance" platform, which manages access and control of the policies and ensures that relevant staff have read and agreed to the policies.
 
@@ -143,15 +144,15 @@ My official job title is "Project Manager". This is currently under review, part
 
 The deliverables for which I am responsible are summarised as follows:
 
-1. Data capture rates exceeding 85% for continuous monitoring, 75% for passive.
-2. Monthly data cleaning (ratification) of continuous data. (K3, K4, K8)
-3. Annual reporting of air quality data. (S12, S13, S14, S15)
-4. Calculation of Key Performance Indicators (KPIs) for air quality.
-5. Developing or revising KPIs as necessary. (K11, K13)
-6. Ad hoc analysis and summaries of air quality data to support other programmes.
-7. Ensuring all relevant air quality data are published on the Open Data Portal. (K4, S12)
-8. Ensuring all relevant technical guidance is followed in relation to air quality management. (S1)
-9. Responding to relevant requests from stakeholders for air quality data and analysis. (S7)
+1.  Data capture rates exceeding 85% for continuous monitoring, 75% for passive.
+2.  Monthly data cleaning (ratification) of continuous data. (K3, K4, K8)
+3.  Annual reporting of air quality data. (S12, S13, S14, S15)
+4.  Calculation of Key Performance Indicators (KPIs) for air quality.
+5.  Developing or revising KPIs as necessary. (K11, K13)
+6.  Ad hoc analysis and summaries of air quality data to support other programmes.
+7.  Ensuring all relevant air quality data are published on the Open Data Portal. (K4, S12)
+8.  Ensuring all relevant technical guidance is followed in relation to air quality management. (S1)
+9.  Responding to relevant requests from stakeholders for air quality data and analysis. (S7)
 10. Delivery of specific projects such as "Slow the Smoke" (S12, S13, S14, S15)
 
 ## Key Skills and Knowledge
@@ -160,52 +161,52 @@ The key skills and knowledge for my role are as follows:
 
 ### Knowledge
 
-* A good understanding of the legal framework for air quality management in the UK. (K1)
-* Familiarity with the relevant technical guidance on assessing air quality. (K2)
-* Knowledge of air quality policy and interactions with other domains like transport.
-* An understanding of the development management (land use planning) process in the UK including Environmental Impact Assessment (EIA).
-* An understanding of the principles of open data and legal framework for public access to data. (K4)
+-   A good understanding of the legal framework for air quality management in the UK. (K1)
+-   Familiarity with the relevant technical guidance on assessing air quality. (K2)
+-   Knowledge of air quality policy and interactions with other domains like transport.
+-   An understanding of the development management (land use planning) process in the UK including Environmental Impact Assessment (EIA).
+-   An understanding of the principles of open data and legal framework for public access to data. (K4)
 
 ### Skills
 
-* Processing and analysing medium sized (up to 10 million observations) data sets
-* SQL (SQL server, ODSSQL and MS Access)
-* Excel
-* HTML, Javascript and CSS for web development of open data products
-* R - packages `openair`, `openaq`, `sf`, `timetk`, `fastverse`, `deweather` and `tidyverse` are relevant to the air quality domain
-* [FME](https://www.safe.com/) and FME Server for automating web services and data integration
-* Time series analysis
-* Network telemetry: IP, analogue, wireless, Teltonika RMS 
-* Technical report writing and comprehension of technical reports relating to the domain
-* Communication skills - ability to report technical information to non - specialists
-* Project management for small and medium sized projects
-* Technical skills related to installation, maintenance and quality control of air monitoring instruments
-* Negotiation skills for contract management and securing outcomes in the planning process
+-   Processing and analysing medium sized (up to 10 million observations) data sets
+-   SQL (SQL server, ODSSQL and MS Access)
+-   Excel
+-   HTML, Javascript and CSS for web development of open data products
+-   R - packages `openair`, `openaq`, `sf`, `timetk`, `fastverse`, `deweather` and `tidyverse` are relevant to the air quality domain
+-   [FME](https://www.safe.com/) and FME Server for automating web services and data integration
+-   Time series analysis
+-   Network telemetry: IP, analogue, wireless, Teltonika RMS
+-   Technical report writing and comprehension of technical reports relating to the domain
+-   Communication skills - ability to report technical information to non - specialists
+-   Project management for small and medium sized projects
+-   Technical skills related to installation, maintenance and quality control of air monitoring instruments
+-   Negotiation skills for contract management and securing outcomes in the planning process
 
 ## Strengths and Weaknesses
 
 ### Strengths
 
-* Long experience in the domain and a good level of skills and knowledge
-* Strong work ethic
-* Motivation to deliver and improve services and air quality
-* Wide range of contacts internally and externally
-* Collaborative approach to working
+-   Long experience in the domain and a good level of skills and knowledge
+-   Strong work ethic
+-   Motivation to deliver and improve services and air quality
+-   Wide range of contacts internally and externally
+-   Collaborative approach to working
 
 ### Weaknesses
 
-* Wide, rather than deep data skill set
-* Limited understanding of statistical theory and advanced analysis
-* No exposure to team environment of other data analysts so lacking peer support
-* Isolated from corporate data analytics functions
-* Limited employer incentive to improve skills
+-   Wide, rather than deep data skill set
+-   Limited understanding of statistical theory and advanced analysis
+-   No exposure to team environment of other data analysts so lacking peer support
+-   Isolated from corporate data analytics functions
+-   Limited employer incentive to improve skills
 
 ## Areas for Improvement
 
-* Improved understanding of statistical theory and learning
-* Power BI (corporate data analytics tool)
-* Azure (corporate data platform)
-* Python and PANDAS for comprehensive tooling of data science operations
+-   Improved understanding of statistical theory and learning
+-   Power BI (corporate data analytics tool)
+-   Azure (corporate data platform)
+-   Python and PANDAS for comprehensive tooling of data science operations
 
 # Portfolio Projects
 
@@ -217,11 +218,9 @@ source("word_table_extract.R")
 
 ```
 
-![Objective 1](images/Objective 1.png)
-![Objective 2](images/Objective 2.png)
+![Objective 1](images/Objective%201.png) ![Objective 2](images/Objective%202.png)
 
-![Objective 3](images/Objective 3.png)
-![Objective 4](images/Objective 4.png)
+![Objective 3](images/Objective%203.png) ![Objective 4](images/Objective%204.png)
 
 I am able to work on these projects concurrently and I believe they are all achievable by the end of the apprenticeship.
 
@@ -253,19 +252,19 @@ Further prescriptive guidance is provided by Defra for air quality reporting in 
 
 For this project, the data process will focus only on tables prefixed "A" in the spreadsheet referenced. These are the tables that contain monitoring data. Other tables in the report require manual data entry as they need data that is sourced from other officers and departments in the council so will not be addressed in this pipeline.
 
-In addition to these tables, there is a requirement to include thematic maps in the report which show concentrations of pollutants at monitoring sites. The process will also produce spatial datasets which can be used in a GIS to plot the maps or will produce graphical output directly for inclusion in the report as image files. 
+In addition to these tables, there is a requirement to include thematic maps in the report which show concentrations of pollutants at monitoring sites. The process will also produce spatial datasets which can be used in a GIS to plot the maps or will produce graphical output directly for inclusion in the report as image files.
 
 ### CAZ Reporting
 
-The purpose of the CAZ is to reduce concentrations of one pollutant (NO~2~) to legal levels in the shortest time possible. Therefore the reporting is limited to NO~2~. However, the reporting on this single pollutant requires greater granularity than the LAQM reporting. This is partly because advanced techniques for analysing changes in time series air quality data will be used to assess the impact of a specific policy intervention (the CAZ) and therefore the hourly time series data need to be reported, not just the summary statistics. This analysis will be done by ITS using the [`AQEval' R package](https://cran.r-project.org/web/packages/AQEval/index.html) and the data for Bristol will be supplied by providing access to the open data portal [dataset for continuous air quality data](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location).
+The purpose of the CAZ is to reduce concentrations of one pollutant (NO~2~) to legal levels in the shortest time possible. Therefore the reporting is limited to NO~2~. However, the reporting on this single pollutant requires greater granularity than the LAQM reporting. This is partly because advanced techniques for analysing changes in time series air quality data will be used to assess the impact of a specific policy intervention (the CAZ) and therefore the hourly time series data need to be reported, not just the summary statistics. This analysis will be done by ITS using the [\`AQEval' R package](https://cran.r-project.org/web/packages/AQEval/index.html) and the data for Bristol will be supplied by providing access to the open data portal [dataset for continuous air quality data](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location).
 
 The reporting for diffusion tube data consists of providing data in a pre - formatted template quarterly. The data is a combination of meta - data for the measurement site, e.g. location, height, distance from a road and the "raw" monthly concentrations from the diffusion tube. The measurement technique for diffusion tubes and continuous analysers is described later on.
 
 ### Analysis and Processing Techniques
 
-#### Summary 
+#### Summary
 
-The overall process was controlled using the [`targets` R package](https://books.ropensci.org/targets/). This is a "Make" - like  pipeline tool for Statistics and data science in R to help maintain a reproducible workflow. Targets learns how the pipeline fits together, skips costly runtime for tasks that are already up to date, runs only the necessary computation, supports implicit parallel computing, abstracts files as R objects, and shows tangible evidence that the results match the underlying code and data.
+The overall process was controlled using the [`targets` R package](https://books.ropensci.org/targets/). This is a "Make" - like pipeline tool for Statistics and data science in R to help maintain a reproducible workflow. Targets learns how the pipeline fits together, skips costly runtime for tasks that are already up to date, runs only the necessary computation, supports implicit parallel computing, abstracts files as R objects, and shows tangible evidence that the results match the underlying code and data.
 
 Each operation was assigned to a function. Targets ensures that the functions run in the right order, and only when all pre - conditions are satisfied. (K3, K8, K10, K14, S2, S4, S15)
 
@@ -273,17 +272,17 @@ Each operation was assigned to a function. Targets ensures that the functions ru
 
 The data needed for the analysis are in five separate repositories:
 
-1. A corporate Azure SQL server database hosting BCC's continuous air quality data
-2. A Microsoft Access database for the diffusion tube data and monitoring site meta data
-3. The council's [open data portal](https://opendata.bristol.gov.uk/explore/?sort=modified)
-4. UK Government's [Air Information Resource](https://uk-air.defra.gov.uk/data/) which holds data for the air monitoring sites run by government as part of the Automated Urban and Rural Network (AURN). There are two of these sites in Bristol.
-5. The LAQM Portal (holds data for the calendar for changing diffusion tubes)
+1.  A corporate Azure SQL server database hosting BCC's continuous air quality data
+2.  A Microsoft Access database for the diffusion tube data and monitoring site meta data
+3.  The council's [open data portal](https://opendata.bristol.gov.uk/explore/?sort=modified)
+4.  UK Government's [Air Information Resource](https://uk-air.defra.gov.uk/data/) which holds data for the air monitoring sites run by government as part of the Automated Urban and Rural Network (AURN). There are two of these sites in Bristol.
+5.  The LAQM Portal (holds data for the calendar for changing diffusion tubes)
 
 Four of these repositories were used in the analysis. The open data portal was not used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.
 
 ##### Data processing overview
 
-The data processing is split into two parts, because the reporting regime requires the use of a standard excel spreadsheet template for reporting. The first stage generates the input data for the template using a `targets` pipeline. The second stage takes output from the template spreadsheet and generates further files for inclusion in the final report, including charts as images, csv files for updating the open data portal and ESRI shapefiles for mapping in ArcGIS. 
+The data processing is split into two parts, because the reporting regime requires the use of a standard excel spreadsheet template for reporting. The first stage generates the input data for the template using a `targets` pipeline. The second stage takes output from the template spreadsheet and generates further files for inclusion in the final report, including charts as images, csv files for updating the open data portal and ESRI shapefiles for mapping in ArcGIS.
 
 The data from databases was accessed using a combination of the `DBI`, `dplyr` and `odbc` packages. Data from the LAQM Portal was retrieved and processed with the `rvest` package for web scaping. For the data that is hosted on the government's website, the `openair` package provides a helpful function called `importAURN`. Functions written using a combination of `tidyverse` and base R and controlled by `targets` implement the ETL processes for stage 1. The dataframes are exported as csv files ready to be pasted directly into the spreadsheet template.
 
@@ -296,14 +295,16 @@ Project 1 clearly benefits the council's air quality team by standardising and a
 ## Project 2: To develop a process for monthly diagnostics and QA reporting from air monitors and telemetry devices
 
 ### Introduction
+
 The QA process for air quality measurements is set out in the relevant guidance LAQM.TG(22). Bristol City Council follows this guidance which essentially requires regular calibration of NOx analysers with a traceable gas. In addition to the calibration activity, other datasets are helpful in understanding and maintaining the good operation of the monitoring network. The aim of this project is to bring all those sources of data together in a coherent report to summarise the operating characteristics of the monitoring system and provide assurance that the system is operating within desired parameters.
 
 ### Data Sources
+
 The sources of data are summarised as follows:
 
-1. SQL server database (Envista). Stores air quality measurements and diagnostics data
-2. Google Drive. Calibration data is collected in the field with google forms and stored in google sheets
-3. Teltonika Remote Management System (RMS). Parameters for the 4G routers which provide telemetry to the network are available through a REST API.
+1.  SQL server database (Envista). Stores air quality measurements and diagnostics data
+2.  Google Drive. Calibration data is collected in the field with google forms and stored in google sheets
+3.  Teltonika Remote Management System (RMS). Parameters for the 4G routers which provide telemetry to the network are available through a REST API.
 
 ### Data Processing Pipeline
 
@@ -315,11 +316,11 @@ The final reporting product needs to be easily readable and to highlight the key
 
 The key outputs in the report are as follows.
 
-1. A `gt` table showing the amount and percentage of missing data for the measurement period
-2. A `gt` table with sparklines showing the calibration factors used and their ideal target values. This is broken down by pollutant and site and indicates whether calibrations are providing correct data which which to adjust the measurement data.
-3. A chart showing the divergence of span values for two pollutants. This can indicate problems with contamination in calibration gas cylinders.
-4. Charts showing the data use of airtime data allowances by routers. This can help identify excessive data use, which could indicate security breach or operating system problem. If data thresholds are exceeded, airtime can be cut which would inhibit our real time reporting of air quality measurements.
-5. Time series charts of instrument diagnostics. These are compared to high and low "normal operating characteristics" to show when instrument problems may be developing. This could for example be the sample pressure declining, indicating a leak in the system.
+1.  A `gt` table showing the amount and percentage of missing data for the measurement period
+2.  A `gt` table with sparklines showing the calibration factors used and their ideal target values. This is broken down by pollutant and site and indicates whether calibrations are providing correct data which which to adjust the measurement data.
+3.  A chart showing the divergence of span values for two pollutants. This can indicate problems with contamination in calibration gas cylinders.
+4.  Charts showing the data use of airtime data allowances by routers. This can help identify excessive data use, which could indicate security breach or operating system problem. If data thresholds are exceeded, airtime can be cut which would inhibit our real time reporting of air quality measurements.
+5.  Time series charts of instrument diagnostics. These are compared to high and low "normal operating characteristics" to show when instrument problems may be developing. This could for example be the sample pressure declining, indicating a leak in the system.
 
 Although the final reporting will be through an html rendered quarto document, some examples are shown below.
 
@@ -337,12 +338,9 @@ Although the final reporting will be through an html rendered quarto document, s
 
 ![Calibration factors](images/cal_factors.png)
 
-
-![Span divergence](project-2-diagnostics/qa_report_files/figure-html/span_divergence-1.png)
-### Project 2: Business Benefits
+![Span divergence](project-2-diagnostics/qa_report_files/figure-html/span_divergence-1.png) \### Project 2: Business Benefits
 
 It is vital that stakeholders have confidence in the quality of air quality data. Multi - million pound decisions are taken on the evidence from air quality monitoring such as the CAZ. Hence there is a great deal of scrutiny of the data which must be defendable. The output from this project demonstrates that a rigorous QA process is conducted at monthly intervals on the data. It also ensures that operational parameters are regularly reviewed to maintain data flow and real time publishing of our air quality data.
-
 
 ## Project 3: To publish a dashboard to share the results of citizen science air monitoring for the Slow the Smoke Project
 
@@ -358,11 +356,11 @@ The sensors used are SDS011 sensors that measure PM~10~ and PM~2.5~ as well as t
 
 Although the Sensor.Community organisation provides some mapping and interrogation tools for the data collected from the sensors, it was felt that Bristol's [open data platform](https://opendata.bristol.gov.uk/) offered several advantages for this project over the Sensor.Community offer as follows.
 
-1. A unified single point of enquiry for local air quality data
-2. Ability to integrate with other air quality measurements
-3. Interactive bespoke dashboard and visualisation options
-4. A powerful and well documented API for querying the data
-5. Integrated aggregation of data to hourly interval enabling direct comparison with reference method instruments
+1.  A unified single point of enquiry for local air quality data
+2.  Ability to integrate with other air quality measurements
+3.  Interactive bespoke dashboard and visualisation options
+4.  A powerful and well documented API for querying the data
+5.  Integrated aggregation of data to hourly interval enabling direct comparison with reference method instruments
 
 In order to satisfy expectation for the customers of these data, i.e. the citizen scientists and members of the public, it was decided that the data should be as current as possible. (K7, K4, K9) This meant designing a real - time "Extract - Transform - Load" (ETL) process to query the local raw Sensor.Community data from their API, transform it to a state suitable for publishing on our portal and then using the push API on our portal to publish the data.
 
@@ -372,8 +370,7 @@ FME is a no - code platform for ETL which is primarily focused on spatial data. 
 
 ![Hourly FME ETL Process](images/hourly_ld_fme.png)
 
-![Daily FME ETL Process](images/daily_ld_fme.png)
-It was decided to split into hourly and daily processes because the latency in the Sensor.Community API process made it impossible to reliably downsample data into hourly intervals in a real - time process. The FME hourly process subsets the measurement data using a bounding box to just get Bristol's data, unnests the PM~10~ and PM~2.5~ data from the json array and writes the data to a csv file.
+![Daily FME ETL Process](images/daily_ld_fme.png) It was decided to split into hourly and daily processes because the latency in the Sensor.Community API process made it impossible to reliably downsample data into hourly intervals in a real - time process. The FME hourly process subsets the measurement data using a bounding box to just get Bristol's data, unnests the PM~10~ and PM~2.5~ data from the json array and writes the data to a csv file.
 
 The daily FME process then downsamples the data in the csv to hourly intervals, transforms it in various ways, and then writes the data to a json array and pushes to the open data portal and flushes data from the temporary csv file to prepare it for the next cycle. The daily process also automatically adds any new sites that might be established by a citizen scientist to the [open data datasets for the sensors](https://opendata.bristol.gov.uk/explore/?q=luftdaten&sort=modified)
 
@@ -383,25 +380,21 @@ The FME schedules run reliably and this has proved a robust method for automatin
 
 #### Making Sense of Data - Workshop and Learning Resources
 
-It was recognised that citizen scientists would need some initial training and induction to familiarise themselves with the sensors and the data that was collected (S7, S12). A "Making Sense of Data" workshop was convened in July 2022 and interactive resources hosted on the open data platform were prepared to support the learning activity.  (S7, S12)  
+It was recognised that citizen scientists would need some initial training and induction to familiarise themselves with the sensors and the data that was collected (S7, S12). A "Making Sense of Data" workshop was convened in July 2022 and interactive resources hosted on the open data platform were prepared to support the learning activity. (S7, S12)\
 The [learning resources](https://opendata.bristol.gov.uk/pages/making_sense_of_data/) include:
 
-1. Interactive leaflet maps showing locations of the sensors
-2. Time series interactive charts (vega) showing hourly and daily sensor data
-3. Polar plots showing dominant wind speeds and directions for different levels of pollutants
-4. Animated gif images of polar plots showing how pollution varies with time and highlighting weather features that affect air pollution.
-5. A [short video](https://knowlewestmediacentre-my.sharepoint.com/personal/annali_grimes_kwmc_org_uk/_layouts/15/stream.aspx?id=%2Fpersonal%2Fannali%5Fgrimes%5Fkwmc%5Forg%5Fuk%2FDocuments%2FSlow%20the%20Smoke%2FCitizen%20Sensing%2Fworkshops%2FIntro%20to%20Bristol%20Open%20Data%2Fintro%5Faq%5Fopen%5Fdata%2Emp4&ga=1) introducing the open data portal and explaining how to query, analyse, map and interpret the low cost sensor air quality data using the tools on the open data platform.
+1.  Interactive leaflet maps showing locations of the sensors
+2.  Time series interactive charts (vega) showing hourly and daily sensor data
+3.  Polar plots showing dominant wind speeds and directions for different levels of pollutants
+4.  Animated gif images of polar plots showing how pollution varies with time and highlighting weather features that affect air pollution.
+5.  A [short video](https://knowlewestmediacentre-my.sharepoint.com/personal/annali_grimes_kwmc_org_uk/_layouts/15/stream.aspx?id=%2Fpersonal%2Fannali%5Fgrimes%5Fkwmc%5Forg%5Fuk%2FDocuments%2FSlow%20the%20Smoke%2FCitizen%20Sensing%2Fworkshops%2FIntro%20to%20Bristol%20Open%20Data%2Fintro%5Faq%5Fopen%5Fdata%2Emp4&ga=1) introducing the open data portal and explaining how to query, analyse, map and interpret the low cost sensor air quality data using the tools on the open data platform.
 
-
-:::{layout-ncol=1 layout-valign="center"}
-
+::: {layout-ncol="1" layout-valign="center"}
 ![Making Sense of Data - screenshot 1](images/msod_1.png)
 
 ![Making Sense of Data - screenshot 2](images/msod_2.png)
 
-![Making Sense of Data - screenshot 3](images/msod_3.png)
-![Making Sense of Data - video screenshot](images/project_3_video.png)
-
+![Making Sense of Data - screenshot 3](images/msod_3.png) ![Making Sense of Data - video screenshot](images/project_3_video.png)
 :::
 
 #### Sensor Dashboard
@@ -410,46 +403,44 @@ In addition to the "Making Sense of Data" workshop and learning resources, it wa
 
 The open data portal provides strong capability for visualisation and transformation by default. For each dataset there is a tabular view, which can be ordered and filtered by facet or user entered search criteria. Interactive maps and charts are also provided which can be similarly filtered and the filtered data can be exported in a range of common formats. For experienced users, a REST API is available which offers some SQL - like syntax to manipulate and export the data. However, for this purpose, it was felt appropriate to develop a more curated data product than the default offer which was tailored to the anticipated needs of the customer. The dashboard should help to answer the following questions.
 
-1. What is the current (or recent) level of pollution at my sensor?
-2. What is the spatial context of my sensor?
-3. What do the readings mean in terms of relevant legal or health - based limits?
-4. How do pollutant levels change with time of day or day of week?
-5. How can I relate pollution levels to wind patterns or weather?
-6. How can I download the data if I need to do more detailed analysis on it?
+1.  What is the current (or recent) level of pollution at my sensor?
+2.  What is the spatial context of my sensor?
+3.  What do the readings mean in terms of relevant legal or health - based limits?
+4.  How do pollutant levels change with time of day or day of week?
+5.  How can I relate pollution levels to wind patterns or weather?
+6.  How can I download the data if I need to do more detailed analysis on it?
 
 (S7, S12, S13, S14, S15, B2)
 
 A [web dashboard](https://opendata.bristol.gov.uk/pages/luftdaten-sitepage/?q=sensor_id:66970) was designed to answer these questions by implementing the following features.
 
-1. An interactive map on the first page where the user can select their sensor and go to the dashboard main page
-2. A simple coloured bar gauge graphic at the top of the page for each pollutant which relates the most recent concentration to the relevant air quality index - including a link to the method for determining the index.
-3. Descriptive text for the sensor and an interactive zoomable map showing the location of the selected sensor.
-4. A slider control to select the time period for subsequent visualisations.
-5. Tabs, providing five different visualisations including:
-6. Time series chart for both pollutants (selectable)
-7. Daily mean chart including relevant World Health Organisation (WHO) guideline values for comparison
-8. Charts for hour of day and day of week - to show diurnal and weekly variation
-9. A wind rose for the selected time period, which shows wind speed and direction
+1.  An interactive map on the first page where the user can select their sensor and go to the dashboard main page
+2.  A simple coloured bar gauge graphic at the top of the page for each pollutant which relates the most recent concentration to the relevant air quality index - including a link to the method for determining the index.
+3.  Descriptive text for the sensor and an interactive zoomable map showing the location of the selected sensor.
+4.  A slider control to select the time period for subsequent visualisations.
+5.  Tabs, providing five different visualisations including:
+6.  Time series chart for both pollutants (selectable)
+7.  Daily mean chart including relevant World Health Organisation (WHO) guideline values for comparison
+8.  Charts for hour of day and day of week - to show diurnal and weekly variation
+9.  A wind rose for the selected time period, which shows wind speed and direction
 10. A data table with download links in Excel, JSON and CSV formats
 
-:::{layout-ncol=1 layout-valign="center"}
-
-![Sensor Dashboard 1](images/sensor_1.png)
-![Sensor Dashboard 2](images/sensor_2.png)
+::: {layout-ncol="1" layout-valign="center"}
+![Sensor Dashboard 1](images/sensor_1.png) ![Sensor Dashboard 2](images/sensor_2.png)
 :::
 
 #### Technologies used in Data Products
 
 Both the "Making Sense of Data" learning resources and the sensor dashboard were built on the Opendatasoft platform using the components available. These were:
 
-1. Web development using HTML and CSS
-2. Angular JS for logic
-3. Opendatasoft's widgets for visualisations, aggregation, iteration and controls
-4. Javascript for string and data manipulation
+1.  Web development using HTML and CSS
+2.  Angular JS for logic
+3.  Opendatasoft's widgets for visualisations, aggregation, iteration and controls
+4.  Javascript for string and data manipulation
 
 (K10, S2, S7, S12, S14)
 
-In addition to these technologies, javascript was used to manipulate a url in order to implement the wind rose. The wind rose image is rendered by sending a request to a resource at https://mesonet.agron.iastate.edu. Depending on the query within the request, a wind rose will be returned for the requested time period. 
+In addition to these technologies, javascript was used to manipulate a url in order to implement the wind rose. The wind rose image is rendered by sending a request to a resource at https://mesonet.agron.iastate.edu. Depending on the query within the request, a wind rose will be returned for the requested time period.
 
 ### Advanced Data Products for Project Reporting
 
@@ -461,50 +452,49 @@ In order to provide deeper insight into this issue, further analysis was conduct
 
 The [`openair`](https://davidcarslaw.github.io/openair/) package in R provides open source tools for the analysis of air quality data. Several bespoke visualisations are available to reveal patterns in air quality data such as summary plots, heat maps and polar plots, as used in the "Making Sense of Data" materials. A separate package [`openairmaps`](https://github.com/davidcarslaw/openairmaps) implements polar plots superimposed on an interactive Leaflet base map.
 
-> The openairmaps package has been designed to create interactive HTML air quality maps. These are useful to understand the geospatial context of openair-type
-analysis, and to present data in an engaging way in dashboards and websites.
+> The openairmaps package has been designed to create interactive HTML air quality maps. These are useful to understand the geospatial context of openair-type analysis, and to present data in an engaging way in dashboards and websites.
 
 The advantages of visualising air quality data in this way are as follows:
 
-1. Where many sensors are in the same location, the dispersion patterns can be inspected for consistency
-2. Data can be binned by, for example, time period and season to help reveal likely source sectors
-3. If reference method and low cost sensors are used on both maps, the relative difference in scale of measurements can be highlighted
+1.  Where many sensors are in the same location, the dispersion patterns can be inspected for consistency
+2.  Data can be binned by, for example, time period and season to help reveal likely source sectors
+3.  If reference method and low cost sensors are used on both maps, the relative difference in scale of measurements can be highlighted
 
 Despite these advantages, care must be taken not to misinterpret the maps. They are intended to indicate patterns of dispersion and source direction, not absolute values or comparison with objectives. This is why they are not deployed as a resource in the sensor dashboard.
 
-The data were prepared by first filtering the available Sensor.Community sensor data for data capture. This is necessary because the surface fitting algorithm in openairmaps requires a certain level of data availability. Reference method data are downloaded from open data resources and joined to the Sensor.Community data and then a wind speed and direction data from Bristol airport is joined by timestamp to the air quality data. The data are binned using the `cutData` function in openair to create data which is used in a selector control. This dataset is fed into the `polarMap` function for each pollutant to produce the map. 
+The data were prepared by first filtering the available Sensor.Community sensor data for data capture. This is necessary because the surface fitting algorithm in openairmaps requires a certain level of data availability. Reference method data are downloaded from open data resources and joined to the Sensor.Community data and then a wind speed and direction data from Bristol airport is joined by timestamp to the air quality data. The data are binned using the `cutData` function in openair to create data which is used in a selector control. This dataset is fed into the `polarMap` function for each pollutant to produce the map.
 
 The interactive maps are published by rendering them as Quarto documents and publishing on the [quarto-pubs website.](https://stevecrawshaw.quarto.pub/slow-the-smoke-polar-maps/)
 
 An example of a static version of the maps is shown below.
 
-![Example of static PM ~2.5~ polar map by cut by season](images/static_polar_pm25.png)
-### Project 3: Business Benefits
+![Example of static PM 2.5 polar map by cut by season](images/static_polar_pm25.png) \### Project 3: Business Benefits
 
 An open data dashboard was a key deliverable for the Slow the Smoke project and public engagement was a key strand in this work. The data products developed in the project demonstrated to funders that BCC is a reliable project partner and satisfied the conditions of the contract.
 
-## Project 4: Comparing performance of low – cost sensors with reference method instruments
+## Project 4: Comparing performance of low -- cost sensors with reference method instruments
 
 ### Introduction
 
-The Slow the Smoke (StS) project is a Citizen Science project funded by Defra's Air Quality Grant. It aims to test engagement approaches based on citizen monitoring of air quality with a particular focus on emissions from domestic solid fuel burning (wood burning stoves etc.).   
+The Slow the Smoke (StS) project is a Citizen Science project funded by Defra's Air Quality Grant. It aims to test engagement approaches based on citizen monitoring of air quality with a particular focus on emissions from domestic solid fuel burning (wood burning stoves etc.).
 
-Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities. I developed and agreed with the partners a data sharing agreement to cover the management of personal data under GDPR that was collected by the outreach activities. (K1, K2, K15, S1) 
+Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities. I developed and agreed with the partners a data sharing agreement to cover the management of personal data under GDPR that was collected by the outreach activities. (K1, K2, K15, S1)
 
 The combination of citizen science, community engagement and behavioural surveys is intended to identify effective approaches to influencing behaviour in relation to domestic emissions to air.
 
-Ten citizen scientists have self selected in the study area which is a ward in the city centre called Ashley. This ward was selected because we have evidence that there is a higher level of solid fuel burning than average.  
+Ten citizen scientists have self selected in the study area which is a ward in the city centre called Ashley. This ward was selected because we have evidence that there is a higher level of solid fuel burning than average.
 
-The citizen scientists have each been given a "low cost" air sensor that monitors particulate matter (PM). PM is fine dust in the air, including smoke. There are two fractions of PM that are important for health; PM~10~ (aerodynamic diameter < 10 &mu;) and PM~2.5~ (aerodynamic diameter < 10 &mu;). The devices deployed monitor both of these fractions using a light - scattering approach, where the diffusion of laser light is a function of the concentration of PM in the sampled air.  
+The citizen scientists have each been given a "low cost" air sensor that monitors particulate matter (PM). PM is fine dust in the air, including smoke. There are two fractions of PM that are important for health; PM~10~ (aerodynamic diameter \< 10 μ) and PM~2.5~ (aerodynamic diameter \< 10 μ). The devices deployed monitor both of these fractions using a light - scattering approach, where the diffusion of laser light is a function of the concentration of PM in the sampled air.
 
-Because these devices do not directly measure concentration of PM, but use a proxy measure, they are not as accurate as "approved" measuring instruments used to assess compliance with air quality objectives. It is therefore necessary to attempt to characterise the performance of these devices in relation to approved or "reference method" devices by co - locating the low cost sensors with reference method instruments and comparing measurements.  
+Because these devices do not directly measure concentration of PM, but use a proxy measure, they are not as accurate as "approved" measuring instruments used to assess compliance with air quality objectives. It is therefore necessary to attempt to characterise the performance of these devices in relation to approved or "reference method" devices by co - locating the low cost sensors with reference method instruments and comparing measurements.
 
 ### Co - location Study
 
 There are three monitoring sites which measure PM in Bristol. A map and summary data for the sites are shown below.
 
-<iframe src="https://opendata.bristol.gov.uk/explore/embed/dataset/air-quality-monitoring-sites/map/?disjunctive.pollutants&refine.current=True&refine.pollutants=PM10&refine.pollutants=PM2.5&location=13,51.44776,-2.59447&basemap=jawg.streets&static=false&datasetcard=false&scrollWheelZoom=true" width="700" height="500" frameborder="2"></iframe>
+<iframe src="https://opendata.bristol.gov.uk/explore/embed/dataset/air-quality-monitoring-sites/map/?disjunctive.pollutants&amp;refine.current=True&amp;refine.pollutants=PM10&amp;refine.pollutants=PM2.5&amp;location=13,51.44776,-2.59447&amp;basemap=jawg.streets&amp;static=false&amp;datasetcard=false&amp;scrollWheelZoom=true" width="700" height="500" frameborder="2">
 
+</iframe>
 
 ```{r}
 
@@ -526,7 +516,7 @@ pm_tbl %>%
     cols_label(description = "Site description", pollutants = "Pollutants")
 ```
 
-The co - location study used two of these sites; Parson Street School and Temple Way. These sites are both operated by the council. Using the AURN St Pauls site would have required permissions from the Environment Agency which would have been a time consuming and uncertain process.  
+The co - location study used two of these sites; Parson Street School and Temple Way. These sites are both operated by the council. Using the AURN St Pauls site would have required permissions from the Environment Agency which would have been a time consuming and uncertain process.
 
 The [airrohr SDS011 fine dust sensors](https://sensor.community/en/sensors/airrohr/) require a wifi signal in order to push data to a server. The Bristol City Council sites did not previously have wifi access available. The telemetry at our air monitoring sites was a combination of 3G modems and analogue land lines in 2021. In order to accommodate the co - location study and also for the purposes of virtualising our data collection machine, I procured, configured and installed Teltonika RUT950 or RUT955 4G LTE routers at all of our monitoring sites. This enabled 4G TCP/IP access to the data loggers or instruments at all of the sites, and also provided a wifi hotspot to enable the SDS011 sensors to send data.
 
@@ -534,9 +524,9 @@ The physical installation of the SDS011 sensors at both sites was complete in ea
 
 #### Colocation Study: Concept
 
-The aim of the colocation study is to compare the performance of the low cost sensors with the performance of reference method instruments measuring the same pollutant. The method of implementing this comparison was to collect hourly data for the two co - located  devices and establish the linearity of the response using a linear model to report coefficients and r^2^.
+The aim of the colocation study is to compare the performance of the low cost sensors with the performance of reference method instruments measuring the same pollutant. The method of implementing this comparison was to collect hourly data for the two co - located devices and establish the linearity of the response using a linear model to report coefficients and r^2^.
 
-Some of the methods for testing the performance of the sensors have been adopted from the [United States Environmental Protection Agency (USEPA) report on the Performance Testing Protocols, Metrics and Target Values for Fine Particulate Matter Air Sensors](https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=544837&Lab=CEMM). 
+Some of the methods for testing the performance of the sensors have been adopted from the [United States Environmental Protection Agency (USEPA) report on the Performance Testing Protocols, Metrics and Target Values for Fine Particulate Matter Air Sensors](https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=544837&Lab=CEMM).
 
 Within this study it was not possible to compare the responses of multiple low cost sensors with each other as there was not a budget to purchase additional devices for this purpose.
 
@@ -546,7 +536,7 @@ Continuous Ambient Air Quality Monitoring Systems (CAMS) are certified by the En
 
 (K2, K8, K9, S1)
 
-The equipment used in this colocation study is the Met One BAM 1020 Continuous Particulate Monitor, hereafter referred to as "BAM 1020". The instrument works by drawing a sample of air through a filter tape every hour. The deposited PM is then exposed to a source of radioactive Carbon 14 on one side of the filter tape. A beta radiation detector is on the other side of the tape and measures the attenuation of the beta radiation through the sampled filter. The attenuation of the beta radiation is a function of the deposited PM mass on the filter tape. Because the flow rate of the sampled air is known, the concentration in &mu;gm^-3^ can be calculated. Hourly concentrations are recorded on an external data logger and polled by a central telemetry system.
+The equipment used in this colocation study is the Met One BAM 1020 Continuous Particulate Monitor, hereafter referred to as "BAM 1020". The instrument works by drawing a sample of air through a filter tape every hour. The deposited PM is then exposed to a source of radioactive Carbon 14 on one side of the filter tape. A beta radiation detector is on the other side of the tape and measures the attenuation of the beta radiation through the sampled filter. The attenuation of the beta radiation is a function of the deposited PM mass on the filter tape. Because the flow rate of the sampled air is known, the concentration in μgm^-3^ can be calculated. Hourly concentrations are recorded on an external data logger and polled by a central telemetry system.
 
 #### Colocation Sites: Temple Way
 
@@ -614,8 +604,7 @@ site_details(pm_meta %>% filter(siteid == 215))
 
 The low cost sensors were co - located inside the cages of the monitoring sites. Parson Street was installed on 29th March 2022 and Bristol Temple Way was installed on 1st May 2022. The photographs below show the detail of the colocated devices at each monitoring site.
 
-:::{layout-ncol=2 layout-valign="center"}
-
+::: {layout-ncol="2" layout-valign="center"}
 ![Temple Way](images/btw_cage.jpg)
 
 ![Parson Street](images/ps_cage.jpg)
@@ -625,14 +614,11 @@ Co - located instruments
 
 #### Data Sources
 
-Data from one low cost sensor and from both reference instruments are published in near real time on the council's open data portal. The BAM 1020 data are available through the [`air-quality-data-continuous`](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location) dataset and the Parson Street data are available through the [`luftdaten_pm_bristol`](https://opendata.bristol.gov.uk/explore/dataset/luftdaten_pm_bristol/table/?disjunctive.sensor_id&q=sensor_id+%3D+71552&sort=date&location=22,51.43267,-2.60496&basemap=jawg.streets) dataset. This is a dataset that is a geographical subset of the sensor.community [archive](https://archive.sensor.community/) focussed on Bristol. In addition, data are aggregated to give an hourly mean value for both PM~10~ and PM~2.5~. 
-Custom functions were written in R to access these files and import the data as data frames.
-The data for the low cost sensor at Temple Way are not published on the council's open data portal. This is because the sensor did not register properly on the sensor.community portal. The data are however available through a [combination of online](https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445) .csv and .zip files.
+Data from one low cost sensor and from both reference instruments are published in near real time on the council's open data portal. The BAM 1020 data are available through the [`air-quality-data-continuous`](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location) dataset and the Parson Street data are available through the [`luftdaten_pm_bristol`](https://opendata.bristol.gov.uk/explore/dataset/luftdaten_pm_bristol/table/?disjunctive.sensor_id&q=sensor_id+%3D+71552&sort=date&location=22,51.43267,-2.60496&basemap=jawg.streets) dataset. This is a dataset that is a geographical subset of the sensor.community [archive](https://archive.sensor.community/) focussed on Bristol. In addition, data are aggregated to give an hourly mean value for both PM~10~ and PM~2.5~. Custom functions were written in R to access these files and import the data as data frames. The data for the low cost sensor at Temple Way are not published on the council's open data portal. This is because the sensor did not register properly on the sensor.community portal. The data are however available through a [combination of online](https://api-rrd.madavi.de/csvfiles.php?sensor=esp8266-6496445) .csv and .zip files.
 
 #### Data Processing Pipeline
 
-Initially the data processing pipeline was split into three R scripts, one for retrieving and preparing the data, one for plotting, and one for modelling the data. However, while developing this approach, it became apparent that there were significant problems with this method. Tracking the operations across three different scripts became confusing, and testing and debugging was sub - optimal and resulted in errors when running the scripts if they weren't called in order. 
-Researching this issue identified a possible solution, which was eventually used for this project. The [`targets`](https://books.ropensci.org/targets/) R package is a "Make" - like pipeline tool for data science in R. It helps to maintain a reproducible workflow, minimising repetition, running only necessary code, and forces a functional approach to code and pipeline development.
+Initially the data processing pipeline was split into three R scripts, one for retrieving and preparing the data, one for plotting, and one for modelling the data. However, while developing this approach, it became apparent that there were significant problems with this method. Tracking the operations across three different scripts became confusing, and testing and debugging was sub - optimal and resulted in errors when running the scripts if they weren't called in order. Researching this issue identified a possible solution, which was eventually used for this project. The [`targets`](https://books.ropensci.org/targets/) R package is a "Make" - like pipeline tool for data science in R. It helps to maintain a reproducible workflow, minimising repetition, running only necessary code, and forces a functional approach to code and pipeline development.
 
 (B7, B6, S15, K11)
 
@@ -654,27 +640,25 @@ Nesting the model data enables a concise iterative approach to developing the mo
 
 Functions were developed to create a range of visualisations of both the raw and processed data and model outputs.
 
-1. plot_drift() is a function based on the ggplot2 library which takes the prepared model data tibble and a site ID and returns a ggplot object (plot) showing how the pollutant concentrations from the low cost sensor diverge from the reference method measurements over time. The plot uses the geom_smooth() geom with the smoothing set to "gam" in order to show a smoothed trace.
-2. plot_scatter() is another ggplot based function which generates a scatter plot for co - located instruments. It also incorporates functions from the ggside library (extension for ggplot2) which enables side - plots for the scatter plot showing the distribution of data points for each axis. Further it includes stat_cor() and stat_regline_equation() from the ggpubr library to show correlation statistics and the equation derived from the linear model on the chart. This function therefore provides much useful information about the relationship between the two datasets on a single chart.
-3. prep_timeplot() is a helper function that takes the prepared data for modelling and processes it for use in another function. The function subsets the data, renames columns, pivots longer and pads the time series such that the data is ready for the plot_time_series() function.
-4. plot_time_series() takes the data from step 3 above and a string representing an interval (e.g. "hour") and plots a time series chart using the ggplot2 library.
-5. Other helper functions which format and save plots.
-
+1.  plot_drift() is a function based on the ggplot2 library which takes the prepared model data tibble and a site ID and returns a ggplot object (plot) showing how the pollutant concentrations from the low cost sensor diverge from the reference method measurements over time. The plot uses the geom_smooth() geom with the smoothing set to "gam" in order to show a smoothed trace.
+2.  plot_scatter() is another ggplot based function which generates a scatter plot for co - located instruments. It also incorporates functions from the ggside library (extension for ggplot2) which enables side - plots for the scatter plot showing the distribution of data points for each axis. Further it includes stat_cor() and stat_regline_equation() from the ggpubr library to show correlation statistics and the equation derived from the linear model on the chart. This function therefore provides much useful information about the relationship between the two datasets on a single chart.
+3.  prep_timeplot() is a helper function that takes the prepared data for modelling and processes it for use in another function. The function subsets the data, renames columns, pivots longer and pads the time series such that the data is ready for the plot_time_series() function.
+4.  plot_time_series() takes the data from step 3 above and a string representing an interval (e.g. "hour") and plots a time series chart using the ggplot2 library.
+5.  Other helper functions which format and save plots.
 
 ##### Modelling
 
-The model data tibble previously created is used as input to a function to run a linear model on the data for each site. A script to import custom themes for plots is imported at the top of the _targets.R file. The make.model.output.tbl() function takes the data tibble and creates a new output tibble with the following features:
+The model data tibble previously created is used as input to a function to run a linear model on the data for each site. A script to import custom themes for plots is imported at the top of the \_targets.R file. The make.model.output.tbl() function takes the data tibble and creates a new output tibble with the following features:
 
-1. a list column (model_obj) which is the model object derived from the lm() function comparing the low - cost (dependent variable) and reference (independent variable) device data for each site and pollutant
-2. a list column containing the linear coefficients (intercept and slope) from each model object using the tidymodels package.
-3. a list column, perf, which holds a tibble of performance metrics for each site derived by the glance() function from the `broom` package. Glance accepts a model object and returns a tibble with exactly one row of model summaries. The summaries are typically goodness of fit measures, p-values for hypothesis tests on residuals, or model convergence information.
+1.  a list column (model_obj) which is the model object derived from the lm() function comparing the low - cost (dependent variable) and reference (independent variable) device data for each site and pollutant
+2.  a list column containing the linear coefficients (intercept and slope) from each model object using the tidymodels package.
+3.  a list column, perf, which holds a tibble of performance metrics for each site derived by the glance() function from the `broom` package. Glance accepts a model object and returns a tibble with exactly one row of model summaries. The summaries are typically goodness of fit measures, p-values for hypothesis tests on residuals, or model convergence information.
 
 ### Results
 
 The colocated data were first plotted using the summaryPlot function from the `openair` package. This gives a schematic overview of the time series, distribution, and summary statistics for the data. It can be immediately seen that the distributions differ, with the low cost sensor data being markedly more right - skewed than the reference data, but with lower overall concentrations than the reference data. It is also notable that significant quantities of data are missing from the reference PM~10~ instrument at Temple Way. This is because data were removed by the Environment Agency due to data quality issues. This is unfortunately likely to affect the performance of future modelling.
 
-:::{layout-ncol=2 layout-valign="center"}
-
+::: {layout-ncol="2" layout-valign="center"}
 ![Summary plot: PM10](project-4-colocation-study/plots/summary_plot_pm10.png)
 
 ![Summary plot: PM2.5](project-4-colocation-study/plots/summary_plot_pm2_5.png)
@@ -682,14 +666,11 @@ The colocated data were first plotted using the summaryPlot function from the `o
 Summary plots
 :::
 
-
 Further exploratory data analysis (EDA) with time series charts showed that the data from the low cost sensors diverged significantly from the reference instruments. The plot below shows daily mean concentrations at both sites.
 
-![Daily mean time series chart](project-4-colocation-study/plots/time_series_day_gg.png)
-The divergence does not appear to be uniform or consistent and seems to drift over the study period, so drift plots were developed to examine this artefact. Drift is significant, and different at each site and for each pollutant.
+![Daily mean time series chart](project-4-colocation-study/plots/time_series_day_gg.png) The divergence does not appear to be uniform or consistent and seems to drift over the study period, so drift plots were developed to examine this artefact. Drift is significant, and different at each site and for each pollutant.
 
-:::{layout-ncol=2 layout-valign="center"}
-
+::: {layout-ncol="2" layout-valign="center"}
 ![Drift plot: PM10](project-4-colocation-study/plots/drift_plot_500_gg.png)
 
 ![Drift plot: PM2.5](project-4-colocation-study/plots/drift_plot_215_gg.png)
@@ -705,7 +686,6 @@ Scatter plots were made of the colocated data at each site to visualise the hour
 
 ![Scatter plot: PM2.5](project-4-colocation-study/plots/scatter_gg_215.png)
 
-
 #### Summary Tables
 
 The performance metrics for each model are extracted and tabulated into a range of formats for display. the `gtsummary` package produces a nicely formatted html table and the `performance` package from the `easystats` suite of statistical tools is used to generate a comprehensive html dashboard for each model showing the performance of the model including several plots.
@@ -715,4 +695,3 @@ The performance metrics for each model are extracted and tabulated into a range 
 ```{r}
 here::here()
 ```
-
