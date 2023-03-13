@@ -2,6 +2,29 @@
 start_date <- "2022-05-01" # BTW started operating
 end_date <- "2023-02-28"
 
+# libraries
+
+packages <-  c(
+       "tidyverse",
+       "lubridate",
+       "httr2",
+       "jsonlite",
+       "glue",
+       "janitor",
+       "fs",
+       "padr",
+       "gt",
+       "data.table",
+       "tidymodels",
+       "ggside",   # side plots of density
+       "ggpubr",   # easy labelling of equations on the plot
+       "openair",
+       "easystats",
+       "gtsummary",
+       "webshot2")
+
+pacman::p_load(char = packages)
+
 # Functions ----
 
 #   Get Sensor Data ----
@@ -160,54 +183,22 @@ get.parson.st.sds.hr.tbl <- function(start_date,
 
 # get temp and RH data
 
-get.temp.rh.raw.tbl <-
-    function(start_date, end_date, sensor_id = "71553") {
-        col_spec = cols(
-            sensor_id = col_double(),
-            sensor_type = col_character(),
-            location = col_double(),
-            lat = col_double(),
-            lon = col_double(),
-            timestamp = col_datetime(format = ""),
-            temperature = col_double(),
-            humidity = col_double()
-        )
-        
-        dates <- seq.Date(
-            from = as.Date(start_date),
-            to = as.Date(end_date),
-            by = "day"
-        ) %>%
-            as.character()
-        
-        filenames = glue(
-            "https://archive.sensor.community/{dates}/{dates}_dht22_sensor_{sensor_id}.csv"
-        )
-        browser()
-        rh_temp_raw_tbl <- map_dfr(filenames,
-                                   \(x) read_delim(x,
-                                                   delim = ";",
-                                                   col_types = col_spec))
-        return(rh_temp_raw_tbl)
-        
-    }
+make.temp.rh.tbl <- function(start_date, end_date, unit = 'hour'){
 
-rh_temp_raw_tbl <- get.temp.rh.raw.tbl(start_date = start_date,
-                                       end_date = end_date,
-                                       sensor_id = "71553")
+raw_temp_rh_tbl <- import_ods(dataset = 'met-data-bristol-lulsgate',
+                          endpoint = 'exports',
+                          date_col = 'date_time', 
+                          dateon = start_date,
+                          dateoff = end_date,
+                          format = 'csv', 
+                          select = 'date_time, rh as humidity, temp as temperature'
+                          )
 
-# make hourly mean temp and rh data
-make.temp.rh.tbl <- function(rh_temp_raw_tbl) {
-    temp_rh_tbl <- temp_rh_tbl_raw %>%
-        group_by(date = lubridate::ceiling_date(timestamp, unit = "hour")) %>%
-        summarise(
-            temperature = mean(temperature, na.rm = TRUE),
-            humidity = mean(humidity, na.rm = TRUE)
-        )
-    
-    return(temp_rh_tbl)
+temp_rh_tbl <- raw_temp_rh_tbl %>% 
+    group_by(date = ceiling_date(date_time, unit = unit)) %>% 
+    summarise(across(-date_time, ~mean(.x, na.rm = TRUE)))
+return(temp_rh_tbl)
 }
-
 #   Get Reference Data ----
 
 get.ref.tbl <- function(start_date, end_date) {
@@ -272,7 +263,6 @@ make.model.data.tbl <- function(combined_long_tbl){
                                     all()), ~ NULL
                      ))),
         md_wide = map(
-            # daily data
             md,
             ~ pluck(.x) %>%
                 pivot_wider(
@@ -280,6 +270,14 @@ make.model.data.tbl <- function(combined_long_tbl){
                     names_from = type,
                     values_from = starts_with("pm")
                 ) 
+        ),
+        daily_wide = map( # make a daily tbl for modelling
+            md_wide,
+            ~pluck(.x) %>%
+                group_by(dat = floor_date(date, unit = "day")) %>%
+                summarise(across(-date, \(x) mean(x, na.rm = TRUE))) %>% 
+                mutate(month = month(dat)) %>% 
+                rename(date = dat)
         )
     )
     return(model_data_tbl)
@@ -325,22 +323,32 @@ plot.drift.site.gg <- function(model_data_tbl, siteid = 215) {
 plot.scatter.site.gg <- function(model_data_tbl) {
     # create a scatter plot and side density plot with
     # equation labels on the plot
+        pos_ref = as.integer(max(model_data_tbl$reference,
+                                      na.rm = TRUE) * 0.8)
+        pos_lc = as.integer(max(model_data_tbl$low_cost,
+                                     na.rm = TRUE) * 0.7)
     model_data_tbl %>%
-        ggplot(aes(x = reference, y = low_cost)) +
-        geom_point2(alpha = 0.5) +
+        na.omit() %>% 
+        ggplot(aes(x = low_cost , y = reference)) +
+        geom_point2(alpha = 0.3) +
         geom_smooth(method = "lm") +
-        geom_xsidedensity(lwd = 1) +
-        geom_ysidedensity(lwd = 2) +
+        geom_xsidedensity(size = 1) +
+        geom_ysidedensity(size = 2) +
         scale_ysidex_continuous(guide = guide_axis(angle = 90),
                                 breaks = NULL) +
         scale_xsidey_continuous(guide = guide_axis(angle = 90),
                                 breaks = NULL) +
-        labs(x = "Reference Instrument",
-             y = "Low Cost Sensor") +
-        stat_cor(label.y = 50,
-                 label.x = 50,
-                 aes(label = paste(after_stat(rr.label), after_stat(p.label), sep = "~`,`~"))) +
-        stat_regline_equation(label.y = 44) +
+        labs(y = "Reference Instrument",
+             x = "Low Cost Sensor") +
+        stat_cor(label.y = pos_ref,
+                 label.x = pos_lc,
+                 aes(label = paste(after_stat(rr.label),
+                                   after_stat(p.label),
+                                   sep = "~`,`~")),
+                 geom = 'label') +
+        stat_regline_equation(label.y = pos_ref + 10,
+                              label.x = pos_lc, 
+                              geom = 'label') +
         theme_web_bw()
 }
 

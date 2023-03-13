@@ -25,8 +25,8 @@ lm_monthly_tbl <- daily_site_tbl %>%
     mutate(month = lubridate::month(date)) %>% 
     nest(data = -month) %>% 
     mutate(
-        fit = map(data, ~lm(reference ~ low_cost + humidity + temperature, data = .x)),
-        # fit = map(data, ~lm(reference ~ low_cost, data = .x)),
+        fit = map(data, ~lm(reference ~ low_cost + humidity + temperature,
+                            data = .x)),
         tidied = map(fit, tidy),
         glanced = map(fit, glance),
         augmented = map(fit, augment)

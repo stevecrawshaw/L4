@@ -3,26 +3,9 @@
 # Load packages required to define the pipeline:
 library(targets)
 # library(tarchetypes) # Load other packages as needed. # nolint
-packages <-  c(
-       "tidyverse",
-       "lubridate",
-       "httr2",
-       "jsonlite",
-       "glue",
-       "janitor",
-       "fs",
-       "padr",
-       "gt",
-       "data.table",
-       "tidymodels",
-       "ggside",   # side plots of density
-       "ggpubr",   # easy labelling of equations on the plot
-       "openair",
-       "easystats",
-       "gtsummary",
-       "webshot2")
 
-tar_option_set(packages = packages,
+
+tar_option_set(
   format = "rds"
 )
 # Variables ----
@@ -80,12 +63,10 @@ list(
                           end_date = end_date)
   ),
   tar_target(
-      name = temp_rh_raw_tbl,
-      command = get.temp.rh.raw.tbl(start_date, end_date, sensor_id = "71553")
-  ),
-  tar_target(
       name = temp_rh_tbl,
-      command = make.temp.rh.tbl(temp_rh_raw_tbl)
+      command = make.temp.rh.tbl(start_date = start_date,
+                                end_date = end_date,
+                                unit = 'hour')
   ),
   # tar_target(
   #     name = ,
