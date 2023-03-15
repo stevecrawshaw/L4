@@ -243,7 +243,7 @@ get.aq.data.db <-
         
         #then map the mapped function to the list, appending the siteid list name as the .id argument
         output <-
-            map_dfr(site_list, ~ pmap_dfr(.l = all_of(.x), .f = getData), .id = "table_site")
+            map_dfr(site_list, ~ pmap_dfr(.l = .x, .f = getData), .id = "table_site")
         
         
         
@@ -708,7 +708,8 @@ get.mean.no2 <- function(contin_siteid, dateon, dateoff, id){
            siteid == {{contin_siteid}}) %>% 
     summarise(no2_mean = mean(no2, na.rm = TRUE),
               datacap =  (sum(!is.na(no2)) * 100) / n(),
-              id = {{id}})
+              id = {{id}}) %>% 
+    return()
 
 }
 

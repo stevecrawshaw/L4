@@ -31,15 +31,12 @@ con <- connect.envista()
 contin_4yrs_tbl <- get.aq.data.all(startDate = as.Date(startDate) - years(4), endDate = endDate)
 contin_bias_data_tbl <- make.contin.bias.data.tbl(contin_4yrs_tbl, bias_no2_tube_tbl)
 
-bias_site_list <- make.as.site.list(bias_no2_tube_tbl, contin_bias_data_tbl, aqms_tbl)
 
-fp <- bias_site_list$`Fishponds Road`
+bias_site_list <- make.bias.site.list(bias_no2_tube_tbl, contin_bias_data_tbl, aqms_tbl)
 
-fp
-
-contin_4yrs_tbl %>% 
-    filter(siteid == 463,
-           between(date, ))
+# fp <- bias_site_list$`Fishponds Road`
+# 
+# fp 
 
 no2_data_cap_tbl <- make.datacap.tbl(contin_4yrs_tbl, startDate = startDate, pollutant = no2)
 pm2.5_data_cap_tbl <- make.datacap.tbl(contin_4yrs_tbl, startDate = startDate, pollutant = pm2.5)
