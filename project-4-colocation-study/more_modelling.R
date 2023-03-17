@@ -80,15 +80,6 @@ daily_site_tbl %>%
     geom_line(aes(x = date, y = value, color = name))
     
 
-
-
-
-
-
-
-
-
-
 fitted_lm_plot
 
 lm_monthly_tbl %>% 
