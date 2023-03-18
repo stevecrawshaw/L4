@@ -65,51 +65,93 @@ sp_plot_tbl <- prep.sp.plot.tbl(timeplot_tbl)
 
 save.png.summaryplot(sp_plot_tbl, pollutant = "pm10")
 
-md_wide_split <- model_data_tbl$md_wide[1][[1]] %>% 
-    na.omit() %>% 
-    initial_time_split()
-
-model.parameter.test <- function(md_wide_split){
-# this function tests 3 combinations of input paramaters for a lm
+model.parameter.test <- function(md_wide_split) {
+    # this function tests 3 combinations of input paramaters for a lm
     # and outputs a tbl of performance metrics for each one
     
     # the models are run on the training data and tested on the test data
     # as defined by the rsample::initial time splits function
-trained_model_reference_low_cost <- linear_reg() %>% 
-    set_engine('lm') %>% 
-    fit(reference ~ low_cost,
-        data = training(md_wide_split))
-
-trained_model_reference_low_cost_humidity <- linear_reg() %>% 
-    set_engine('lm') %>% 
-    fit(reference ~ low_cost + humidity,
-        data = training(md_wide_split))
-
-trained_model_reference_low_cost_humidity_temperature <- linear_reg() %>% 
-    set_engine('lm') %>% 
-    fit(reference ~ low_cost + humidity + temperature,
-        data = training(md_wide_split))
-
-model_test_list <- list("reference_lowcost" = trained_model_reference_low_cost,
-                        "reference_lowcost_humidity" = trained_model_reference_low_cost_humidity,
-                        "reference_lowcost_humidity_temperature" = trained_model_reference_low_cost_humidity_temperature)
-
-metric.test <- function(trained_model, md_wide_split){
-    pred_tbl <- augment(trained_model, new_data = testing(md_wide_split))
-    pred_tbl %>% 
-    model_metrics(truth = reference, estimate = .pred) %>% 
+    
+    lm_model <- linear_reg() %>%
+        set_engine('lm')
+    
+    xg_model <- boost_tree(
+    mode = 'regression',
+    engine = 'xgboost',
+    trees = 20
+) 
+    
+    reference_low_cost_lm <- lm_model %>%
+        fit(reference ~ low_cost,
+            data = training(md_wide_split))
+    
+    reference_low_cost_humidity_lm <- lm_model %>% 
+        fit(reference ~ low_cost + humidity,
+            data = training(md_wide_split))
+    
+    reference_low_cost_humidity_temperature_lm <- lm_model %>%
+        fit(reference ~ low_cost + humidity + temperature,
+            data = training(md_wide_split))
+    
+    reference_low_cost_xg <- xg_model %>%
+        fit(reference ~ low_cost,
+            data = training(md_wide_split))
+    
+        reference_low_cost_humidity_xg <- xg_model %>% 
+        fit(reference ~ low_cost + humidity,
+            data = training(md_wide_split))
+    
+    reference_low_cost_humidity_temperature_xg <- xg_model %>%
+        fit(reference ~ low_cost + humidity + temperature,
+            data = training(md_wide_split))    
+    
+    model_test_list <- list(
+        "reference_lowcost_lm" = reference_low_cost_lm,
+        "reference_lowcost_humidity_lm" = reference_low_cost_humidity_lm,
+        "reference_lowcost_humidity_temperature_lm" =
+            reference_low_cost_humidity_temperature_lm,
+        "reference_lowcost_xg" = reference_low_cost_xg,
+        "reference_lowcost_humidity_xg" = reference_low_cost_humidity_xg,
+        "reference_lowcost_humidity_temperature_xg" =
+            reference_low_cost_humidity_temperature_xg
+        
+    )
+    
+    model_metrics <- metric_set(yardstick::rmse,
+                            yardstick::rsq,
+                            yardstick::mae)
+    
+    metric.test <- function(trained_model,
+                            md_wide_split,
+                            model_metrics = model_metrics) {
+        pred_tbl <-
+            augment(trained_model, new_data = testing(md_wide_split))
+        pred_tbl %>%
+            model_metrics(truth = reference, estimate = .pred) %>%
+            return()
+    }
+    
+    
+    map_dfr(model_test_list,
+            ~ metric.test(.x,
+                          md_wide_split = md_wide_split,
+                          model_metrics = model_metrics),
+            .id = "model") %>%
+        transmute(model = str_replace_all(model, "_", " "),
+                  .estimator = NULL,
+                  .metric,
+                  .estimate) %>%
+        pivot_wider(id_cols = model,
+                    names_from = .metric,
+                    values_from = .estimate) %>%
         return()
 }
 
+test <- model_data_tbl$md_wide[1][[1]]
 
-map_dfr(model_test_list, ~metric.test(.x,
-                                      md_wide_split = md_wide_split),
-        .id = "model") %>% 
-    transmute(model = str_replace_all(model, "_", " "),
-              .estimator = NULL, .metric, .estimate) %>% 
-    pivot_wider(id_cols = model, names_from = .metric, values_from = .estimate) %>% 
-    return()
-}
+
+
+
 
 make.model.select.tbl <- function(model_data_tbl){
 
@@ -118,6 +160,9 @@ model_select_tbl <- model_data_tbl %>%
     mutate(md_wide_split = md_wide %>%
                pluck(1) %>%
                na.omit() %>% 
+               group_by(date = as.Date(date)) %>% 
+               summarise(across(everything(),
+                                .fns = ~mean(.x, na.rm = TRUE))) %>% 
                initial_time_split() %>%
                list(),
            parameter_test_results = 
@@ -155,16 +200,64 @@ return(model_select_gt)
 }
 
 model_select_gt <- make.model.select.gt(model_select_tbl = model_select_tbl)
-
+model_select_gt
 gtsave(model_select_gt, 'plots/model_select_gt.png')
 
 
+md_wide_split <- model_select_tbl$md_wide_split[1][[1]]# %>% 
+    training() 
+
+selected_model <- linear_reg() %>%
+        set_engine('lm') %>%
+        fit(reference ~ low_cost + humidity,
+            data = md_wide_split)
+    
+
+selected_model_output_tbl <- model_select_tbl %>% 
+    mutate(model_obj = map(md_wide_split, ~training(.x) %>% 
+               lm(reference ~ low_cost + humidity,
+                                  data = .)),
+           tidied = map(model_obj, tidy),
+           glanced = map(model_obj, glance),
+           augmented = map(.x = model_obj,
+                            ~augment(.x, 
+                                     newdata = testing(pluck(md_wide_split,
+                                                             1)))),
+           check_model = map(model_obj, check_model))
+
+
+
+aug_tbl <- selected_model_output_tbl$augmented[1][[1]]
+
+
+aug_tbl %>% 
+    pivot_longer(cols = -date,
+                 names_to = 'Parameter',
+                 values_to = 'Concentration') %>% 
+    filter(Parameter %in% c (".fitted", "reference")) %>% 
+    ggplot(aes(x = date, y = Concentration, colour = Parameter)) +
+    geom_line(linewidth = 1, alpha = 0.7) +
+    labs(title = "Fitted Predictions and Measured Values for Testing Split",
+         subtitle = "Daily mean concentrations of PM",
+         x = "Date") +
+    theme_ppt_single()
+
+cm <- selected_model_output_tbl$model_obj[1][[1]] %>% 
+    check_model()
+
+png("cm.png", width = 1020, height = 800, units = "px")
+cm
+dev.off()
+class(cm)
+print(cm)
 
 check_model(trained_model)    
 tidy(trained_model)
 glance(trained_model)
 
-pred_tbl <- augment(trained_model, new_data = testing(md_wide_split)) 
+pred_tbl <- augment(selected_model, new_data = testing(md_wide_split)) 
+rm(md_wide_split)
+rm(selected_model)
 
 pred_tbl %>% 
     select(date, reference, .pred) %>% 
@@ -172,9 +265,7 @@ pred_tbl %>%
     ggplot(aes(x = date, y = value, colour = name)) +
     geom_line()
 
-model_metrics <- metric_set(yardstick::rmse,
-                            yardstick::rsq,
-                            yardstick::mae)
+
 
 pred_tbl %>% 
     model_metrics(truth = reference, estimate = .pred)
