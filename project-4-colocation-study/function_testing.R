@@ -54,8 +54,8 @@ model_data_tbl <- read_rds(file = "data/model_data_tbl.rds")
 
 plot.drift.site.gg(model_data_tbl, site = 215)
 
-plot.scatter.site.gg(model_data_tbl$md_wide[1][[1]])
-plot.scatter.site.gg(model_data_tbl$md_wide[2][[1]])
+plot.scatter.site.gg(model_data_tbl$daily_wide[1][[1]])
+plot.scatter.site.gg(model_data_tbl$daily_wide[2][[1]])
 
 timeplot_tbl <- prep.timeplot.tbl(model_data_tbl)
 
@@ -65,7 +65,9 @@ sp_plot_tbl <- prep.sp.plot.tbl(timeplot_tbl)
 
 save.png.summaryplot(sp_plot_tbl, pollutant = "pm10")
 
-model.parameter.test <- function(md_wide_split) {
+
+
+model.parameter.test <- function(split) {
     # this function tests 3 combinations of input paramaters for a lm
     # and outputs a tbl of performance metrics for each one
     
@@ -83,27 +85,27 @@ model.parameter.test <- function(md_wide_split) {
     
     reference_low_cost_lm <- lm_model %>%
         fit(reference ~ low_cost,
-            data = training(md_wide_split))
+            data = training(split))
     
     reference_low_cost_humidity_lm <- lm_model %>% 
         fit(reference ~ low_cost + humidity,
-            data = training(md_wide_split))
+            data = training(split))
     
     reference_low_cost_humidity_temperature_lm <- lm_model %>%
         fit(reference ~ low_cost + humidity + temperature,
-            data = training(md_wide_split))
+            data = training(split))
     
     reference_low_cost_xg <- xg_model %>%
         fit(reference ~ low_cost,
-            data = training(md_wide_split))
+            data = training(split))
     
-        reference_low_cost_humidity_xg <- xg_model %>% 
+    reference_low_cost_humidity_xg <- xg_model %>% 
         fit(reference ~ low_cost + humidity,
-            data = training(md_wide_split))
+            data = training(split))
     
     reference_low_cost_humidity_temperature_xg <- xg_model %>%
         fit(reference ~ low_cost + humidity + temperature,
-            data = training(md_wide_split))    
+            data = training(split))    
     
     model_test_list <- list(
         "reference_lowcost_lm" = reference_low_cost_lm,
@@ -122,10 +124,10 @@ model.parameter.test <- function(md_wide_split) {
                             yardstick::mae)
     
     metric.test <- function(trained_model,
-                            md_wide_split,
+                            split,
                             model_metrics = model_metrics) {
         pred_tbl <-
-            augment(trained_model, new_data = testing(md_wide_split))
+            augment(trained_model, new_data = testing(split)) #metrics from test
         pred_tbl %>%
             model_metrics(truth = reference, estimate = .pred) %>%
             return()
@@ -134,7 +136,7 @@ model.parameter.test <- function(md_wide_split) {
     
     map_dfr(model_test_list,
             ~ metric.test(.x,
-                          md_wide_split = md_wide_split,
+                          split = split,
                           model_metrics = model_metrics),
             .id = "model") %>%
         transmute(model = str_replace_all(model, "_", " "),
@@ -147,45 +149,42 @@ model.parameter.test <- function(md_wide_split) {
         return()
 }
 
-test <- model_data_tbl$md_wide[1][[1]]
-
-
-
-
-
 make.model.select.tbl <- function(model_data_tbl){
-
+    
 model_select_tbl <- model_data_tbl %>% 
-    select(md_wide) %>% 
-    mutate(md_wide_split = md_wide %>%
-               pluck(1) %>%
-               na.omit() %>% 
-               group_by(date = as.Date(date)) %>% 
-               summarise(across(everything(),
-                                .fns = ~mean(.x, na.rm = TRUE))) %>% 
+    select(daily_wide) %>% 
+    mutate(split = daily_wide %>% 
+               pluck(1) %>% 
+               na.omit() %>%
                initial_time_split() %>%
                list(),
-           parameter_test_results = 
-               model.parameter.test(md_wide_split = pluck(md_wide_split,1)) %>%
-               list())
+           parameter_test_results =
+               model.parameter.test(split = pluck(split, 1)) %>%
+               list()
+           )
 
 return(model_select_tbl)
 }
 
 model_select_tbl <- make.model.select.tbl(model_data_tbl)
 
+model_select_tbl
+
+
 make.model.select.gt <- function(model_select_tbl){
 
 model_select_gt <- model_select_tbl %>% 
-    select(-md_wide_split, -md_wide) %>% 
+    select(parameter_test_results) %>% 
     unnest(parameter_test_results) %>% 
     mutate(pollutant = if_else(siteid == 215L,
                                md("PM<sub>2.5</sub>"),
                                md("PM<sub>10</sub>")),
-           .after = siteid) %>% 
-    
+           .after = siteid,
+           model_type = str_sub(model, -2, -1),
+           model = str_sub(model, 1, -3)) %>% 
     gt() %>% 
     cols_label(pollutant = "Pollutant",
+               model_type = "Model",
                model = "Model terms",
                rmse = "RMSE",
                rsq = "R squared",
@@ -203,44 +202,77 @@ model_select_gt <- make.model.select.gt(model_select_tbl = model_select_tbl)
 model_select_gt
 gtsave(model_select_gt, 'plots/model_select_gt.png')
 
-
-md_wide_split <- model_select_tbl$md_wide_split[1][[1]]# %>% 
-    training() 
-
-selected_model <- linear_reg() %>%
-        set_engine('lm') %>%
-        fit(reference ~ low_cost + humidity,
-            data = md_wide_split)
+plot.testing.predictions <- function(augmented_tbl, siteid){
+    if(siteid == 215L)
+        {
+        pollutant  = "PM2.5"
+    } else {
+            pollutant = "PM10"
+    }
     
+predict_plot <- augmented_tbl %>% 
+    pivot_longer(cols = -date,
+                 names_to = 'Parameter',
+                 values_to = 'ugm-3') %>% 
+    filter(Parameter %in% c (".fitted", "reference")) %>% 
+    ggplot(aes(x = date, y = `ugm-3`, colour = Parameter)) +
+    geom_line(linewidth = 1, alpha = 0.7) +
+    labs(title = "Fitted Predictions and Measured Values for Testing Split",
+         subtitle = glue("Daily mean concentrations of {pollutant} at site {siteid}"),
+         x = "Date") +
+    theme_ppt_single()
+
+return(predict_plot)
+
+}
+
+make.selected.model.output.tbl <- function(model_select_tbl){
+
 
 selected_model_output_tbl <- model_select_tbl %>% 
-    mutate(model_obj = map(md_wide_split, ~training(.x) %>% 
+    mutate(model_obj = map(split, ~training(.x) %>% 
                lm(reference ~ low_cost + humidity,
                                   data = .)),
            tidied = map(model_obj, tidy),
            glanced = map(model_obj, glance),
+           # metrics on model trained on training set
            augmented = map(.x = model_obj,
                             ~augment(.x, 
-                                     newdata = testing(pluck(md_wide_split,
+                                     newdata = testing(pluck(split,
                                                              1)))),
-           check_model = map(model_obj, check_model))
+           
+           check_model = map(model_obj, check_model),
+           prediction_plot  = map(augmented,
+                                  ~plot.testing.predictions(.x,
+                                                            siteid = siteid)),
+           perf_gt =  map(model_obj, ~tbl_regression(.x) %>% 
+                add_glance_table()))
+return(selected_model_output_tbl)
+}
+
+selected_model_output_tbl <- 
+    make.selected.model.output.tbl(model_select_tbl = model_select_tbl)
+
+selected_model_output_tbl$prediction_plot[2][[1]]
+
+selected_model_output_tbl$perf_gt[2][[1]]
+
+selected_model_output_tbl %>% 
+    select(tidied) %>% 
+    unnest(tidied) %>% 
+    gt() %>% 
+    fmt_number(columns = -term, decimals = 3) %>% 
+    tab_header(title = "Trained Model Coefficients")
 
 
+selected_model_output_tbl %>% 
+    select(glanced) %>% 
+    unnest(glanced) %>% 
+    select(r.squared, p.value, nobs, df.residual) %>% 
+    gt() %>% 
+    fmt_number(columns = c("r.squared", "p.value"), decimals = 3) %>% 
+    tab_header(title = "Trained Model Metrics")
 
-aug_tbl <- selected_model_output_tbl$augmented[1][[1]]
-
-
-aug_tbl %>% 
-    pivot_longer(cols = -date,
-                 names_to = 'Parameter',
-                 values_to = 'Concentration') %>% 
-    filter(Parameter %in% c (".fitted", "reference")) %>% 
-    ggplot(aes(x = date, y = Concentration, colour = Parameter)) +
-    geom_line(linewidth = 1, alpha = 0.7) +
-    labs(title = "Fitted Predictions and Measured Values for Testing Split",
-         subtitle = "Daily mean concentrations of PM",
-         x = "Date") +
-    theme_ppt_single()
 
 cm <- selected_model_output_tbl$model_obj[1][[1]] %>% 
     check_model()
@@ -250,36 +282,6 @@ cm
 dev.off()
 class(cm)
 print(cm)
-
-check_model(trained_model)    
-tidy(trained_model)
-glance(trained_model)
-
-pred_tbl <- augment(selected_model, new_data = testing(md_wide_split)) 
-rm(md_wide_split)
-rm(selected_model)
-
-pred_tbl %>% 
-    select(date, reference, .pred) %>% 
-    pivot_longer(cols = -date) %>% 
-    ggplot(aes(x = date, y = value, colour = name)) +
-    geom_line()
-
-
-
-pred_tbl %>% 
-    model_metrics(truth = reference, estimate = .pred)
-
-
-
-training(md_wide_split)
-
-
-
-
-
-testing(md_wide_split)
-
 
 model_output_tbl <- make.model.output.tbl(model_data_tbl)
 
