@@ -65,221 +65,57 @@ sp_plot_tbl <- prep.sp.plot.tbl(timeplot_tbl)
 
 save.png.summaryplot(sp_plot_tbl, pollutant = "pm10")
 
-
-
-model.parameter.test <- function(split) {
-    # this function tests 3 combinations of input paramaters for a lm
-    # and outputs a tbl of performance metrics for each one
-    
-    # the models are run on the training data and tested on the test data
-    # as defined by the rsample::initial time splits function
-    
-    lm_model <- linear_reg() %>%
-        set_engine('lm')
-    
-    xg_model <- boost_tree(
-    mode = 'regression',
-    engine = 'xgboost',
-    trees = 20
-) 
-    
-    reference_low_cost_lm <- lm_model %>%
-        fit(reference ~ low_cost,
-            data = training(split))
-    
-    reference_low_cost_humidity_lm <- lm_model %>% 
-        fit(reference ~ low_cost + humidity,
-            data = training(split))
-    
-    reference_low_cost_humidity_temperature_lm <- lm_model %>%
-        fit(reference ~ low_cost + humidity + temperature,
-            data = training(split))
-    
-    reference_low_cost_xg <- xg_model %>%
-        fit(reference ~ low_cost,
-            data = training(split))
-    
-    reference_low_cost_humidity_xg <- xg_model %>% 
-        fit(reference ~ low_cost + humidity,
-            data = training(split))
-    
-    reference_low_cost_humidity_temperature_xg <- xg_model %>%
-        fit(reference ~ low_cost + humidity + temperature,
-            data = training(split))    
-    
-    model_test_list <- list(
-        "reference_lowcost_lm" = reference_low_cost_lm,
-        "reference_lowcost_humidity_lm" = reference_low_cost_humidity_lm,
-        "reference_lowcost_humidity_temperature_lm" =
-            reference_low_cost_humidity_temperature_lm,
-        "reference_lowcost_xg" = reference_low_cost_xg,
-        "reference_lowcost_humidity_xg" = reference_low_cost_humidity_xg,
-        "reference_lowcost_humidity_temperature_xg" =
-            reference_low_cost_humidity_temperature_xg
-        
-    )
-    
-    model_metrics <- metric_set(yardstick::rmse,
-                            yardstick::rsq,
-                            yardstick::mae)
-    
-    metric.test <- function(trained_model,
-                            split,
-                            model_metrics = model_metrics) {
-        pred_tbl <-
-            augment(trained_model, new_data = testing(split)) #metrics from test
-        pred_tbl %>%
-            model_metrics(truth = reference, estimate = .pred) %>%
-            return()
-    }
-    
-    
-    map_dfr(model_test_list,
-            ~ metric.test(.x,
-                          split = split,
-                          model_metrics = model_metrics),
-            .id = "model") %>%
-        transmute(model = str_replace_all(model, "_", " "),
-                  .estimator = NULL,
-                  .metric,
-                  .estimate) %>%
-        pivot_wider(id_cols = model,
-                    names_from = .metric,
-                    values_from = .estimate) %>%
-        return()
-}
-
-make.model.select.tbl <- function(model_data_tbl){
-    
-model_select_tbl <- model_data_tbl %>% 
-    select(daily_wide) %>% 
-    mutate(split = daily_wide %>% 
-               pluck(1) %>% 
-               na.omit() %>%
-               initial_time_split() %>%
-               list(),
-           parameter_test_results =
-               model.parameter.test(split = pluck(split, 1)) %>%
-               list()
-           )
-
-return(model_select_tbl)
-}
+# Modelling tests ----
 
 model_select_tbl <- make.model.select.tbl(model_data_tbl)
 
 model_select_tbl
 
-
-make.model.select.gt <- function(model_select_tbl){
-
-model_select_gt <- model_select_tbl %>% 
-    select(parameter_test_results) %>% 
-    unnest(parameter_test_results) %>% 
-    mutate(pollutant = if_else(siteid == 215L,
-                               md("PM<sub>2.5</sub>"),
-                               md("PM<sub>10</sub>")),
-           .after = siteid,
-           model_type = str_sub(model, -2, -1),
-           model = str_sub(model, 1, -3)) %>% 
-    gt() %>% 
-    cols_label(pollutant = "Pollutant",
-               model_type = "Model",
-               model = "Model terms",
-               rmse = "RMSE",
-               rsq = "R squared",
-               mae = "MAE") %>% 
-    fmt_markdown(columns = c("pollutant")) %>% 
-    fmt_number(columns = c("rmse", "rsq", "mae"),
-               decimals = 3) %>% 
-    tab_header("Model Selection Metrics")
-
-return(model_select_gt)
-
-}
-
 model_select_gt <- make.model.select.gt(model_select_tbl = model_select_tbl)
-model_select_gt
+
 gtsave(model_select_gt, 'plots/model_select_gt.png')
-
-plot.testing.predictions <- function(augmented_tbl, siteid){
-    if(siteid == 215L)
-        {
-        pollutant  = "PM2.5"
-    } else {
-            pollutant = "PM10"
-    }
-    
-predict_plot <- augmented_tbl %>% 
-    pivot_longer(cols = -date,
-                 names_to = 'Parameter',
-                 values_to = 'ugm-3') %>% 
-    filter(Parameter %in% c (".fitted", "reference")) %>% 
-    ggplot(aes(x = date, y = `ugm-3`, colour = Parameter)) +
-    geom_line(linewidth = 1, alpha = 0.7) +
-    labs(title = "Fitted Predictions and Measured Values for Testing Split",
-         subtitle = glue("Daily mean concentrations of {pollutant} at site {siteid}"),
-         x = "Date") +
-    theme_ppt_single()
-
-return(predict_plot)
-
-}
-
-make.selected.model.output.tbl <- function(model_select_tbl){
-
-
-selected_model_output_tbl <- model_select_tbl %>% 
-    mutate(model_obj = map(split, ~training(.x) %>% 
-               lm(reference ~ low_cost + humidity,
-                                  data = .)),
-           tidied = map(model_obj, tidy),
-           glanced = map(model_obj, glance),
-           # metrics on model trained on training set
-           augmented = map(.x = model_obj,
-                            ~augment(.x, 
-                                     newdata = testing(pluck(split,
-                                                             1)))),
-           
-           check_model = map(model_obj, check_model),
-           prediction_plot  = map(augmented,
-                                  ~plot.testing.predictions(.x,
-                                                            siteid = siteid)),
-           perf_gt =  map(model_obj, ~tbl_regression(.x) %>% 
-                add_glance_table()))
-return(selected_model_output_tbl)
-}
 
 selected_model_output_tbl <- 
     make.selected.model.output.tbl(model_select_tbl = model_select_tbl)
 
+selected_model_output_tbl %>% glimpse()
+
 selected_model_output_tbl$prediction_plot[2][[1]]
 
-selected_model_output_tbl$perf_gt[2][[1]]
+selected_model_output_tbl$perf_gt_train[1][[1]]
+selected_model_output_tbl$perf_gt_full[1][[1]]
 
-selected_model_output_tbl %>% 
-    select(tidied) %>% 
-    unnest(tidied) %>% 
-    gt() %>% 
-    fmt_number(columns = -term, decimals = 3) %>% 
-    tab_header(title = "Trained Model Coefficients")
+tidied_gt <- make.tidied.gt(selected_model_output_tbl, type = tidied_full)
+
+glanced_gt <- make.glanced.gt(selected_model_output_tbl, type = glanced_full)
 
 
-selected_model_output_tbl %>% 
-    select(glanced) %>% 
-    unnest(glanced) %>% 
-    select(r.squared, p.value, nobs, df.residual) %>% 
-    gt() %>% 
-    fmt_number(columns = c("r.squared", "p.value"), decimals = 3) %>% 
-    tab_header(title = "Trained Model Metrics")
+gtExtras::gtsave_extra(model_select_gt, 
+                       filename = "plots/tidied.png")
 
+webshot(url = "//tmp/RtmpmU48rb/file5f6d6ed092cc.html", file = "ws.png")
 
-cm <- selected_model_output_tbl$model_obj[1][[1]] %>% 
+save_gt <- function(obj = tidied_gt){
+    object <-  enquo(obj)
+    object_char <- quo_name(object)
+png(glue("{object_char}.png"), width = 1020, height = 800, units = "px")
+object_char
+dev.off()    
+    
+}
+
+?gt_save_webshot()
+gtsave(tidied_gt, filename = "tidied.docx", path = "plots")
+
+save_gt(tidied_gt)
+
+cm <- selected_model_output_tbl$model_obj_full[2][[1]] %>% 
     check_model()
 
 png("cm.png", width = 1020, height = 800, units = "px")
-cm
+tidied_gt
 dev.off()
+
 class(cm)
 print(cm)
 

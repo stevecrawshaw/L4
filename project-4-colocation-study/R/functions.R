@@ -21,6 +21,7 @@ packages <-  c(
        "openair",
        "easystats",
        "gtsummary",
+       "gtExtras",
        "webshot2")
 
 pacman::p_load(char = packages)
@@ -489,109 +490,233 @@ save.ggplot <- function(ggplot){
 
 # Model Functions -----
 
-make.model.output.tbl <- function(model_data_tbl){
-    model_output_tbl <- model_data_tbl %>%
-        mutate(
-            model_obj = map(md_wide, ~pluck(.x) %>% 
-                                lm(reference ~ low_cost, data = .)),
-            coefs = map(model_obj, ~ pluck(.x) %>%
-                            tidy()),
-            perf = map(model_obj, ~ pluck(.x) %>%
-                           glance()),
-            cor_test = map(md_wide,
-                           ~ cor_test(.x,
-                                      "reference",
-                                      "low_cost") %>%
-                               as_tibble()),
-            plot = map(
-                md_wide,
-                ~ plot.scatter.site.gg(.) +
-                    labs(title = quickText(
-                        glue("Scatter plot of {get.title(siteid)} (ugm-3)")
-                    ),
-                    subtitle = "Reference Instrument (BAM 1020) vs. Low Cost Sensor (SDS011)")
-            ),
-            pollutant = if_else(siteid == 215L, "PM2.5", "PM10")
-        )
-    return(model_output_tbl)
-}
 
-make.dashboard <- function(model_output_tbl, siteid = 215){
-    # pre fill the model_dashboard function
-    dash <- partial(.f = model_dashboard,
-                    parameters_args = NULL,
-                    performance_args = NULL,
-                    output_dir = here::here(),
-                    rmd_dir = system.file("templates/easydashboard.Rmd", package = "easystats")
-    )
-    # iteratively generate the dashboards from the table of model objects
-    dash_tbl <- model_output_tbl %>% 
-        ungroup() %>% 
-        filter(siteid == {{siteid}}) %>% 
-        select(model_obj, pollutant)
+model.parameter.test <- function(split) {
+    # this function tests 3 combinations of input parameters 
+    # for a lm and xgboost model
+    # and outputs a tbl of performance metrics for each one
     
-    file_path <- glue("site_{siteid}_{dash_tbl$pollutant}_dashboard.html")
+    # the models are run on the training data and tested on the test data
+    # as defined by the rsample::initial time splits function
     
-    dash(model = dash_tbl$model_obj[[1]], output_file = file_path)
+    lm_model <- linear_reg() %>%
+        set_engine('lm')
     
-    return(file_path)
-}
-
-make.model.perf.tbl <- function(model_output_tbl){
+    xg_model <- boost_tree(
+    mode = 'regression',
+    engine = 'xgboost',
+    trees = 20
+) 
     
-    model_perf_tbl <- model_output_tbl %>% 
-        select(siteid, pollutant, perf) %>% 
-        unnest(perf) 
-    return(model_perf_tbl)
+    reference_low_cost_lm <- lm_model %>%
+        fit(reference ~ low_cost,
+            data = training(split))
     
-}
-
-transpose.model.perf.tbl <- function(model_perf_tbl){
-
-    headings <- glue("Site {model_perf_tbl$siteid}: {model_perf_tbl$pollutant}")
-    rownms <- names(model_perf_tbl[-c(1:2)])
+    reference_low_cost_humidity_lm <- lm_model %>% 
+        fit(reference ~ low_cost + humidity,
+            data = training(split))
     
-    t_perf_tbl <- model_perf_tbl %>%
-        mutate(across(.cols = 2:last_col(), ~round(as.double(.x), 2))) %>%
-        setDT() %>%
-        transpose(.) %>%
-        .[-c(1:2), metric := rownms] %>%
-        na.omit()
+    reference_low_cost_humidity_temperature_lm <- lm_model %>%
+        fit(reference ~ low_cost + humidity + temperature,
+            data = training(split))
     
-    setnames(t_perf_tbl, old = c("V1", "V2"), new = headings)
-    setcolorder(t_perf_tbl, neworder = c(3, 1, 2))
+    reference_low_cost_xg <- xg_model %>%
+        fit(reference ~ low_cost,
+            data = training(split))
     
-    return(t_perf_tbl)
-}
-
-make.model.perf.tbl.gt <- function(model_output_tbl){
+    reference_low_cost_humidity_xg <- xg_model %>% 
+        fit(reference ~ low_cost + humidity,
+            data = training(split))
     
-    models <- model_output_tbl$model_obj
+    reference_low_cost_humidity_temperature_xg <- xg_model %>%
+        fit(reference ~ low_cost + humidity + temperature,
+            data = training(split))    
     
-    regression_tbl_list <- models %>% 
-        map(~tbl_regression(.x) %>% 
-                add_glance_table())
-    
-    table_names <- glue("Site {model_output_tbl$siteid}: {model_output_tbl$pollutant}")
-    
-    tbl_merge(regression_tbl_list, tab_spanner = table_names)
-    
-}
-
-save.model.perf.tbl.gt <- function(model_perf_tbl_gt, filename = "model_gt_name"){
-    
-    path <- glue("plots/{filename}")
-    fhtml <- glue("{path}.html")
-    fpng <- glue("{path}.png")
+    model_test_list <- list(
+        "reference_lowcost_lm" = reference_low_cost_lm,
+        "reference_lowcost_humidity_lm" = reference_low_cost_humidity_lm,
+        "reference_lowcost_humidity_temperature_lm" =
+            reference_low_cost_humidity_temperature_lm,
+        "reference_lowcost_xg" = reference_low_cost_xg,
+        "reference_lowcost_humidity_xg" = reference_low_cost_humidity_xg,
+        "reference_lowcost_humidity_temperature_xg" =
+            reference_low_cost_humidity_temperature_xg
         
-    model_perf_tbl_gt %>% 
-        tbl_butcher() %>% 
-        as_gt() %>% 
-        gtsave(filename = fhtml)
-    # unduly convoluted as gtsave(*.png) results in error
-    # gt \ webshot  needs chromium installed to make png  - poor
-    webshot2::webshot(url = fhtml, file = fpng)
+    )
     
-    return(fpng)
+    model_metrics <- metric_set(yardstick::rmse,
+                            yardstick::rsq,
+                            yardstick::mae)
+    
+    metric.test <- function(trained_model,
+                            split,
+                            model_metrics = model_metrics) {
+        pred_tbl <-
+            augment(trained_model, new_data = testing(split)) #metrics from test
+        pred_tbl %>%
+            model_metrics(truth = reference, estimate = .pred) %>%
+            return()
+    }
+    
+    
+    map_dfr(model_test_list,
+            ~ metric.test(.x,
+                          split = split,
+                          model_metrics = model_metrics),
+            .id = "model") %>%
+        transmute(model = str_replace_all(model, "_", " "),
+                  .estimator = NULL,
+                  .metric,
+                  .estimate) %>%
+        pivot_wider(id_cols = model,
+                    names_from = .metric,
+                    values_from = .estimate) %>%
+        return()
 }
+
+make.model.select.tbl <- function(model_data_tbl){
+    # this function creates a tbl to hold the output of the model 
+    # parameter test
+    
+    # and creates a split object based on the daily mean data 
+    # for each group (siteid)
+model_select_tbl <- model_data_tbl %>% 
+    select(daily_wide) %>% 
+    mutate(split = daily_wide %>% 
+               pluck(1) %>% 
+               na.omit() %>%
+               initial_time_split() %>%
+               list(),
+           parameter_test_results =
+               model.parameter.test(split = pluck(split, 1)) %>%
+               list()
+           )
+
+return(model_select_tbl)
+}
+
+
+make.model.select.gt <- function(model_select_tbl){
+# this function creates a gt table that summarises the result of the 
+    # model parameter selection exercise
+model_select_gt <- model_select_tbl %>% 
+    select(parameter_test_results) %>% 
+    unnest(parameter_test_results) %>% 
+    mutate(pollutant = if_else(siteid == 215L,
+                               md("PM<sub>2.5</sub>"),
+                               md("PM<sub>10</sub>")),
+           .after = siteid,
+           model_type = str_sub(model, -2, -1),
+           model = str_sub(model, 1, -3)) %>% 
+    gt() %>% 
+    cols_label(pollutant = "Pollutant",
+               model_type = "Model",
+               model = "Model terms",
+               rmse = "RMSE",
+               rsq = "R squared",
+               mae = "MAE") %>% 
+    fmt_markdown(columns = c("pollutant")) %>% 
+    fmt_number(columns = c("rmse", "rsq", "mae"),
+               decimals = 3) %>% 
+    tab_header("Model Selection Metrics")
+
+return(model_select_gt)
+
+}
+
+plot.testing.predictions <- function(augmented_tbl, siteid){
+    
+    # this function plots the model's prediuctions from the augmented column
+    # compared to the observed data. It is used within the 
+    # make.selected.model.output function to embed the plots in that tbl
+    if(siteid == 215L)
+        {
+        pollutant  = "PM2.5"
+    } else {
+            pollutant = "PM10"
+    }
+    
+predict_plot <- augmented_tbl %>% 
+    pivot_longer(cols = -date,
+                 names_to = 'Parameter',
+                 values_to = 'ugm-3') %>% 
+    filter(Parameter %in% c (".fitted", "reference")) %>% 
+    ggplot(aes(x = date, y = `ugm-3`, colour = Parameter)) +
+    geom_line(linewidth = 1, alpha = 0.7) +
+    labs(title = "Fitted Predictions and Measured Values for Testing Split",
+         subtitle = glue("Daily mean concentrations of {pollutant} at site {siteid}"),
+         x = "Date") +
+    theme_ppt_single()
+
+return(predict_plot)
+
+}
+
+make.selected.model.output.tbl <- function(model_select_tbl){
+
+    # this function runs the selected model on training split
+    # and full data and provides glance and tidy summaries for each
+    # as well as a performance gt tbl for trained and full tbls
+
+selected_model_output_tbl <- model_select_tbl %>% 
+    mutate(model_obj_train = map(split, ~training(.x) %>% # trained model
+               lm(reference ~ low_cost + humidity,
+                                  data = .)),
+           model_obj_full = map(daily_wide, ~pluck(.x) %>% # full data model
+               lm(reference ~ low_cost + humidity,
+                                  data = .)),
+           tidied_train = map(model_obj_train, tidy),
+           glanced_train = map(model_obj_train, glance),
+           tidied_full = map(model_obj_full, tidy),
+           glanced_full = map(model_obj_full, glance),
+           augmented = map(.x = model_obj_train,
+                            ~augment(.x, 
+                                     newdata = testing(pluck(split,
+                                                             1)))),
+           
+           check_model_train = map(model_obj_train, check_model),
+           check_model_full = map(model_obj_full, check_model),
+           prediction_plot  = map(augmented,
+                                  ~plot.testing.predictions(.x,
+                                                            siteid = siteid)),
+           perf_gt_train =  map(model_obj_train,
+                          ~tbl_regression(.x) %>% 
+                add_glance_table()),
+           perf_gt_full =  map(model_obj_full,
+                          ~tbl_regression(.x) %>% 
+                add_glance_table()))
+
+return(selected_model_output_tbl)
+}
+
+make.tidied.gt <- function(selected_model_output_tbl, type = tidied_train){
+    # this function makes a gt for the tidied summary
+    
+tidied = enquo(type)
+title_suffix <- str_split_i(tidied %>% quo_name(), "_", 2)
+selected_model_output_tbl %>% 
+    select(!!tidied) %>% 
+    unnest(!!tidied) %>% 
+    gt() %>% 
+    fmt_number(columns = -term, decimals = 3) %>% 
+    tab_header(title = glue("Model Coefficients ({title_suffix})"))
+    
+}
+
+make.glanced.gt <- function(selected_model_output_tbl, type = glanced_train){
+    # this function makes a gt for the glanced summary
+glanced = enquo(type)
+title_suffix <- str_split_i(glanced %>% quo_name(), "_", 2)
+
+selected_model_output_tbl %>% 
+    select(!!glanced) %>% 
+    unnest(!!glanced) %>% 
+    select(r.squared, p.value, nobs, df.residual) %>% 
+    gt() %>% 
+    fmt_number(columns = c("r.squared", "p.value"), decimals = 3) %>% 
+    tab_header(title = glue("Model Metrics ({title_suffix})")) %>% 
+    return()
+}
+
+
 
