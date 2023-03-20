@@ -321,15 +321,29 @@ plot.drift.site.gg <- function(model_data_tbl, siteid = 215) {
 
 # function to generate scatter and density plots from the model data
 # to be used to create nested plot in model output tbl
-plot.scatter.site.gg <- function(model_data_tbl) {
+plot.scatter.site.gg <- function(model_data_tbl, siteid = 215) {
     # create a scatter plot and side density plot with
     # equation labels on the plot
-        pos_ref = as.integer(max(model_data_tbl$reference,
-                                      na.rm = TRUE) * 0.8)
-        pos_lc = as.integer(max(model_data_tbl$low_cost,
-                                     na.rm = TRUE) * 0.7)
-    model_data_tbl %>%
+    plot_data <-  model_data_tbl %>%
+        select(daily_wide) %>% 
+        ungroup() %>% 
+        filter(siteid == {{siteid}}) %>% 
         na.omit() %>% 
+        unnest(daily_wide)
+    
+    pos_ref = plot_data %>%
+            pull(reference) %>% 
+            max(na.rm = TRUE) %>% 
+        `*`(0.8) %>% 
+        as.integer()
+        
+    pos_lc = plot_data %>%
+            pull(low_cost) %>% 
+            max(na.rm = TRUE) %>% 
+        `*`(0.7) %>% 
+        as.integer()
+    
+    plot_data %>% 
         ggplot(aes(x = low_cost , y = reference)) +
         geom_point2(alpha = 0.3) +
         geom_smooth(method = "lm") +
@@ -340,7 +354,8 @@ plot.scatter.site.gg <- function(model_data_tbl) {
         scale_xsidey_continuous(guide = guide_axis(angle = 90),
                                 breaks = NULL) +
         labs(y = "Reference Instrument",
-             x = "Low Cost Sensor") +
+             x = "Low Cost Sensor",
+             title = get.title({{siteid}}) %>% openair::quickText()) +
         stat_cor(label.y = pos_ref,
                  label.x = pos_lc,
                  aes(label = paste(after_stat(rr.label),
@@ -768,5 +783,66 @@ save.model.perf.tbl.gt <- function(model_perf_tbl_gt, filename = "model_gt_name"
     return(fpng)
 }
 
-selected_model_output_tbl %>% glimpse()
+save.prediction.plots <- function(selected_model_output_tbl){
+selected_model_output_tbl %>% 
+    select(siteid, plot = prediction_plot) %>% 
+    pwalk(save.plot) %>% 
+        return()
+}
+
+save.model.select.gt <- function(model_select_tbl = model_select_tbl){
+
+make.model.select.gt(model_select_tbl = model_select_tbl) %>% 
+    gtsave(filename = "model_select_gt.png", path = "plots")
+    
+}
+
+
+save.perf.gt.train <- function(selected_model_output_tbl){
+
+perf_gt_train <- make.merged.perf.gt(selected_model_output_tbl = selected_model_output_tbl,
+                                     type = perf_gt_train)
+
+save.model.perf.tbl.gt(perf_gt_train, filename = "performance_gt_train")
+}
+
+save.perf.gt.full <- function(selected_model_output_tbl){
+perf_gt_full <- make.merged.perf.gt(selected_model_output_tbl = selected_model_output_tbl,
+                                     type = perf_gt_full)
+
+save.model.perf.tbl.gt(perf_gt_full, filename = "performance_gt_full")
+}
+
+save.check.model.train <- function(selected_model_output_tbl){
+selected_model_output_tbl %>% 
+    transmute(check_mod = check_model_train,
+              siteid,
+              pollutant,
+              type = "Training") %>% 
+    pwalk(save_image)
+}
+
+save.check.model.full <- function(selected_model_output_tbl){
+selected_model_output_tbl %>% 
+    transmute(check_mod = check_model_full,
+              siteid,
+              pollutant,
+              type = "Full") %>% 
+    pwalk(save_image)
+}
+
+save.glanced.tidied.gt <- function(selected_model_output_tbl){
+
+make.tidied.gt(selected_model_output_tbl = selected_model_output_tbl, type = tidied_train) %>% 
+    gtsave(filename = "tidied_gt_train.png", path = "plots")
+make.tidied.gt(selected_model_output_tbl = selected_model_output_tbl, type = tidied_full) %>% 
+    gtsave(filename = "tidied_gt_full.png", path = "plots")
+make.glanced.gt(selected_model_output_tbl = selected_model_output_tbl, type = glanced_train) %>% 
+    gtsave(filename = "glanced_gt_train.png", path = "plots")
+make.glanced.gt(selected_model_output_tbl = selected_model_output_tbl, type = glanced_full) %>% 
+    gtsave(filename = "glanced_gt_full.png", path = "plots")
+
+}
+
+# selected_model_output_tbl %>% glimpse()
 

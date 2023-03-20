@@ -54,8 +54,10 @@ model_data_tbl <- read_rds(file = "data/model_data_tbl.rds")
 
 plot.drift.site.gg(model_data_tbl, site = 215)
 
-plot.scatter.site.gg(model_data_tbl$daily_wide[1][[1]])
-plot.scatter.site.gg(model_data_tbl$daily_wide[2][[1]])
+plot.scatter.site.gg(model_data_tbl, siteid = 500)
+
+
+splot.scatter.site.gg(model_data_tbl$daily_wide[2][[1]])
 
 timeplot_tbl <- prep.timeplot.tbl(model_data_tbl)
 
@@ -81,48 +83,8 @@ selected_model_output_tbl <-
 # Saving ----
 
 # save plots
-selected_model_output_tbl %>% 
-    select(siteid, plot = prediction_plot) %>% 
-    pwalk(save.plot)
 
 # save model selection gt
-make.model.select.gt(model_select_tbl = model_select_tbl) %>% 
-    gtsave(filename = "model_select_gt.png", path = "plots")
+
 
 # make performance tables for each model
-
-perf_gt_train <- make.merged.perf.gt(selected_model_output_tbl = selected_model_output_tbl,
-                                     type = perf_gt_train)
-
-perf_gt_full <- make.merged.perf.gt(selected_model_output_tbl = selected_model_output_tbl,
-                                     type = perf_gt_full)
-
-# save performance tables
-save.model.perf.tbl.gt(perf_gt_train, filename = "performance_gt_train")
-save.model.perf.tbl.gt(perf_gt_full, filename = "performance_gt_full")
-
-# save the check model output
-selected_model_output_tbl %>% 
-    transmute(check_mod = check_model_train,
-              siteid,
-              pollutant,
-              type = "Training") %>% 
-    pwalk(save_image)
-
-selected_model_output_tbl %>% 
-    transmute(check_mod = check_model_full,
-              siteid,
-              pollutant,
-              type = "Full") %>% 
-    pwalk(save_image)
-
-
-make.tidied.gt(selected_model_output_tbl = selected_model_output_tbl, type = tidied_train) %>% 
-    gtsave(filename = "tidied_gt_train.png", path = "plots")
-make.tidied.gt(selected_model_output_tbl = selected_model_output_tbl, type = tidied_full) %>% 
-    gtsave(filename = "tidied_gt_full.png", path = "plots")
-make.glanced.gt(selected_model_output_tbl = selected_model_output_tbl, type = glanced_train) %>% 
-    gtsave(filename = "glanced_gt_train.png", path = "plots")
-make.glanced.gt(selected_model_output_tbl = selected_model_output_tbl, type = glanced_full) %>% 
-    gtsave(filename = "glanced_gt_full.png", path = "plots")
-

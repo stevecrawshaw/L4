@@ -119,6 +119,22 @@ list(
       command = plot.drift.site.gg(model_data_tbl, site = 215)
   ),
   tar_target(
+      name = scatter_plot_500_gg,
+      command = plot.scatter.site.gg(model_data_tbl, siteid = 500)
+  ),
+  tar_target(
+      name = scatter_plot_215_gg,
+      command = plot.scatter.site.gg(model_data_tbl, siteid = 215)
+  ),
+  tar_target(
+      name = save_scatter_plot_500_gg,
+      command = save.ggplot(scatter_plot_500_gg)
+  ),
+  tar_target(
+      name = save_scatter_plot_215_gg,
+      command = save.ggplot(scatter_plot_215_gg)
+  ),
+  tar_target(
       name = save_gg_time_series_hour_gg,
       command = save.ggplot(time_series_hour_gg)
   ),
@@ -133,5 +149,43 @@ list(
   tar_target(
       name = save_drift_plot_215_gg,
       command = save.ggplot(drift_plot_215_gg)
+  ),
+  tar_target(name = model_select_tbl,
+             command = make.model.select.tbl(model_data_tbl)
+             ),
+  tar_target(name = model_select_gt,
+             command = make.model.select.gt(model_select_tbl)
+             ),
+  tar_target(name = selected_model_output_tbl,
+             command = make.selected.model.output.tbl(model_select_tbl)
+             ),
+  tar_target(
+      name = save_prediction_plots,
+      command = save.prediction.plots(selected_model_output_tbl)
+  ),
+  tar_target(
+      name = save_model_select_gt,
+      command = save.model.select.gt(model_select_tbl)
+  ),
+  tar_target(
+      name = save_perf_gt_train,
+      command = save.perf.gt.train(selected_model_output_tbl)
+  ),
+  tar_target(
+      name = save_perf_gt_full,
+      command = save.perf.gt.full(selected_model_output_tbl) 
+  )  ,
+  tar_target(
+      name = save_check_model_train,
+      command = save.check.model.train(selected_model_output_tbl)
+  ),
+  tar_target(
+      name = save_check_model_full,
+      command = save.check.model.full(selected_model_output_tbl) 
+  ),
+  tar_target(
+      name = save_glanced_tidied_gt,
+      command = save.glanced.tidied.gt(selected_model_output_tbl)
   )
+  
 )
