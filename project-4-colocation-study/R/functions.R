@@ -353,13 +353,6 @@ plot.scatter.site.gg <- function(model_data_tbl) {
         theme_web_bw()
 }
 
-plot.model.base <- function(lm_fit) {
-    # take a fitted model and plot with base R
-    lm_fit %>%
-        pluck("fit") %>%
-        plot(pch = 16,    # optional parameters to make points blue
-             col = '#006EA1')
-}
 
 get.title <- function(siteid) {
     title <- case_when(
@@ -467,7 +460,8 @@ save.png.summaryplot <- function(sp_plot_tbl, pollutant = "pm2.5"){
 }
 
 save.plot <- function(siteid, plot){
-    ggsave(filename = glue("scatterplot_{siteid}.png"),
+    fname = plot$labels$subtitle
+    ggsave(filename = glue("{fname}_{siteid}.png"),
            plot = plot, device = "png",
            path = "plots",
            dpi = "print")
@@ -486,6 +480,17 @@ save.ggplot <- function(ggplot){
            path = "plots",
            dpi = "print")
     return(glue("/plots/{filename}"))
+}
+
+save_image <- function(check_mod = check_model_train,
+                       siteid,
+                       pollutant,
+                       type = "Training"){
+
+png(glue("plots/model_check_{type}_{siteid}_{pollutant}.png"), width = 1020, height = 800, units = "px")
+print(check_mod)
+graphics.off()    
+    
 }
 
 # Model Functions -----
@@ -595,7 +600,6 @@ model_select_tbl <- model_data_tbl %>%
 return(model_select_tbl)
 }
 
-
 make.model.select.gt <- function(model_select_tbl){
 # this function creates a gt table that summarises the result of the 
     # model parameter selection exercise
@@ -684,7 +688,8 @@ selected_model_output_tbl <- model_select_tbl %>%
                 add_glance_table()),
            perf_gt_full =  map(model_obj_full,
                           ~tbl_regression(.x) %>% 
-                add_glance_table()))
+                add_glance_table()),
+           pollutant = if_else(siteid == 215L, "PM2.5", "PM10"))
 
 return(selected_model_output_tbl)
 }
@@ -718,5 +723,50 @@ selected_model_output_tbl %>%
     return()
 }
 
+make.merged.perf.gt <- function(selected_model_output_tbl, type = perf_gt_train){
+perf_gt <- enquo(type)
+version <- quo_name(perf_gt)
 
+if(str_detect(version, "train")){
+    title_suffix <- "Training"
+} else {
+    title_suffix <- "Full"
+}
+    
+sites <- selected_model_output_tbl %>% 
+    pull(siteid) %>% 
+    as.character()
+pollutants = selected_model_output_tbl %>% 
+    pull(pollutant) %>% 
+    as.character()
+
+sitepolls = glue("Model Performance ({title_suffix})
+                 
+                 site: {sites} pollutant: {pollutants}")
+
+selected_model_output_tbl %>% 
+    pull(!!perf_gt) %>% 
+    tbl_merge(tab_spanner = {{sitepolls}}) %>% 
+    return()
+
+}
+
+save.model.perf.tbl.gt <- function(model_perf_tbl_gt, filename = "model_gt_name"){
+    
+    path <- glue("plots/{filename}")
+    fhtml <- glue("{path}.html")
+    fpng <- glue("{path}.png")
+        
+    model_perf_tbl_gt %>% 
+        tbl_butcher() %>% 
+        as_gt() %>% 
+        gtsave(filename = fhtml)
+    # unduly convoluted as gtsave(*.png) results in error
+    # gt \ webshot  needs chromium installed to make png  - poor
+    webshot2::webshot(url = fhtml, file = fpng)
+    
+    return(fpng)
+}
+
+selected_model_output_tbl %>% glimpse()
 

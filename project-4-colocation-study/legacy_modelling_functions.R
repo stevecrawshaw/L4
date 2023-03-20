@@ -88,20 +88,5 @@ make.model.perf.tbl.gt <- function(model_output_tbl){
     
 }
 
-save.model.perf.tbl.gt <- function(model_perf_tbl_gt, filename = "model_gt_name"){
-    
-    path <- glue("plots/{filename}")
-    fhtml <- glue("{path}.html")
-    fpng <- glue("{path}.png")
-        
-    model_perf_tbl_gt %>% 
-        tbl_butcher() %>% 
-        as_gt() %>% 
-        gtsave(filename = fhtml)
-    # unduly convoluted as gtsave(*.png) results in error
-    # gt \ webshot  needs chromium installed to make png  - poor
-    webshot2::webshot(url = fhtml, file = fpng)
-    
-    return(fpng)
-}
+
 

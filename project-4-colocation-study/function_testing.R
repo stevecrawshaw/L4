@@ -73,63 +73,56 @@ model_select_tbl
 
 model_select_gt <- make.model.select.gt(model_select_tbl = model_select_tbl)
 
-gtsave(model_select_gt, 'plots/model_select_gt.png')
 
 selected_model_output_tbl <- 
     make.selected.model.output.tbl(model_select_tbl = model_select_tbl)
 
-selected_model_output_tbl %>% glimpse()
 
-selected_model_output_tbl$prediction_plot[2][[1]]
+# Saving ----
 
-selected_model_output_tbl$perf_gt_train[1][[1]]
-selected_model_output_tbl$perf_gt_full[1][[1]]
+# save plots
+selected_model_output_tbl %>% 
+    select(siteid, plot = prediction_plot) %>% 
+    pwalk(save.plot)
 
-tidied_gt <- make.tidied.gt(selected_model_output_tbl, type = tidied_full)
+# save model selection gt
+make.model.select.gt(model_select_tbl = model_select_tbl) %>% 
+    gtsave(filename = "model_select_gt.png", path = "plots")
 
-glanced_gt <- make.glanced.gt(selected_model_output_tbl, type = glanced_full)
+# make performance tables for each model
+
+perf_gt_train <- make.merged.perf.gt(selected_model_output_tbl = selected_model_output_tbl,
+                                     type = perf_gt_train)
+
+perf_gt_full <- make.merged.perf.gt(selected_model_output_tbl = selected_model_output_tbl,
+                                     type = perf_gt_full)
+
+# save performance tables
+save.model.perf.tbl.gt(perf_gt_train, filename = "performance_gt_train")
+save.model.perf.tbl.gt(perf_gt_full, filename = "performance_gt_full")
+
+# save the check model output
+selected_model_output_tbl %>% 
+    transmute(check_mod = check_model_train,
+              siteid,
+              pollutant,
+              type = "Training") %>% 
+    pwalk(save_image)
+
+selected_model_output_tbl %>% 
+    transmute(check_mod = check_model_full,
+              siteid,
+              pollutant,
+              type = "Full") %>% 
+    pwalk(save_image)
 
 
-gtExtras::gtsave_extra(model_select_gt, 
-                       filename = "plots/tidied.png")
-
-webshot(url = "//tmp/RtmpmU48rb/file5f6d6ed092cc.html", file = "ws.png")
-
-save_gt <- function(obj = tidied_gt){
-    object <-  enquo(obj)
-    object_char <- quo_name(object)
-png(glue("{object_char}.png"), width = 1020, height = 800, units = "px")
-object_char
-dev.off()    
-    
-}
-
-?gt_save_webshot()
-gtsave(tidied_gt, filename = "tidied.docx", path = "plots")
-
-save_gt(tidied_gt)
-
-cm <- selected_model_output_tbl$model_obj_full[2][[1]] %>% 
-    check_model()
-
-png("cm.png", width = 1020, height = 800, units = "px")
-tidied_gt
-dev.off()
-
-class(cm)
-print(cm)
-
-model_output_tbl <- make.model.output.tbl(model_data_tbl)
-
-scatter_gg_215 <- model_output_tbl[model_output_tbl$siteid == 215,]$plot[[1]]
-scatter_gg_500 <- model_output_tbl[model_output_tbl$siteid == 500,]$plot[[1]]
-
-# Model Tests ----
-
-model_data_tbl <- read_rds("data/model_data_tbl.rds")
-
-model_perf_tbl <- make.model.perf.tbl(model_output_tbl)
-
-model_perf_tbl_gt <- make.model.perf.tbl.gt(model_output_tbl)
-
+make.tidied.gt(selected_model_output_tbl = selected_model_output_tbl, type = tidied_train) %>% 
+    gtsave(filename = "tidied_gt_train.png", path = "plots")
+make.tidied.gt(selected_model_output_tbl = selected_model_output_tbl, type = tidied_full) %>% 
+    gtsave(filename = "tidied_gt_full.png", path = "plots")
+make.glanced.gt(selected_model_output_tbl = selected_model_output_tbl, type = glanced_train) %>% 
+    gtsave(filename = "glanced_gt_train.png", path = "plots")
+make.glanced.gt(selected_model_output_tbl = selected_model_output_tbl, type = glanced_full) %>% 
+    gtsave(filename = "glanced_gt_full.png", path = "plots")
 

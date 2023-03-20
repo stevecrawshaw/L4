@@ -68,15 +68,6 @@ list(
                                 end_date = end_date,
                                 unit = 'hour')
   ),
-  # tar_target(
-  #     name = ,
-  #     command = 
-  # ),
-  # tar_target(
-  #     name = ,
-  #     command = 
-  # )
-  
   tar_target(
     name = combined_long_tbl,
     command = make.combined.long.tbl(ref_tbl,
@@ -109,21 +100,7 @@ list(
     name = sp_plot_tbl,
     command = prep.sp.plot.tbl(timeplot_tbl)
   ),
-  tar_target(
-    name = model_output_tbl,
-    command = make.model.output.tbl(model_data_tbl)
-  ),
-  tar_target(
-    name = dashboard_215,
-    command = make.dashboard(model_output_tbl, siteid = 215),
-    format = "file"
-  ),
-  tar_target(
-    name = dashboard_500,
-    command = make.dashboard(model_output_tbl, siteid = 500),
-    format = "file"
-  ),
-  tar_target(
+   tar_target(
     name = save_png_pm25,
     command = save.png.summaryplot(sp_plot_tbl, "pm2.5"),
     format = "file"
@@ -156,38 +133,5 @@ list(
   tar_target(
       name = save_drift_plot_215_gg,
       command = save.ggplot(drift_plot_215_gg)
-  ),
-  tar_target(
-      name = scatter_gg_215,
-      command = model_output_tbl[model_output_tbl$siteid == 215,]$plot[[1]]
-  ),
-  tar_target(
-      name = scatter_gg_500,
-      command = model_output_tbl[model_output_tbl$siteid == 500,]$plot[[1]]
-  ),
-  tar_target(
-      name = save_scatter_gg_215,
-      command = save.ggplot(scatter_gg_215)
-  ),
-  tar_target(
-      name = save_scatter_gg_500,
-      command = save.ggplot(scatter_gg_500)
-  ),
-  tar_target(
-      name = model_perf_tbl,
-      command = make.model.perf.tbl(model_output_tbl)
-  ),
-  tar_target(
-      name = transpose_model_perf_tbl,
-      command = transpose.model.perf.tbl(model_perf_tbl)
-  ),
-  tar_target(
-      name = model_perf_tbl_gt,
-      command = make.model.perf.tbl.gt(model_output_tbl)
-  ),
-  tar_target(
-      name = save_model_perf_tbl_gt,
-      command = save.model.perf.tbl.gt(model_perf_tbl_gt),
-      format = "file"
   )
 )
