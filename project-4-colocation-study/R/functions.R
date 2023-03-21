@@ -436,11 +436,12 @@ plot.time.series.gg <- function(timeplot_tbl, interval = "hour") {
             values = c("#A15766", "#1C6762")
         ) +
         labs(
-            title = glue("Time series plot of {title_interval} PM at colocated sites"),
-            x = "date",
+            title = glue("Time series plot of {title_interval} PM"),
+            x = "Date",
             y = quickText("ugm-3"),
             colour = "Type"
-        )
+        ) +
+        theme_report_facet()
 }
 
 prep.sp.plot.tbl <- function(timeplot_tbl){
@@ -662,7 +663,7 @@ predict_plot <- augmented_tbl %>%
     filter(Parameter %in% c (".fitted", "reference")) %>% 
     ggplot(aes(x = date, y = `ugm-3`, colour = Parameter)) +
     geom_line(linewidth = 1, alpha = 0.7) +
-    labs(title = "Fitted Predictions and Measured Values for Testing Split",
+    labs(title = "Fitted Predictions and Measured Values",
          subtitle = glue("Daily mean concentrations of {pollutant} at site {siteid}"),
          x = "Date") +
     theme_ppt_single()

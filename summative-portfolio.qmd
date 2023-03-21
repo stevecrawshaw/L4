@@ -649,16 +649,17 @@ Functions were developed to create a range of visualisations of both the raw and
 
 The colocated data were first plotted using the summaryPlot function from the `openair` package. This gives a schematic overview of the time series, distribution, and summary statistics for the data. It can be immediately seen that the distributions differ, with the low cost sensor data being markedly more right - skewed than the reference data, but with lower overall concentrations than the reference data. It is also notable that significant quantities of data are missing from the reference PM~10~ instrument at Temple Way. This is because data were removed by the Environment Agency due to data quality issues. This is unfortunately likely to affect the performance of future modelling.
 
-::: {layout-ncol="2" layout-valign="center"}
 ![Summary plot: PM10](project-4-colocation-study/plots/summary_plot_pm10.png)
+
 
 ![Summary plot: PM2.5](project-4-colocation-study/plots/summary_plot_pm2_5.png)
 
-:::
 
 Further exploratory data analysis (EDA) with time series charts showed that the data from the low cost sensors diverged significantly from the reference instruments. The plot below shows daily mean concentrations at both sites.
 
-![Daily mean time series chart](project-4-colocation-study/plots/time_series_day_gg.png) The divergence does not appear to be uniform or consistent and seems to drift over the study period, so drift plots were developed to examine this artefact. Drift is significant, and different at each site and for each pollutant.
+![Daily mean time series chart](project-4-colocation-study/plots/time_series_day_gg.png)
+
+The divergence does not appear to be uniform or consistent and seems to drift over the study period, so drift plots were developed to examine this artefact. Drift is significant, and different at each site and for each pollutant.
 
 ::: {layout-ncol="2" layout-valign="center"}
 ![Drift plot: PM10](project-4-colocation-study/plots/drift_plot_500_gg.png)

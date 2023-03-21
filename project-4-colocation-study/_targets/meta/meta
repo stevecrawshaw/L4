@@ -25,7 +25,7 @@ make.merged.perf.gt|function|d74d5b24f9e83a0e|||||||||||||||
 make.model.data.tbl|function|9af9c277dbab9611|||||||||||||||
 make.model.select.gt|function|bafee68b6d17659e|||||||||||||||
 make.model.select.tbl|function|e10ff3c6608b22a8|||||||||||||||
-make.selected.model.output.tbl|function|0432c459aef63c42|||||||||||||||
+make.selected.model.output.tbl|function|00c9131ca61a6cb4|||||||||||||||
 make.temp.rh.tbl|function|247e7f5bd21a01d6|||||||||||||||
 make.temple.way.sds.hr.tbl|function|76b6af850af5fd32|||||||||||||||
 make.tidied.gt|function|3975038fab4e64f3|||||||||||||||
@@ -38,8 +38,8 @@ packages|object|fb009fcd7f9b3bc3|||||||||||||||
 parson_st_sds_hr_tbl|stem|361e95a1a479c0e3|08d49c39dc943d89|5bebc13fb2166629|-1942118816||t19436.616660431s|af416e2900c9c0de|42662|rds|local|vector|||1.86||
 plot.drift.site.gg|function|291322d5965f5cd0|||||||||||||||
 plot.scatter.site.gg|function|f8ec68b95a4f05df|||||||||||||||
-plot.testing.predictions|function|c9726592163da9e2|||||||||||||||
-plot.time.series.gg|function|119924648fba336b|||||||||||||||
+plot.testing.predictions|function|5ff9d3e2754df7ed|||||||||||||||
+plot.time.series.gg|function|6a894ccf42c64634|||||||||||||||
 prep.sp.plot.tbl|function|46f9bc1a121646dc|||||||||||||||
 prep.timeplot.tbl|function|7bece499c6ec9ab7|||||||||||||||
 ref_tbl|stem|549aec34536f0e4b|f555c14961a7bda5|76e90da902bc70c9|-2130245924||t19436.6165947664s|fbc288e53e457dc8|64332|rds|local|vector|||9.17||
@@ -54,25 +54,25 @@ save.perf.gt.train|function|82b230eb2965aad3|||||||||||||||
 save.plot|function|ae042d052e1ea173|||||||||||||||
 save.png.summaryplot|function|8804bdc994646567|||||||||||||||
 save.prediction.plots|function|1f66c2de8b5897df|||||||||||||||
-save_check_model_full|stem|8fa893c5a170dc74|028f924327f3ef64|681aa1e3b2d68718|581667140||t19436.6370629108s|03f45736bd8f8218|303377|rds|local|vector|||3.63||
-save_check_model_train|stem|3d4f4cb7643f3eaf|cb974371d3055b83|a26762a0de4192e1|763642223||t19436.6369591153s|9ff286cb0a8d4e7d|240071|rds|local|vector|||4.39||
+save_check_model_full|stem|8fa893c5a170dc74|028f924327f3ef64|f8c7d2af2dee1d9b|581667140||t19437.464563854s|03f45736bd8f8218|303377|rds|local|vector|||3.67||
+save_check_model_train|stem|3d4f4cb7643f3eaf|cb974371d3055b83|c09dc755971ce481|763642223||t19437.4644189953s|9ff286cb0a8d4e7d|240071|rds|local|vector|||4.17||
 save_drift_plot_215_gg|stem|2252781d0d930be6|f151d0e366fe1564|abdd301c10e608b4|-1897135981||t19436.6217715197s|758d7d51407f572d|117|rds|local|vector|||1.16||
 save_drift_plot_500_gg|stem|8713be40e5079f82|5a60d32d651c6fb6|322f0ae2b77ce845|-1115365591||t19436.6222512639s|758d7d51407f572d|117|rds|local|vector|||1.06||
-save_gg_time_series_day_gg|stem|6f16f8503b6b0fb6|ad22de3fe6f82e48|f146a783a915874c|-325668443||t19436.6170497351s|045b07e719c4cc68|120|rds|local|vector|||0.67||
-save_gg_time_series_hour_gg|stem|05eee7093a0377b4|6af75f046aabd427|4ffa376ccedd2366|1821442045||t19436.617008386s|b0efa4f1e05eee68|121|rds|local|vector|||1.06|1m22mRemoved 1 row containing missing values geom_line.|
-save_glanced_tidied_gt|stem|32af597cbdb2a163|3fd9009f91f1e81a|2dc92710b8f763f2|-756276419||t19436.6370201408s|ac45463db19e2cbe|48|rds|local|vector|||5.25||
+save_gg_time_series_day_gg|stem|6f16f8503b6b0fb6|ad22de3fe6f82e48|4c7f918d9280ebe4|-325668443||t19437.4643701225s|045b07e719c4cc68|120|rds|local|vector|||0.57||
+save_gg_time_series_hour_gg|stem|05eee7093a0377b4|6af75f046aabd427|19da8cefb2d13864|1821442045||t19437.464363262s|b0efa4f1e05eee68|121|rds|local|vector|||2.76|1m22mRemoved 1 row containing missing values geom_line.|
+save_glanced_tidied_gt|stem|32af597cbdb2a163|3fd9009f91f1e81a|17ebfe7164a5efd9|-756276419||t19437.464695241s|ac45463db19e2cbe|48|rds|local|vector|||4.84||
 save_image|function|e042a47efb754089|||||||||||||||
 save_model_select_gt|stem|32af597cbdb2a163|4e1539861b566f24|46fb5a58df9468a9|-790441993||t19436.636804832s|ac45463db19e2cbe|48|rds|local|vector|||2.62||
-save_perf_gt_full|stem|76973e1682aa709e|3c784f49334d9ebb|71dd86d2e78c15b1|-1221098836||t19436.6368918242s|045b07e719c4cc68|120|rds|local|vector|||6.8||
-save_perf_gt_train|stem|2ff64678627bb023|ae88f6b640acc47f|6d566979c164eec0|-1734455999||t19436.6371433326s|b0efa4f1e05eee68|121|rds|local|vector|||6.92||
+save_perf_gt_full|stem|76973e1682aa709e|3c784f49334d9ebb|8da42fd5a5c12043|-1221098836||t19437.4646386932s|045b07e719c4cc68|120|rds|local|vector|||6.44||
+save_perf_gt_train|stem|2ff64678627bb023|ae88f6b640acc47f|0114c387661371fb|-1734455999||t19437.4645084392s|b0efa4f1e05eee68|121|rds|local|vector|||7.69||
 save_png_pm10|stem|3092e43c572bada0|13e13e71015d911e|8329286ff062f0d5|-835137275|plots/summary_plot_pm10.png|t19436.6170298136s|41750021aad5fd2d|14938|file|local|vector|||1.83|More than one site detected, using pm10|
 save_png_pm25|stem|77f41807fa7e7fa4|0d915a0e2d8beb74|8329286ff062f0d5|1434329897|plots/summary_plot_pm2_5.png|t19436.6170417872s|720a447f18066eb5|14914|file|local|vector|||1.01|More than one site detected, using pm2.5|
-save_prediction_plots|stem|a5ecc02d7c54f27c|6e5ac908bd103083|86590f1d44eaa3ea|1181030672||t19436.6369076512s|632cd5022c64f35a|59782|rds|local|vector|||1.32||
+save_prediction_plots|stem|528a080961da8e78|6e5ac908bd103083|c6bcb135842d689a|1181030672||t19437.4645207173s|cd341b5f7430783e|63535|rds|local|vector|||1||
 save_scatter_plot_215_gg|stem|766b12e2e7162bd9|5d261d300e80e6c1|069c58d5f8689950|1350960898||t19436.659320703s|f21b4888ae8bdafc|118|rds|local|vector|||0.89|1m22mRemoved 8 rows containing nonfinite values stat_smooth.. 1m22mRemoved 7 rows containing nonfinite values stat_density.. 1m22mRemoved 1 rows containing nonfinite values stat_density.. 1m22mRemoved 8 rows containing nonfinite values stat_cor.. 1m22mRemoved 8 rows containing nonfinite values stat_regline_equation.. 1m22mRemoved 8 rows containing missing values geom_point.|
 save_scatter_plot_500_gg|stem|980c65d1b5cb3f74|3fd834c0d8c74ed9|931d562af8b8d7dd|-1529477450||t19436.6593102463s|f21b4888ae8bdafc|118|rds|local|vector|||1.08|1m22mRemoved 79 rows containing nonfinite values stat_smooth.. 1m22mRemoved 79 rows containing nonfinite values stat_density.. 1m22mRemoved 79 rows containing nonfinite values stat_cor.. 1m22mRemoved 79 rows containing nonfinite values stat_regline_equation.. 1m22mRemoved 79 rows containing missing values geom_point.|
 scatter_plot_215_gg|stem|272b2438577db80e|5a6df980874cb75c|c2de39ac4c8f1c1a|1036966888||t19436.6592967815s|3d109723308fe312|833422|rds|local|vector|||0.2||
 scatter_plot_500_gg|stem|47c5860ccd907cc0|a24686e4cc21ab4f|c2de39ac4c8f1c1a|-1696058695||t19436.6592904106s|421f496a9a2aa6c9|846683|rds|local|vector|||0.42|1m22mUsing size aesthetic for lines was deprecated in ggplot2 3.4.0.36mℹ39m Please use linewidth instead.|
-selected_model_output_tbl|stem|d010743a23f6c4fe|dc508cd30e02410c|1a9d6db3663196e3|-784331535||t19436.6249523399s|e2344f9596d0ef37|5511021|rds|local|vector|||8.84||
+selected_model_output_tbl|stem|5f1fdc286499ef4b|dc508cd30e02410c|60539c0ab66f0850|-784331535||t19437.464330611s|a56bec7c29762ce8|5510978|rds|local|vector|||10.98||
 sp_plot_tbl|stem|ca23c6ab7705131b|d9e55d09644540c2|fe1276231a8b7dfb|2027666610||t19436.6169626985s|aca21ff69dd5cfd3|170235|rds|local|vector|||0.05||
 start_date|object|790899fadde4c8a8|||||||||||||||
 temp_rh_tbl|stem|a8fa2b219d353084|66cf7f7b23e959ef|a65d0a63150905d8|1919796951||t19436.6166378043s|3249a7a40b498df5|39431|rds|local|vector|||3.66||
@@ -82,8 +82,8 @@ theme_report_facet|function|a7d19ef517935dbb|||||||||||||||
 theme_web_bw|function|2967215ebd52193b|||||||||||||||
 theme_web_classic|function|99025b9e4b078dcc|||||||||||||||
 theme_web_void|function|cf385f698691e69e|||||||||||||||
-time_series_day_gg|stem|c0a7686e2f35c40d|6446ce8ca77beb21|aaecf5af0680c9ee|-2853685||t19436.6169720514s|09076e433db1d4f6|333124|rds|local|vector|||0.61||
-time_series_hour_gg|stem|caf8aafe8c253b50|f94087a8ea821275|aaecf5af0680c9ee|662578143||t19436.6169609679s|3a2d3b1a6638aac9|983127|rds|local|vector|||0.03||
+time_series_day_gg|stem|f35ac7d5b64e20c0|6446ce8ca77beb21|243f9fac0a15de3d|-2853685||t19437.4641881421s|1eef6b4abfc74afb|334672|rds|local|vector|||0.44||
+time_series_hour_gg|stem|5e68a259c475b9d1|f94087a8ea821275|243f9fac0a15de3d|662578143||t19437.4641809663s|894a985dfd352944|984673|rds|local|vector|||0.03||
 timeplot_tbl|stem|97df5e7fc33452c4|61bd83449c42e1c7|3ebcf3102e9cf567|-1511535049||t19436.6169441131s|a307b220181ea16a|224914|rds|local|vector|||0.22||
 wants|object|4b19678db23ebc60|||||||||||||||
 write.model.data.tbl|function|1ee55b783fdb5491|||||||||||||||
