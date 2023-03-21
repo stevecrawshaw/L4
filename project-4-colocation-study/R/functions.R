@@ -24,7 +24,7 @@ packages <-  c(
        "gtExtras",
        "webshot2")
 
-pacman::p_load(char = packages)
+# pacman::p_load(char = packages)
 
 # Functions ----
 

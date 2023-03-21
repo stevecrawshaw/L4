@@ -4,23 +4,18 @@
 library(targets)
 # library(tarchetypes) # Load other packages as needed. # nolint
 
-
-tar_option_set(
-  format = "rds"
-)
-# Variables ----
-
-options(clustermq.scheduler = "multicore")
-
-# tar_make_future() configuration (okay to leave alone):
-# Install packages {{future}}, {{future.callr}}, and {{future.batchtools}} to allow use_targets() to configure tar_make_future() options.
-
 # Run the R scripts in the R/ folder with your custom functions:
 tar_source(c("../../airquality_GIT/ods-import-httr2.R",
   "../../airquality_GIT/gg_themes.R",
   "R"))
 
-# Replace the target list below with your own:
+tar_option_set(
+  format = "rds",
+  packages = packages
+)
+
+options(clustermq.scheduler = "multicore")
+
 list(
   tar_target(
     name = zip_file_urls,
