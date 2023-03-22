@@ -1,9 +1,9 @@
 ---
 title: "Summative Portfolio: L4"
 author: "Steve Crawshaw"
-format: 
-    html:
-        embed-resources: true
+format: docx
+    # html:
+    #     embed-resources: true
 date: "`r Sys.Date()`"
 toc: true
 toc-title: "Table of Contents"
@@ -591,7 +591,7 @@ site_details(pm_meta %>% filter(siteid == 500))
 
 #### Colocation Sites: Parson Street School
 
-Oxides of Nitrogen (NOx) have been measured at [Parson Street School](https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:215) for many years. The enclosure is close to the roadside of a busy, queuing road and represents exposure of schoolchildren and school staff. In recognition of the need to understand exposure to PM~2.5~ at a roadside site the monitoring station was updated with a BAM 1020 in 2021. The BAM 1020 when configured for monitoring PM~2.5~ includes an additional particle size cut off filter and also incorporates a heated inlet to drive off volatile compounds from the sampled air. The summary metadata for the site is shown below.
+Oxides of Nitrogen (NOx) have been measured at [Parson Street School](https://opendata.bristol.gov.uk/pages/aqcontinuoussites/?q=siteid:215) for many years. The enclosure is close to the roadside of a busy, queuing road and represents exposure of school children and school staff. In recognition of the need to understand exposure to PM~2.5~ at a roadside site the monitoring station was updated with a BAM 1020 in 2021. The BAM 1020 when configured for monitoring PM~2.5~ includes an additional particle size cut off filter and also incorporates a heated inlet to drive off volatile compounds from the sampled air. The summary metadata for the site is shown below.
 
 ```{r}
 #| eval = FALSE
@@ -633,6 +633,8 @@ For the Temple Way sensor a different approach was developed to retrieve the dat
 Once data are retrieved from the online repositories, they are combined into a nested data frame or "tibble" with functions from the `purrr` package such that columns are created that can be used in the subsequent modelling process. The resulting nested tibble is grouped by the site ID with list columns containing the raw hourly data, the prepared source data for the model, and a pivoted (wide) dataset used in the plotting and modelling functions.
 
 Nesting the model data enables a concise iterative approach to developing the modelling pipeline and means that the modelling process itself generates a data frame with list columns that contain the output of the regression model, as well as plots which explain the data, and model output.
+
+Although data from the reference method instruments are collected at hourly frequency, and the data from low - cost sensors are collected at five minute frequency (then downsampled to hourly) it was decided that the modelling exercise would use daily data. This is to reduce the large variation in hourly data and also to reflect the legal objectives for these pollutants, which are largely set in relation to daily rather than hourly periods.
 
 ##### Plotting
 
@@ -758,3 +760,5 @@ It can be seen that the model predictions (.fitted) are quite close to the obser
 This exercise used a simple linear model to establish the relationship between a reference method instrument and low cost sensor for two different measures of particulate pollution (PM~10~ and PM~2.5~) at two different sites in Bristol. Humidity was identified as an important term to include in the model, and helped improve model performance. Coefficients for the models were different depending on the pollutant and site. Nevertheless, the models performed reasonably well, given the limited availability of data.
 
 The use of low cost sensors in air quality measurement is growing, and large [research projects](https://www.breathelondon.org/) have been established to assess the performance of the sensors and identify machine learning algorithms which can treat the sensor output to improve accuracy when compared to reference method instruments. The work presented here does not approach the rigour in the large research studies, but does indicate that a simple linear model which accounts for humidity may help to improve the accuracy of the low cost sensors. This may be a suitable treatment for the data from low - cost sensors in the context of a non regulatory citizen science project such as Slow the Smoke.
+
+It was unfortunate that a significant subset of data were lost through a ratification process at Temple Way from 10/05/2022 to 25/07/2022 as this significantly reduced the training data available for one model and therefore its potential perfomance. It is likely that the performance of the modelling process could be improved with a longer time period and more colocation sites. In particular it would be advantageous for the study period to capture an entire calendar year in order to have data representative for all the seasons and weather conditions therein. A greater range of models could be compared rather than just linear regression and xgboost, and hyper parameter tuning could improve performance of machine learning methods. In addition, although the data modelled were time series, the modelling approach did not incorporate any time forecasting methods. This was partly because of the limited data available, as not all seasonal data were available. Nonetheless, in relation to air quality data, the key influences arise from meteorological conditions and traffic movement (for the sites studied), and this work focused on modelling the relationship between two measured quantities rather than the output of a complex process *per se*. Hence this quite simple modelling approach seems appropriate for the purpose.
