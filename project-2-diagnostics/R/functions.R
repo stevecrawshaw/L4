@@ -309,7 +309,7 @@ plot.span.diff <- function(cal_plot_tbl, date_list){
     add_count(site, calibration) %>% 
     filter(n > 1) 
     
-    if (nrow(cals_twice_month_tbl) > 0){
+    if (nrow(cals_twice_month_tbl) > 0){ # there are two spans to compare
 
     
     span_diff_plot <- cals_twice_month_tbl %>% 
@@ -334,7 +334,7 @@ plot.span.diff <- function(cal_plot_tbl, date_list){
         theme(strip.text = element_text(face = "bold",
                                         size = 12))
     
-    return(span_diff_plot)} else {
+    return(span_diff_plot)} else { # only one span to compare
         
         return("Twice monthly calibration data does not exist to make span plot")
     }
@@ -344,17 +344,17 @@ plot.span.diff <- function(cal_plot_tbl, date_list){
 make.cal.factor.gt <- function(cal_plot_tbl, date_list){
     
     cal_factor_gt <- cal_plot_tbl %>% 
-        filter(str_detect(calibration, "sensitivity|zero")) %>% 
+        filter(str_detect(calibration, "sensitivity|zero")) %>% # just cal data 
         separate(col = calibration,
                  into = c("pollutant",
                           "point"),
                  remove = TRUE) %>%
         mutate(target = if_else(point == "zero", 0.05, 1),
-               val = round(value, 2),
+               val = round(value, 2), # set red line targets for factors
                point = str_to_title(point)) %>%
         group_by(site, date) %>% 
-        gt(rowname_col = "date", groupname_col = "site") %>% 
-        tab_options(row_group.as_column = TRUE,
+        gt(rowname_col = "date", groupname_col = "site") %>% # code below is
+        tab_options(row_group.as_column = TRUE, # gt formatting
                     column_labels.font.weight = "bold"
         ) %>% 
         fmt_number(columns = value, decimals = 2) %>% 
@@ -459,7 +459,7 @@ get.data.use <- function(dateon, dateoff, device_url, pat, device_id_tbl) {
         req_url_query(start_date = start_date,
                       end_date = end_date) %>%
         req_perform()
-    # req_dry_run()
+    # req_dry_run() - for testing
     
         response_data_usage %>%
         resp_body_json() %>%
@@ -469,13 +469,15 @@ get.data.use <- function(dateon, dateoff, device_url, pat, device_id_tbl) {
         mutate(id = id) %>% 
             return()
     }
-    
+    # create a partial function for implementing the data retrieval
+    # over multiple sites
     get.data.use.partial <- partial(.f = single.site.data,
                                 dateon = dateon,
                                 dateoff = dateoff,
                                 device_url = device_url,
                                 pat = pat)
-    
+    # map the partial function over the site id's
+    # returning a data frame by row
     all_sites_data_tbl <- map_dfr(device_id_tbl$id,
                         .f = ~get.data.use.partial(.x))
     

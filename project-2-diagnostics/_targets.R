@@ -25,7 +25,6 @@ options(clustermq.scheduler = "multiprocess")
 tar_source()
 # source("other_functions.R") # Source other scripts as needed. # nolint
 
-# Replace the target list below with your own:
 list( 
   tar_target(
     name = final_tbl,

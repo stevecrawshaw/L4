@@ -49,7 +49,7 @@ Thumbs.db
 summative-portfolio.pdf
 
 # images
-/images/*.png
+#/images/*.png
 
 # dashboards - big
 

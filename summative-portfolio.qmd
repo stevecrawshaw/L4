@@ -1,9 +1,10 @@
 ---
 title: "Summative Portfolio: L4"
 author: "Steve Crawshaw"
-format: docx
-    # html:
-    #     embed-resources: true
+format:
+    html:
+        embed-resources: true
+        page-layout: article
 date: "`r Sys.Date()`"
 toc: true
 toc-title: "Table of Contents"
@@ -494,6 +495,7 @@ Because these devices do not directly measure concentration of PM, but use a pro
 There are three monitoring sites which measure PM in Bristol. A map and summary data for the sites are shown below.
 
 ![Map of monitoring sites used in study](project-4-colocation-study/plots/sites_map.png)
+
 ```{r}
 
 pm_tbl <- import_ods("air-quality-monitoring-sites",
@@ -648,14 +650,11 @@ Functions were developed to create a range of visualisations of both the raw and
 
 ##### Exploratory Data Analysis
 
-
 The colocated data were first plotted using the summaryPlot function from the `openair` package. This gives a schematic overview of the time series, distribution, and summary statistics for the data. It can be immediately seen that the distributions differ, with the low cost sensor data being markedly more right - skewed than the reference data, but with lower overall concentrations than the reference data. It is also notable that significant quantities of data are missing from the reference PM~10~ instrument at Temple Way. This is because data were removed by the Environment Agency due to data quality issues. This is unfortunately likely to affect the performance of future modelling.
 
 ![Summary plot: PM10](project-4-colocation-study/plots/summary_plot_pm10.png)
 
-
 ![Summary plot: PM2.5](project-4-colocation-study/plots/summary_plot_pm2_5.png)
-
 
 Further exploratory data analysis (EDA) with time series charts showed that the data from the low cost sensors diverged significantly from the reference instruments. The plot below shows daily mean concentrations at both sites.
 
@@ -667,7 +666,6 @@ The divergence does not appear to be uniform or consistent and seems to drift ov
 ![Drift plot: PM10](project-4-colocation-study/plots/drift_plot_500_gg.png)
 
 ![Drift plot: PM2.5](project-4-colocation-study/plots/drift_plot_215_gg.png)
-
 :::
 
 #### Scatter Plot and Linear Regression
@@ -678,18 +676,17 @@ Scatter plots were made of the colocated data at each site to visualise the hour
 
 ![Scatter plot: PM2.5](project-4-colocation-study/plots/scatter_plot_215_gg.png)
 
-
 ##### Modelling
 
 The relationship between the low - cost and reference sensors should ideally be linear. It is therefore reasonable to identify a linear regression model as appropriate for this task. However, other models may also be useful, so in addition to the linear model, am xgboost model was also deployed to compare with the simple linear model.
 
-The [EPA report](https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=544837&Lab=CEMM) indicates that the low - cost sensors may be affected by ambient humidity levels. This is also borne out by research by [Liu et al (2018)](https://www.mdpi.com/2073-4433/10/2/41). Hence it was decided to include humidity as a term in the model selection process, as well as temperature as another available variable that may affect the relationship.  
+The [EPA report](https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=544837&Lab=CEMM) indicates that the low - cost sensors may be affected by ambient humidity levels. This is also borne out by research by [Liu et al (2018)](https://www.mdpi.com/2073-4433/10/2/41). Hence it was decided to include humidity as a term in the model selection process, as well as temperature as another available variable that may affect the relationship.
 
 In order to compare the two models (xgboost and linear regression) using a combination of three regressors (low - cost readings, temperature and humidity), a function was written to:
 
-1. Split the data into training and test sets using rsample::initial_time_split() function
-2. Run the selected combinations of models and regressors on the training split and store in a list. 
-3. Using the model metrics functions in the yardstick package, make a table of model metrics to judge the performance of the model / regressor combinations based on the performance of the models when applied to an unseen testing split.
+1.  Split the data into training and test sets using rsample::initial_time_split() function
+2.  Run the selected combinations of models and regressors on the training split and store in a list.
+3.  Using the model metrics functions in the yardstick package, make a table of model metrics to judge the performance of the model / regressor combinations based on the performance of the models when applied to an unseen testing split.
 
 The results of this analysis are shown below.
 
@@ -699,15 +696,15 @@ It can be seen that the model and regressors that minimised RMSE and maximised R
 
 The model data tibble previously created is used as input to a function to run the linear model on the data for each site. A script to import custom themes for plots is imported at the top of the \_targets.R file. The make.selected.model.output.tbl() function takes the data tibble and creates a new output tibble with the following features:
 
-1. Model input data (time stamped daily concentrations and humidity data for entire period)
-2. A temporal split object for training and testing the model
-3. Model objects for the training and full data
-4. Tidied datasets (estimates, standard error and p.values) for training and full data
-5. Glanced datasets (r squared, p.value and number of observations) from training and full data
-6. Augmented data - combined observed test data and predicted (fitted) data from the trained model
-7. A check_model object, visually summarising the model's performance for training and full data
-8. Prediction plots showing the predicted daily values from the model for the test split using the augmented data
-9. A performance summary table for the training and full data
+1.  Model input data (time stamped daily concentrations and humidity data for entire period)
+2.  A temporal split object for training and testing the model
+3.  Model objects for the training and full data
+4.  Tidied datasets (estimates, standard error and p.values) for training and full data
+5.  Glanced datasets (r squared, p.value and number of observations) from training and full data
+6.  Augmented data - combined observed test data and predicted (fitted) data from the trained model
+7.  A check_model object, visually summarising the model's performance for training and full data
+8.  Prediction plots showing the predicted daily values from the model for the test split using the augmented data
+9.  A performance summary table for the training and full data
 
 ### Results
 
@@ -719,7 +716,6 @@ The `eaststats` metapackage in R contains a package called `performance` which i
 
 ![Model check plots: Full data set, site 215 (PM~2.5~)](project-4-colocation-study/plots/model_check_Full_215_PM2.5.png)
 
-
 Inspecting the plots it can be seen that the models perform reasonably well according to the analyses in the check_model() function. The linearity of residuals is good until very high concentrations are reached. This also holds for the homogeneity of variance. Colinearity of predictors is low for both models. Normality of residuals is good for both sites, although at site 500 there is an interesting artefact in the first positive standard deviation where residuals start to diverge from normality slightly. Overall it seems that the linear model performs well at both sites.
 
 #### Summary Tables
@@ -730,30 +726,23 @@ The performance metrics for each model are extracted and tabulated into a range 
 
 The model coefficients are shown in the tables below for the models fitted to the training data and the full datasets. Note that the coefficients relate to both predictors (low - cost and humidity) and therefore are different to the coefficients shown on the exploratory scatter plots, which just include the low - cost term.
 
-
 ![Model Coefficients (Training)](project-4-colocation-study/plots/tidied_gt_train.png)
 
 ![Model Coefficients (Full)](project-4-colocation-study/plots/tidied_gt_full.png)
-
 
 ##### Model Performance
 
 The key metrics for the models are shown in the table below.
 
-
 ![Model Performance Summary Table (Training)](project-4-colocation-study/plots/performance_gt_train.png)
 
-
 ![Model Performance Summary Table (Full)](project-4-colocation-study/plots/performance_gt_full.png)
-
 
 #### Model Predictions
 
 The models can be used to predict data in the test split. The fitted data are compared with the observed (reference) data in the test set with a time series plot for the daily mean concentrations. The test set is isolated from the training data so this is a true test of the model on "unseen" data.
 
-![Model predictions on test data: PM~10~](project-4-colocation-study/plots/Daily mean concentrations of PM10 at site 500_500.png)
-![Model predictions on test data: PM~2.5~](project-4-colocation-study/plots/Daily mean concentrations of PM2.5 at site 215_215.png)
-It can be seen that the model predictions (.fitted) are quite close to the observed reference data at both sites.
+![Model predictions on test data: PM10](project-4-colocation-study/plots/Daily%20mean%20concentrations%20of%20PM10%20at%20site%20500_500.png) ![Model predictions on test data: PM2.5](project-4-colocation-study/plots/Daily%20mean%20concentrations%20of%20PM2.5%20at%20site%20215_215.png) It can be seen that the model predictions (.fitted) are quite close to the observed reference data at both sites.
 
 ### Conclusions
 
