@@ -274,7 +274,7 @@ Each operation was assigned to a function. Targets ensures that the functions ru
 
 The data needed for the analysis are in five separate repositories:
 
-1.  A corporate Azure SQL server database hosting BCC's continuous air quality data
+1.  A corporate Azure SQL server database (envista) hosting BCC's continuous air quality data
 2.  A Microsoft Access database for the diffusion tube data and monitoring site meta data
 3.  The council's [open data portal](https://opendata.bristol.gov.uk/explore/?sort=modified)
 4.  UK Government's [Air Information Resource](https://uk-air.defra.gov.uk/data/) which holds data for the air monitoring sites run by government as part of the Automated Urban and Rural Network (AURN). There are two of these sites in Bristol.
@@ -294,57 +294,7 @@ For the generation of spatial output, the `sf` package is used to create shapefi
 
 Project 1 clearly benefits the council's air quality team by standardising and automating the statutory reporting procedures for air quality monitoring. Rather than having to laboriously manually collate data from disparate data sources and summarise in a tool such as Excel, the entire process can run reproducibly and efficiently with two processes in R.
 
-## Project 2: To develop a process for monthly diagnostics and QA reporting from air monitors and telemetry devices
-
-### Introduction
-
-The QA process for air quality measurements is set out in the relevant guidance LAQM.TG(22). Bristol City Council follows this guidance which essentially requires regular calibration of NOx analysers with a traceable gas. In addition to the calibration activity, other datasets are helpful in understanding and maintaining the good operation of the monitoring network. The aim of this project is to bring all those sources of data together in a coherent report to summarise the operating characteristics of the monitoring system and provide assurance that the system is operating within desired parameters.
-
-### Data Sources
-
-The sources of data are summarised as follows:
-
-1.  SQL server database (Envista). Stores air quality measurements and diagnostics data
-2.  Google Drive. Calibration data is collected in the field with google forms and stored in google sheets
-3.  Teltonika Remote Management System (RMS). Parameters for the 4G routers which provide telemetry to the network are available through a REST API.
-
-### Data Processing Pipeline
-
-The pipeline for this project was built in R, using the `targets` package to ensure reproducibility and organise the functions. Data are extracted from the data sources, using database connections, the `googlesheets4` R package and the RMS API provided by Teltonika. Various data cleaning and processing functions are implemented in the targets pipeline to prepare the data for output in a Quarto document.
-
-### Reporting
-
-The final reporting product needs to be easily readable and to highlight the key parameters which govern measurement quality and system reliability. It was decided that an html output from a Quarto document would be the ideal option. The file is portable across systems and can be easily published for sharing with e.g. service contractors on a website such as Quarto pubs.
-
-The key outputs in the report are as follows.
-
-1.  A `gt` table showing the amount and percentage of missing data for the measurement period
-2.  A `gt` table with sparklines showing the calibration factors used and their ideal target values. This is broken down by pollutant and site and indicates whether calibrations are providing correct data which which to adjust the measurement data.
-3.  A chart showing the divergence of span values for two pollutants. This can indicate problems with contamination in calibration gas cylinders.
-4.  Charts showing the data use of airtime data allowances by routers. This can help identify excessive data use, which could indicate security breach or operating system problem. If data thresholds are exceeded, airtime can be cut which would inhibit our real time reporting of air quality measurements.
-5.  Time series charts of instrument diagnostics. These are compared to high and low "normal operating characteristics" to show when instrument problems may be developing. This could for example be the sample pressure declining, indicating a leak in the system.
-
-Although the final reporting will be through an html rendered quarto document, some examples are shown below.
-
-<!-- :::{layout-ncol=2 layout-valign="center"} -->
-
-![Diagnostics plot: Brislington](project-2-diagnostics/qa_report_files/figure-html/diag_plot_1-1.png)
-
-<!-- :::{layout-ncol=2 layout-valign="center"} -->
-
-![Daily 4G data use](project-2-diagnostics/qa_report_files/figure-html/data_use_1-1.png)
-
-![Cumulative data use for period](project-2-diagnostics/qa_report_files/figure-html/cumulative_data_use-1.png)
-
-<!-- :::{layout-ncol=2 layout-valign="center"} -->
-
-![Calibration factors](images/cal_factors.png)
-
-![Span divergence](project-2-diagnostics/qa_report_files/figure-html/span_divergence-1.png) \### Project 2: Business Benefits
-
-It is vital that stakeholders have confidence in the quality of air quality data. Multi - million pound decisions are taken on the evidence from air quality monitoring such as the CAZ. Hence there is a great deal of scrutiny of the data which must be defendable. The output from this project demonstrates that a rigorous QA process is conducted at monthly intervals on the data. It also ensures that operational parameters are regularly reviewed to maintain data flow and real time publishing of our air quality data.
-
-## Project 3: To publish a dashboard to share the results of citizen science air monitoring for the Slow the Smoke Project
+## Project 2: To publish a dashboard to share the results of citizen science air monitoring for the Slow the Smoke Project
 
 ### Introduction
 
@@ -474,7 +424,7 @@ An example of a static version of the maps is shown below.
 
 An open data dashboard was a key deliverable for the Slow the Smoke project and public engagement was a key strand in this work. The data products developed in the project demonstrated to funders that BCC is a reliable project partner and satisfied the conditions of the contract.
 
-## Project 4: Comparing performance of low -- cost sensors with reference method instruments
+## Project 3: Comparing performance of low -- cost sensors with reference method instruments
 
 ### Introduction
 
