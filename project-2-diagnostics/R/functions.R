@@ -658,7 +658,6 @@ output <- map_dfr(site_list,
                             .f = getData),
                   .id = "table_site")
 
-# con %>% dbDisconnect()
 
 # output
 
@@ -683,9 +682,8 @@ inner_join(filtered_tbl %>%
               names_from = pollutant,
               values_from = V) %>% 
   group_by(siteid) %>% 
-  pad_by_time(.date_var = Date_Time, #throws a non fatal dplyr error here
+  pad_by_time(.date_var = Date_Time, 
               .by = padby) %>%
-  # padr::pad(interval = padby) %>% 
   rename(date = Date_Time) %>% 
   mutate(siteid = as.integer(siteid))
 
