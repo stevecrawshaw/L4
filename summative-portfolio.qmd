@@ -455,7 +455,11 @@ FME is a no - code platform for ETL which is primarily focused on spatial data. 
 
 ![Hourly FME ETL Process](images/hourly_ld_fme.png)
 
-![Daily FME ETL Process](images/daily_ld_fme.png) It was decided to split into hourly and daily processes because the latency in the Sensor.Community API process made it impossible to reliably downsample data into hourly intervals in a real - time process. The FME hourly process subsets the measurement data using a bounding box to just get Bristol's data, unnests the PM~10~ and PM~2.5~ data from the json array and writes the data to a csv file.
+
+![Daily FME ETL Process](images/daily_ld_fme.png)
+
+
+It was decided to split into hourly and daily processes because the latency in the Sensor.Community API process made it impossible to reliably downsample data into hourly intervals in a real - time process. The FME hourly process subsets the measurement data using a bounding box to just get Bristol's data, unnests the PM~10~ and PM~2.5~ data from the json array and writes the data to a csv file.
 
 The daily FME process then downsamples the data in the csv to hourly intervals, transforms it in various ways, and then writes the data to a json array and pushes to the open data portal and flushes data from the temporary csv file to prepare it for the next cycle. The daily process also automatically adds any new sites that might be established by a citizen scientist to the [open data datasets for the sensors](https://opendata.bristol.gov.uk/explore/?q=luftdaten&sort=modified)
 
@@ -465,7 +469,8 @@ The FME schedules run reliably and this has proved a robust method for automatin
 
 #### Making Sense of Data - Workshop and Learning Resources
 
-It was recognised that citizen scientists would need some initial training and induction to familiarise themselves with the sensors and the data that was collected (S7, S12). A "Making Sense of Data" workshop was convened in July 2022 and interactive resources hosted on the open data platform were prepared to support the learning activity. (S7, S12)\
+It was recognised that citizen scientists would need some initial training and induction to familiarise themselves with the sensors and the data that was collected (S7, S12). A "Making Sense of Data" workshop was convened in July 2022 and interactive resources hosted on the open data platform were prepared to support the learning activity. (S7, S12)
+
 The [learning resources](https://opendata.bristol.gov.uk/pages/making_sense_of_data/) include:
 
 1.  Interactive leaflet maps showing locations of the sensors
@@ -479,7 +484,11 @@ The [learning resources](https://opendata.bristol.gov.uk/pages/making_sense_of_d
 
 ![Making Sense of Data - screenshot 2](images/msod_2.png)
 
-![Making Sense of Data - screenshot 3](images/msod_3.png) ![Making Sense of Data - video screenshot](images/project_3_video.png)
+![Making Sense of Data - screenshot 3](images/msod_3.png)
+
+
+![Making Sense of Data - video screenshot](images/project_3_video.png)
+
 :::
 
 The "Making Sense of Data" (MSOD) page was built on the open data platform using the templates and tools available on the platform. The development environment is a content editor which enables opendatasoft's "widgets" to be embedded in HTML tags. "Contexts" are data sets on the portal that can be filtered, aggregated and processed either using javascript or the widgets provided on the platform. The overall structure of the page was quite simple. It was designed to act as a presentation medium, but be interactive to show the features of the platform. Some code is extracted and shown below to illustrate the composition of the page.
@@ -488,12 +497,11 @@ The "Making Sense of Data" (MSOD) page was built on the open data platform using
 
 ![Making sense of data: Weather chart, time selection](images/html-msod-2-weather.png)
 
-On the MSOD page, the concept of "polar plots" is introduced. These are two dimensional plots that indicate the strength and direction of wind that brings pollution to the sensor site. This is a specialised chart provided by `openair::polarPlot()` and requires a data frame with wind speed, wind direction, date time and pollution to render. The detailed operation of the function is beyond scope here, but the output chart is useful to the non - expert in understanding the relationship between wind and pollution. In order to show the dynamic effect of wind on pollution, an animated GIF was developed and used in the MSOD page.
+On the MSOD page, the concept of "polar plots" is introduced. These are two dimensional plots that indicate the strength and direction of wind that brings pollution to the sensor site. This is a specialised chart provided by `openair::polarPlot()` and requires a data frame with wind speed, wind direction, date time and pollution concentrations to render. The detailed operation of the function is beyond scope here, but the output chart is useful to the non - expert in understanding the relationship between wind and pollution. In order to show the dynamic effect of wind on pollution, an animated GIF was developed and used in the MSOD page.
 
-Firstly a polar plot was created for each day at a specific site. This results in around 90 images. Then a function "animates" the multiple PNG files to create a single GIF. The GIF is simply published as an asset on the portal and called using the <img> tag. A sample of the R code to create the animated GIF is shown below.
+Firstly a polar plot was created for each day at a specific site. This results in around 90 images. Then a function using the `magick` library for image manipulation "animates" the multiple PNG files to create a single GIF. The GIF is simply published as an asset on the portal and called using the <img> tag. A sample of the R code to create the animated GIF is shown below.
 
-
-
+![Animated GIF code](images/r-code-make-polarplot-gif.png)
 
 #### Sensor Dashboard
 
@@ -578,13 +586,49 @@ Despite these advantages, care must be taken not to misinterpret the maps. They 
 
 The data were prepared by first filtering the available Sensor.Community sensor data for data capture. This is necessary because the surface fitting algorithm in openairmaps requires a certain level of data availability. Reference method data are downloaded from open data resources and joined to the Sensor.Community data and then a wind speed and direction data from Bristol airport is joined by timestamp to the air quality data. The data are binned using the `cutData` function in openair to create data which is used in a selector control. This dataset is fed into the `polarMap` function for each pollutant to produce the map.
 
+![Prepare data for polar plot map](images/r-code-unnested.png)
+
+![Function to plot polar map](images/r-code-plot-polarmap.png)
+
 The interactive maps are published by rendering them as Quarto documents and publishing on the [quarto-pubs website.](https://stevecrawshaw.quarto.pub/slow-the-smoke-polar-maps/)
 
 An example of a static version of the maps is shown below.
 
-![Example of static PM 2.5 polar map by cut by season](images/static_polar_pm25.png) \### Project 3: Business Benefits
+![Example of static PM 2.5 polar map by cut by season](images/static_polar_pm25.png)
 
-An open data dashboard was a key deliverable for the Slow the Smoke project and public engagement was a key strand in this work. The data products developed in the project demonstrated to funders that BCC is a reliable project partner and satisfied the conditions of the contract.
+### Project 2: Summary of Activities
+
+In Project 2 I carried out the following activities
+
+1. Developed, tested and deployed to production an automated ETL process for real - time sensor data
+2. Developed and delivered learning material for citizen scientists for the Slow the Smoke project including:
+    a. An interactive open data based web page integrating various data sets
+    b. A short video showing how to use the open data portal
+    c. Advanced domain - specific visualisations (polar plots) to explain air pollution
+3. Developed and published a bespoke sensor dashboard including:
+    a. Maps, charts and user - selectable time periods for subsetting data and visualisations
+    b. A wind rose image using a REST API
+    c. Downloadable sensor data in a range of formats
+4. Developed and published a Polar Maps interactive data product to explain the temporal variation in pollution with a compelling visualisation
+5. The data products listed above are included in the final report to the project funders (Defra)
+    
+
+### Project 2: Learning and Reflection
+
+This was an interesting project that included a range of technologies and approaches to deliver successful products. I had some experience with development of dashboards and visualisations on the opendatasoft platform, but this project extended that, and I learned some new techniques, including how to use a third party REST API URL on the platform. However I would say that my skills with front - end technologies like javascript and Angular JS are still quite limited. The web resources I built could have been improved if I had more time to adjust the CSS and HTML in the pages, however I think the quality was satisfactory for the audience.
+
+I enjoyed the process of developing the ETL pipeline in FME and I think that worked quite well.
+
+The MSOD learning material was well received when I presented it to citizen scientists in July 2022 and the polar plots used on the page are an eye - catching visual device that definitely help to convey what is happening with air pollution under differing weather conditions. It would not have been possible to create the polar plots using any other software than R. Knowledge of the the `openair` package was very helpful in this instance.
+
+The sensor dashboard was interesting to build and a good example of the powerful and flexible options available on opendatasoft's platform.
+
+
+
+### Project 2: Business Benefits
+
+The data products developed were key deliverables for the Slow the Smoke project. Public engagement was a key strand in this work and the MSOD page and sensor dashboard were helpful in explaining data to the public. The data products developed in the project demonstrated to funders that BCC is a reliable project partner and satisfied the conditions of the contract. No additional costs were incurred for the project as all the data products were built using existing infrastructure or free and open source software.
+
 
 ## Project 3: Comparing performance of low -- cost sensors with reference method instruments
 
@@ -598,9 +642,9 @@ The combination of citizen science, community engagement and behavioural surveys
 
 Ten citizen scientists have self selected in the study area which is a ward in the city centre called Ashley. This ward was selected because we have evidence that there is a higher level of solid fuel burning than average.
 
-The citizen scientists have each been given a "low cost" air sensor that monitors particulate matter (PM). PM is fine dust in the air, including smoke. There are two fractions of PM that are important for health; PM~10~ (aerodynamic diameter \< 10 μ) and PM~2.5~ (aerodynamic diameter \< 10 μ). The devices deployed monitor both of these fractions using a light - scattering approach, where the diffusion of laser light is a function of the concentration of PM in the sampled air.
+The citizen scientists have each been given a "low cost" air sensor that monitors particulate matter (PM). PM is fine dust in the air, including smoke. There are two fractions of PM that are important for health; PM~10~ (aerodynamic diameter \< 10 μ) and PM~2.5~ (aerodynamic diameter \< 10 μ). The devices deployed monitor both of these fractions using a light - scattering technique, where the diffusion of laser light is a function of the concentration of PM in the sampled air.
 
-Because these devices do not directly measure concentration of PM, but use a proxy measure, they are not as accurate as "approved" measuring instruments used to assess compliance with air quality objectives. It is therefore necessary to attempt to characterise the performance of these devices in relation to approved or "reference method" devices by co - locating the low cost sensors with reference method instruments and comparing measurements.
+Because these devices do not directly measure concentration of PM, but use a proxy measure, they are not as accurate as "reference" measuring instruments used to assess compliance with air quality objectives. It is therefore necessary to attempt to characterise the performance of these devices in relation to approved or "reference method" devices by co - locating the low cost sensors with reference method instruments and comparing measurements.
 
 ### Co - location Study
 
@@ -634,9 +678,9 @@ The [airrohr SDS011 fine dust sensors](https://sensor.community/en/sensors/airro
 
 The physical installation of the SDS011 sensors at both sites was complete in early May 2022.
 
-#### Colocation Study: Concept
+#### Colocation Study: Concept and Objective
 
-The aim of the colocation study is to compare the performance of the low cost sensors with the performance of reference method instruments measuring the same pollutant. The method of implementing this comparison was to collect hourly data for the two co - located devices and establish the linearity of the response using a model to report coefficients and r^2^. In addition to simply describing the relationship between the low - cost and reference devices, the model can be used to predict reference method (i.e. "real" concentrations from low - cost sensor readings).
+The aim of the colocation study is to compare the performance of the low cost sensors with the performance of reference method instruments measuring the same pollutant. The method of implementing this comparison was to collect hourly data for the two co - located devices and establish the linearity of the response using a model to report coefficients and r^2^. In addition to simply describing the relationship between the low - cost and reference devices, the model can be used to predict reference method values (i.e. "real" concentrations from low - cost sensor readings).
 
 Some of the methods for testing the performance of the sensors have been adopted from the [United States Environmental Protection Agency (USEPA) report on the Performance Testing Protocols, Metrics and Target Values for Fine Particulate Matter Air Sensors](https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=544837&Lab=CEMM).
 
@@ -854,7 +898,11 @@ The key metrics for the models are shown in the table below.
 
 The models can be used to predict data in the test split. The fitted data are compared with the observed (reference) data in the test set with a time series plot for the daily mean concentrations. The test set is isolated from the training data so this is a true test of the model on "unseen" data.
 
-![Model predictions on test data: PM10](project-4-colocation-study/plots/Daily%20mean%20concentrations%20of%20PM10%20at%20site%20500_500.png) ![Model predictions on test data: PM2.5](project-4-colocation-study/plots/Daily%20mean%20concentrations%20of%20PM2.5%20at%20site%20215_215.png) It can be seen that the model predictions (.fitted) are quite close to the observed reference data at both sites.
+![Model predictions on test data: PM10](project-4-colocation-study/plots/Daily%20mean%20concentrations%20of%20PM10%20at%20site%20500_500.png) 
+
+![Model predictions on test data: PM2.5](project-4-colocation-study/plots/Daily%20mean%20concentrations%20of%20PM2.5%20at%20site%20215_215.png) 
+
+It can be seen that the model predictions (.fitted) are quite close to the observed reference data at both sites.
 
 ### Conclusions
 
