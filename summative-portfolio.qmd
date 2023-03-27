@@ -423,11 +423,19 @@ Project 1 clearly benefits the council's air quality team by standardising and a
 
 ### Introduction
 
-The Slow the Smoke project is introduced in Project 4. A significant component of it is citizen science monitoring with low cost sensors. The aim of this project is to produce a dashboard which enables citizen scientists to interrogate data from their sensors and gain an understanding of the pollution measurement data that is being captured.
+The Slow the Smoke project is introduced in Project 3. A significant component of it is citizen science monitoring with low cost sensors. The aim of this project is to produce data products which support citizen scientists and citizens in understanding air quality in their area.
+
+
+
+
+
+a dashboard which enables citizen scientists to interrogate data from their sensors and gain an understanding of the pollution measurement data that is being captured.
 
 ### Data Sources
 
-The sensors used are SDS011 sensors that measure PM~10~ and PM~2.5~ as well as temperature and humidity. The measurement interval is five minutes, and the data are transmitted via domestic wifi to a [data repository](https://archive.sensor.community/) which provides a REST [API](https://github.com/opendata-stuttgart/meta/wiki/APIs). This API was used to regularly poll the data and re - publish on Bristol City Council's open data portal.
+For the sensor dashboard and learning materials for citizen scientists, the main data source was the online data sets for the low - cost sensors. The sensors used are SDS011 sensors that measure PM~10~ and PM~2.5~ as well as temperature and humidity. The measurement interval is five minutes, and the data are transmitted via domestic wifi to a [data repository](https://archive.sensor.community/) which provides a REST [API](https://github.com/opendata-stuttgart/meta/wiki/APIs). This API was used to regularly poll the data and re - publish on Bristol City Council's open data portal.
+
+The interactive polar plot maps also used data from the "reference method" (i.e. high quality) instruments operated by Bristol City Council and Defra. These were sourced from Bristol's [open data portal](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location).
 
 ### Automated Data Ingestion and Processing
 
@@ -474,6 +482,12 @@ The [learning resources](https://opendata.bristol.gov.uk/pages/making_sense_of_d
 ![Making Sense of Data - screenshot 3](images/msod_3.png) ![Making Sense of Data - video screenshot](images/project_3_video.png)
 :::
 
+The "Making Sense of Data" (MSOD) page was built on the open data platform using the templates and tools available on the platform. The development environment is a content editor which enables opendatasoft's "widgets" to be embedded in HTML tags. "Contexts" are data sets on the portal that can be filtered, aggregated and processed either using javascript or the widgets provided on the platform. The overall structure of the page was quite simple. It was designed to act as a presentation medium, but be interactive to show the features of the platform. Some code is extracted and shown below to illustrate the composition of the page.
+
+![Making sense of data: aggregation code](images/html-msod-1.png)
+
+![Making sense of data: Weather chart, time selection](images/html-msod-2-weather.png)
+
 #### Sensor Dashboard
 
 In addition to the "Making Sense of Data" workshop and learning resources, it was important to provide an ongoing resource for the citizen scientists to interrogate their data as non - experts in environmental science.
@@ -505,6 +519,22 @@ A [web dashboard](https://opendata.bristol.gov.uk/pages/luftdaten-sitepage/?q=se
 ::: {layout-ncol="1" layout-valign="center"}
 ![Sensor Dashboard 1](images/sensor_1.png) ![Sensor Dashboard 2](images/sensor_2.png)
 :::
+
+The sensor dashboard was also built on opendatasoft's platform. Some sample code is shown below. Firstly the gauges that compare the most recent readings from the sensors with the air quality index for the UK. These use the `ods-gauge` widget and colour the gauge bar using CSS (not shown).
+
+![Sensor dashboard code: gauge](images/html-sensor-gauge.png)
+The code below uses some simple javascript string manipulation to extract latitude and logitude from the data set.
+
+
+![Sensor dashboard code: location (lat \ lon)](images/html-sensor-latlong.png)
+
+The code below is typical use of the `ods-chart` widget which implements a vega interactive chart to display the data.
+
+![Sensor dashboard code: chart](images/html-sensor-chart.png)
+
+The next code fragment returns a wind rose from the [Iowa State Mesonet](https://mesonet.agron.iastate.edu) by dynamically sending the string assembled in the javascript code as a request to the REST API. The date period is determined by the date time selector widget. The weather station is hard coded to be the closest weather station with publicly available weather data for Bristol - Bristol Lulsgate.
+
+![Sensor dashboard code: wind rose](images/html-sensor-wind-rose.png)
 
 #### Technologies used in Data Products
 
