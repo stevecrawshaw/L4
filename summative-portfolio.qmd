@@ -282,7 +282,7 @@ The data needed for the analysis are in five separate repositories:
 
 Four of these repositories were used in the analysis. The open data portal was not used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.
 
-##### Data processing overview
+#### Data processing overview
 
 The data processing is split into two parts, because the reporting regime requires the use of a standard excel spreadsheet template for reporting. The first stage generates the input data for the template using a `targets` pipeline. The second stage takes output from the template spreadsheet and generates further files for inclusion in the final report, including charts as images, csv files for updating the open data portal and ESRI shapefiles for mapping in ArcGIS.
 
@@ -290,9 +290,134 @@ The data from databases was accessed using a combination of the `DBI`, `dplyr` a
 
 For the generation of spatial output, the `sf` package is used to create shapefiles for use in ArcGIS and output graphics as png files.
 
+#### Data Processing Detail
+
+All custom functions are contained within the `functions.R` file which is called by `_targets.R`. The dates of interest are contained at the top of the file. These are beginning and end of the calendar year for reporting.
+
+
+##### Diffusion Tube Calendar Table
+
+Diffusion tubes are passive samplers that measure air quality (NO~2~) for a defined period. The period is determined by a calendar published on the internet and this must be adhered to so that data is consistent. The dates for the calendar are extracted using the web scaping library `rvest` in a two stage process. Firstly a function scrapes the two html tables from the defra web site.
+
+![Scrape HTML tables into list](images/r-code-web-scape-list.png)
+
+Secondly, the relevant dates for the year of interest are selected, cleaned and output as a tibble.
+
+![Extract the year's diffusion tube changeover dates](images/r-code-step1-calendar.png)
+
+Several utility functions are used throughout the pipeline in other functions. They aro not reproduced here, but serve to clean data, provide consistent themes for plots and process dates. 
+
+#### Database Connections and Security
+
+Connections are made to corporate databases to retrieve data. To maintain security and comply with organisational data processing protocols, the connection details are not embedded in code. This would be a security risk, if for example code is shared on a public Github repo. The code below illustrates the use of the `config` packages to hold connection credentials in a `config.yml` file which is referenced by the function and added to a .gitignore file so that it is not published online.
+
+![Database connection function](images/r-code-envista-creds.png)
+
+#### Retrieve Continuous Data
+
+Continuous hourly pollution concentration data from all current sites are retrieved from the envista database using the function below. The function takes the start and end dates supplied and a vector of the site id's, which are supplied in the targets pipeline. The timebase of interest for this process is hourly, but the function can be used to select a different timebase, for example 15 minutes. Another tibble `final_tbl` is also supplied. This holds metadata about the monitoring sites, for example which channel (column) relates to which pollutant. The function essentially iterates over a list of monitoring sites, collecting the data for the relevant time period and cleaning and returning a long format tibble with the consolidated data.
+
+![Retrieve continuous data](images/r-code-get-aqdata.png)
+
+#### Data from National Air Monitoring Network
+
+in addition to continuous data from sites operated by Bristol City Council, we also use data from monitoring sites operated by government. These are know as AURN (Automated Urban and Rural Network) sites. The `openair` package is used to retrieve data fromthese sites using the function shown below. The code first tests to see if the data is available via the openair function. If so, it retrives using the `importAURN()` function. If not, it uses an alternative source, importing by csv in another function (omitted for brevity).
+
+![Retrieve AURN data](images/r-code-aurn.png)
+In addition to local monitoring data from government sites, it is also necessary to get background data from within 50 miles to use to annualise incomplete data from sites where data capture is less than 75%. The function below does that, using the `importMeta()` function to filter sites by latitude and longitude in proximity to Bristol and returning data from these sites as a consolidated tibble.
+
+![Continuous nearby background data](images/r-code-background-contin.png)
+
+#### Reshaping Diffusion Tube Data
+
+After diffusion tube data are retrieved (not shown for brevity) the data are reshaped for later insertion into the output spreadsheet. During development of this pipeline, a mistake was made in the dates on which diffusion tubes were placed, i.e. they were not placed in accordance with the calendar. This required adaptation of the code below and the MS access database, such that a new field was added in the table to flag if the data could be used in the analysis. Incorrectly dated exposures cannot be used so have to be removed. The code below implements that  - as noted in the comment.
+
+![Pivot and filter diffusion tube data](images/r-code-pivot-tubes.png)
+
+#### Annualising Incomplete Data
+
+When there is less than 75% data capture for a monitor, the data are adjusted using the background data collected above. To do this it is necessary to know the "background" concentration of NO~2~ at the site. This is given in terms of a 1km grid square identifier in the MS access database. The identifier can then be used to derive a concentration for NO~2~ in that 1km square for a given year. The function below receives the database connection, the start date and a vector of site ID's which need annualising. It gets the subset of site ID's which need to be and can be annualised and joins tables to return a table of background concentrations for the sites.
+
+![Background concentrations by grid square](images/r-code-gridconcs.png)
+
+#### Making Tables for the Reporting Spreadsheet
+
+The reporting spreadsheet for the ASR requires data to be entered in a prescriptive format. The tables are numbered e.g. "Table A1" to "Table A9". Not all the code to create the tables is shown, for brevity, but an example is given below. This is quite a simple example and populates a table of meta data for monitoring sites and includes a function to generate the required character string to describe the monitoring technology used.
+
+![Making a reporting table](images/r-code-make-a1.png)
+
+#### List of Reporting Tables
+
+All the reporting tables are added to a list in the function below, which takes an unspecified number of tibbles, adds them to a list, and removes the "NA"s generated when the contents are turned into character data types. This is so that the reporting spreadsheet does not contain multiple "NA"s.
+
+![Make list of tables](images/r-code-make-tables-list.png)
+
+#### Write Spreadsheet
+
+The list of tables generated in the function above (and others) is written to the final reporting spreadsheet using the function below. This uses the `write_xlsx` function to write each item in the list supplied to a seprate worksheet in the spreadsheet.
+
+![Write Spreadsheet](images/r-code-write-spreadsheet.png)
+
+#### Graphical Output
+
+In addition to the data required in the reporting spreadsheet for LAQM, the ASR report also makes use of charts to show, for example, trends in pollutants. The code below is included in the pipeline and iteratively generates charts for pre - determined locations in Bristol. `make.no2.trend.chart.tbl()` takes tables of the annual concentration data for current and previous years, a tibble of areas to be plotted and the monitors in that area, and the monitor site metadata tibble. It generates plots for each area using `ggplot` and mapping over each area. Each plot is a nested object in the output table, which also includes a column with the file name of the output image.
+
+The function at the bottom of the screenshot takes that tibble and uses the `purrr::pwalk()` function to iteratively save each plot as a graphics file in the path provided.
+
+![Plotting trend charts](images/r-code-make-no2-trend-charts.png)
+
+An example of a trend chart for an area is shown below.
+
+![NO~2~ trend chart](images/Gloucester Road_2014_to_2022_no2_trend_.png)
+
+#### Spatial Data Output
+
+Because there is a strong spatial element to air quality data, the ASR contains several maps, showing how air quality varies across the city. The data processed in the pipeline is output as a shapefile to support mapping in ArcGIS software. R could be used for mapping but generally a higher quality mapping product is more easily produced using GIS. However the source data can easily be generated using the function below.
+
+![Write shape file](images/r-code-shapefile.png)
+
+#### The `targets` Pipeline
+
+All the functions shown (and more) are called and run in a pipeline governed by the `targets` package. This implements a "Reproducible Analytics Pipeline" whereby the dependencies are implicitly defined by the pipeline itself, and redundant code is not re - run. The names of the targets are the objects created, which are hashed and stored in /targets/objects as .rds files. Targets which have not changed since the last run will not be re - run. A truncated example of the critical targets pipeline is shown below.
+
+![Targets pipeline example](images/r-code-laqm-pipeline-targets.png)
+
+### Project 1: Summary of Activities
+
+In Project 1 I carried out the following activities.
+
+1. Defined the objectives for the project, namely
+    a. Summary data tables for ASR spreadsheet in specified format
+    b. Appropriate graphic output for ASR
+    c. Updated spatial data for most recent year's air quality data
+    d. Summary data for CAZ reporting in specified spreadsheet format
+2. Developed code and functions using R to deliver objectives
+3. Adapted code to accommodate changes in requirements (incorrect exposure periods)
+4. Adopted best practice regarding organisational data requirements to secure credentials
+5. Investigated and implemented a reproducible analytics pipeline using `targets`
+6. Documented the code and analytics approach using literate programming (this Quarto document)
+7. Implemented version control using Git and GitHub to ensure reproducibility and tracking
+
+### Project 1: Learning and Reflection
+
+The process of reporting annual air quality data has changed somewhat over the 25 years I have been doing it. There is a wide range of tasks needed and several different data sets to process. There is a great deal of potential for human error, and I have made mistakes in the past when processing this data. I thought it was a useful project to tackle as part of the L4 apprenticeship because greater rigour in the analysis process and a carefully designed automation process should minimise the errors.
+
+Initially I designed the process to use the open data portal where we publish our air quality data, but as the project developed I became aware that the open data portal was to be decommissioned in 2023. I therefore revised the design to refer directly to the canonical databases to source data.
+
+I started developing the processing in one R script. This soon became unmanageable so I investigated options to help manage the process. I learned about Reproducible Analytics Pipelines and read the book: [Building reproducible analytical pipelines with R](https://leanpub.com/raps-with-r). I adopted as many of the approaches recommended in the book as possible, and I feel that this has greatly improved the quality of the code and analysis used in the project.
+
+Air quality reporting is unfortunately somewhat constrained by the prescriptive and closed requirements of the government department (Defra) which governs the activity in local government. Because of this it is quite difficult for local authorities to share their data in a coherent and consistent way such that a single view of air quality across the UK is possible. If open data approaches were enabled for local authorities by Defra it would enhance understanding of air quality for the public and increase access for researchers.
+
+There are undoubtedly improvements that I could make if I had more time. I would like to do more unit testing of the functions used and ideally build an R package to implement the functions I have developed. I would also like to improve the data management operations upstream of the reporting process, for example the database used to store diffusion tubes and monitoring site meta data is currently MS Access (2010). Moving this to the corporate data lake or a data warehouse would be more robust and enable integration with other data sets in the council. 
+
+Even though I have designed the analysis to be reproducible and accessible, I acknowledge that running the analysis requires a working to intermediate level of expertise with R, and domain specific knowledge. This is potentially a problem in the organisation as I am one of the only people in the council with expertise in R. Hence there is a risk to business continuity with only one person able to run the analysis (safely).
+
+The council is centralising data engineering services, but this function is likely to be focussed on generic business intelligence reporting, not specific "niche" domains such as air quality. Hence it is likely that air quality reporting will remain in a specific team. I am training two colleagues in using R and specialist packages for air quality reporting to help mitigate the risk to business continuity of having only a single practitioner.
+
 ### Project 1: Business Benefits
 
 Project 1 clearly benefits the council's air quality team by standardising and automating the statutory reporting procedures for air quality monitoring. Rather than having to laboriously manually collate data from disparate data sources and summarise in a tool such as Excel, the entire process can run reproducibly and efficiently with two processes in R.
+
 
 ## Project 2: To publish a dashboard to share the results of citizen science air monitoring for the Slow the Smoke Project
 

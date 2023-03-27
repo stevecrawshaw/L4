@@ -44,13 +44,7 @@ tar_source("R/functions.R")
 
 # Replace the target list below with your own:
 list(
-    # tar_target(
-    #     name = dt_cal_content,
-    #     command = read_html(
-    #         "https://laqm.defra.gov.uk/air-quality/air-quality-assessment/diffusion-tube-monitoring-calendar/"
-    #         )
-    # ),
-    tar_target(
+      tar_target(
         name = html_tables_list,
         command = make.html.tables.list()
     ),

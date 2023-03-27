@@ -201,7 +201,6 @@ get.aq.data.db <-
         if (any(siteid %in% "all"))
             siteid = unique(final_tbl$siteid)
         
-        #this tbl filters for the sites and timebase supplied to the function
         filtered_tbl <- final_tbl %>%
             filter(siteid %in% {
                 {
@@ -209,23 +208,18 @@ get.aq.data.db <-
                 }
             },
             minutes == timebase)
-        
-        # this tbl adds the start and end date
-        arg_tbl <- filtered_tbl %>%
+       
+        arg_tbl <- filtered_tbl %>% # this tbl adds the start and end date
             select(siteid, value, status, table) %>%
             mutate(
                 dateStartPOS = as.POSIXct(startDate),
                 dateEndPOS = as.POSIXct(glue("{endDate} 24:00")),
                 table_site = glue("{siteid}_{table}")
             )
-        #we convert to a list with tibles in each element
-        # to iterate over and supply the siteids when mapped to a df
         site_list <- arg_tbl %>%
             split(arg_tbl$table_site) %>%
-            map(select, -c(siteid, table_site)) #remove siteid and table_site as it is the list element name
+            map(select, -c(siteid, table_site)) 
         
-        #function to extract data for each line of the tibble =
-        #combination of pollutant and timebase for each site
         getData <- function(value,
                             status,
                             table,
@@ -238,18 +232,10 @@ get.aq.data.db <-
                 collect()
         }
         
-        #this is the magic
-        #map the getData function to each line of the tibble, using the column names as arguments (pmap) and return a dataframe (dfr)
-        
-        #then map the mapped function to the list, appending the siteid list name as the .id argument
         output <-
             map_dfr(site_list, ~ pmap_dfr(.l = .x, .f = getData), .id = "table_site")
         
-        
-        
         con %>% dbDisconnect()
-        
-        # output
         
         long <- output %>%
             separate(
@@ -285,9 +271,8 @@ get.aq.data.db <-
                 values_from = V
             ) %>%
             group_by(siteid) %>%
-            pad_by_time(.date_var = Date_Time, #throws a non fatal dplyr error here
+            pad_by_time(.date_var = Date_Time, 
                         .by = padby) %>%
-            # padr::pad(interval = padby) %>%
             rename(date = Date_Time) %>%
             mutate(siteid = as.integer(siteid)) %>% 
             ungroup()
@@ -299,7 +284,6 @@ get.aq.data.db <-
 get.aq.data.aurn <- function(sites = c("BRS8", "BR11"), startDate, endDate){
 
     test.import.aurn <- function() {
-    #returns TRUE if import AURN OK
     !is.null(importMeta(source = "aurn", all = FALSE)) %>% 
         return()
     }
@@ -473,6 +457,7 @@ get.annual.tube.data.4yrs.tbl <- function(con, startDate){
 
     return(annual_tube_data_4years_tbl)
 }
+
 get.background.data <- function(no2_data){
 # return the hourly NO2 data in wide format from 4 background sites
     year <- year(no2_data$mid_date %>% median(na.rm = TRUE))
@@ -568,6 +553,7 @@ get.contin_data <- function(con, no2_data, final_tbl){
                    startDate = mindate,
                    endDate = maxdate, timebase = 60)
 }
+
 get.gridconcs.da.tubes <- function(con, startDate, siteids){
     year <- year(as.Date(startDate))
     # tbl of sites that need adjusting with grid id's
@@ -1179,6 +1165,7 @@ make.pm25.trend.chart <- function(startDate){
     
     return(pm25_chart)
 }
+
 write.no2.trend.charts <- function(no2_trend_chart_tbl){
     #plot the outputs to file
     no2_trend_chart_tbl %>%
@@ -1251,5 +1238,6 @@ annual_tubes_tbl %>%
 return(print(glue("shapefile written to {outfile}. Copy to ASR folder")))
     
 }
+
 
 
