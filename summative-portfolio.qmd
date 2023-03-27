@@ -488,6 +488,13 @@ The "Making Sense of Data" (MSOD) page was built on the open data platform using
 
 ![Making sense of data: Weather chart, time selection](images/html-msod-2-weather.png)
 
+On the MSOD page, the concept of "polar plots" is introduced. These are two dimensional plots that indicate the strength and direction of wind that brings pollution to the sensor site. This is a specialised chart provided by `openair::polarPlot()` and requires a data frame with wind speed, wind direction, date time and pollution to render. The detailed operation of the function is beyond scope here, but the output chart is useful to the non - expert in understanding the relationship between wind and pollution. In order to show the dynamic effect of wind on pollution, an animated GIF was developed and used in the MSOD page.
+
+Firstly a polar plot was created for each day at a specific site. This results in around 90 images. Then a function "animates" the multiple PNG files to create a single GIF. The GIF is simply published as an asset on the portal and called using the <img> tag. A sample of the R code to create the animated GIF is shown below.
+
+
+
+
 #### Sensor Dashboard
 
 In addition to the "Making Sense of Data" workshop and learning resources, it was important to provide an ongoing resource for the citizen scientists to interrogate their data as non - experts in environmental science.
