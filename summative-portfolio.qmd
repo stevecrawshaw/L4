@@ -1,16 +1,16 @@
 ---
 title: "Summative Portfolio: L4"
 author: "Steve Crawshaw"
-format: html
+format: pdf
     # html:
     #     embed-resources: true
     #     page-layout: article
 date: "`r Sys.Date()`"
-# toc: true
-# toc-title: "Table of Contents"
+toc: true
+toc-title: "Table of Contents"
 # toc-location: left
-# number-sections: true
-# number-depth: 3
+number-sections: true
+number-depth: 3
 execute:
   echo: false
   warning: false
