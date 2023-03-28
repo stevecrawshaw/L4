@@ -3,7 +3,7 @@ library("xfun")
 p <- c("tidyverse", "docxtractr", "glue", "fs", "here", "officer", "janitor", "ggtext", "gt")
 pkg_attach2(p)
 #read file
-file <- "data/Goals for Progress Reviews.docx"
+file <- "data/Goals for Progress Reviews_neworder.docx"
 #read doc for extracting objective names
 doc <- officer::read_docx(file)
 
