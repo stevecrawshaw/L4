@@ -70,12 +70,9 @@ project-3-dashboard/openair_map.html
 project-3-dashboard/openair_map_files/
 project-3-dashboard/season_period_pm10.html
 project-3-dashboard/plots/*.png
-project-2-diagnostics/data/
-project-2-diagnostics/qa_report_files/
-project-2-diagnostics/qa_report.html
 summative-portfolio_files/
 summative-portfolio.html
-
+project-2-diagnostics
 
 #SP Word
 summative-portfolio.docx
