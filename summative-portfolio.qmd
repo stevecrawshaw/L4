@@ -109,7 +109,11 @@ Much of this data architecture is not of direct relevance to my work as it perta
 -   Dashboards, visualisation and analytics delivered through the OD platform (S14)
 -   Bespoke reporting and ETL pipelines delivered through R, sourcing data through the OD portal and the Envista database (S14, S10, S2, K14, K7)
 
-The data used in this portfolio are all structured data due to the nature of the work. Unstructured data such as text are not relevant in this domain. (K5)
+The data used in this portfolio are all structured data due to the nature of the work. Examples of this structured data are tabular data extracted from corporate SQL server database or MS Access database and data processed as JSON arrays on the open data portal.
+
+Some data used in the dashboard project could be considered as unstructured, for example the collection of images used to create the animated GIF, however there is an inherent structure to the collection in that the series of images is labelled with a sequential time stamp and relates to a single monitor. Also these data are really an intermediate step in a process to create a visualisation rather than a source data set.
+
+In the conventional sense, and considering the definition of unstructured data when applied to source data for analysis, unstructured data such as collections of images, multimedia files or emails were not used in the project as they are not relevant in this domain. (K5)
 
 ## Security Standards and Policies
 
@@ -214,7 +218,7 @@ The key skills and knowledge for my role are as follows:
 
 # Portfolio Projects
 
-I have identified four projects which align with business and apprenticeship progress review objectives. They are focussed on creating data products which will enhance business processes and increase confidence in our data and analysis. They are summarised below.
+I have identified three projects which align with business and apprenticeship progress review objectives. They are focussed on creating data products which will enhance business processes and increase confidence in our data and analysis. They are summarised below.
 
 ```{r}
 source("word_table_extract.R")
@@ -229,6 +233,10 @@ source("word_table_extract.R")
 I am able to work on these projects concurrently and I believe they are all achievable by the end of the apprenticeship.
 
 I have created a [GitHub repository](https://github.com/stevecrawshaw/L4) for all the projects, and other work as part of the apprenticeship. This enables code sharing, version control and backup of work. I have found this very useful in being able to work on projects flexibly.
+
+All the projects require data sets to be combined. The first project requires multiple sources of data to be joined with each other. This is usually achieved using `dplyr::left_join()` or `dplyr::inner_join()` functions, but the `purrr::map_dfr()` function is used extensively to iteratively stack multiple data sets when extracted from databases. The dashboard project requires meteorological data from the open data portal to be combined with air quality data to generate visualisations such as polar plots. Data are combined by joining on hourly time stamps with `dplyr` join functions.
+
+Because the sources of data used in the project are mostly under my control, the risks of combining are minimal as I understand the data characteristics and processes for sourcing. Selecting the appropriate field to join on and type of join is important to ensure that the resulting data is as expected.
 
 All the projects have been mainly implemented using R. I selected R as the overarching computing environment because I have greater experience in programming in R. Another key consideration is that R offers a powerful and comprehensive library for manipulation of air quality data, called `openair`, which is integral to the implementation of aspects of some of the projects.
 
@@ -327,7 +335,7 @@ Continuous hourly pollution concentration data from all current sites are retrie
 
 #### Data from National Air Monitoring Network
 
-in addition to continuous data from sites operated by Bristol City Council, we also use data from monitoring sites operated by government. These are know as AURN (Automated Urban and Rural Network) sites. The `openair` package is used to retrieve data fromthese sites using the function shown below. The code first tests to see if the data is available via the openair function. If so, it retrives using the `importAURN()` function. If not, it uses an alternative source, importing by csv in another function (omitted for brevity).
+In addition to continuous data from sites operated by Bristol City Council, we also use data from monitoring sites operated by government. These are know as AURN (Automated Urban and Rural Network) sites. The `openair` package is used to retrieve data fromthese sites using the function shown below. The code first tests to see if the data is available via the openair function. If so, it retrives using the `importAURN()` function. If not, it uses an alternative source, importing by csv in another function (omitted for brevity).
 
 ![Retrieve AURN data](images/r-code-aurn.png)
 In addition to local monitoring data from government sites, it is also necessary to get background data from within 50 miles to use to annualise incomplete data from sites where data capture is less than 75%. The function below does that, using the `importMeta()` function to filter sites by latitude and longitude in proximity to Bristol and returning data from these sites as a consolidated tibble.
@@ -336,7 +344,11 @@ In addition to local monitoring data from government sites, it is also necessary
 
 #### Reshaping Diffusion Tube Data
 
-After diffusion tube data are retrieved (not shown for brevity) the data are reshaped for later insertion into the output spreadsheet. During development of this pipeline, a mistake was made in the dates on which diffusion tubes were placed, i.e. they were not placed in accordance with the calendar. This required adaptation of the code below and the MS access database, such that a new field was added in the table to flag if the data could be used in the analysis. Incorrectly dated exposures cannot be used so have to be removed. The code below implements that  - as noted in the comment.
+After diffusion tube data are retrieved (not shown for brevity) the data are reshaped for later insertion into the output spreadsheet. 
+
+During development of this pipeline, a mistake was made in the dates on which diffusion tubes were placed, i.e. they were not placed in accordance with the calendar. I sought guidance from the LAQM Helpdesk (a resource to assist local authorities in managing air quality). They confirmed that we could publish the data but that the incorrectly exposed concentration periods could not be used in the calculations for annual mean values. (B7)
+
+This required adaptation of the code below and the MS access database, such that a new field was added in the table to flag if the data could be used in the analysis. The code below implements that  - as noted in the comment.
 
 ![Pivot and filter diffusion tube data](images/r-code-pivot-tubes.png)
 
@@ -433,13 +445,16 @@ Project 1 clearly benefits the council's air quality team by standardising and a
 
 ### Introduction
 
-The Slow the Smoke project is introduced in Project 3. A significant component of it is citizen science monitoring with low cost sensors. The aim of this project is to produce data products which support citizen scientists and citizens in understanding air quality in their area.
+The Slow the Smoke (StS) project is a Citizen Science project funded by Defra's Air Quality Grant. It aims to test engagement approaches based on citizen monitoring of air quality with a particular focus on emissions from domestic solid fuel burning (wood burning stoves etc.).
 
+Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities. I developed and agreed with the partners a data sharing agreement to cover the management of personal data under GDPR that was collected by the outreach activities. This ensures private data is safeguarded in accordance with GDPR.
+(K1, K2, K15, S1)
 
+The combination of citizen science, community engagement and behavioural surveys is intended to identify effective approaches to influencing behaviour in relation to domestic emissions to air.
 
+Ten citizen scientists have self selected in the study area which is a ward in the city centre called Ashley. This ward was selected because we have evidence that there is a higher level of solid fuel burning than average.
 
-
-a dashboard which enables citizen scientists to interrogate data from their sensors and gain an understanding of the pollution measurement data that is being captured.
+The aim of this project is to produce data products which support citizen scientists and citizens in understanding air quality in their area. This includes: learning materials for workshops, a sensor dashboard and advanced analytics to assist with policy decisions.
 
 ### Data Sources
 
@@ -510,6 +525,8 @@ The overall structure of the page was quite simple. It was designed to act as a 
 ![Making sense of data: Weather chart, time selection](images/html-msod-2-weather.png)
 
 On the MSOD page, the concept of "polar plots" is introduced. These are two dimensional plots that indicate the strength and direction of wind that brings pollution to the sensor site. This is a specialised chart provided by `openair::polarPlot()` and requires a data frame with wind speed, wind direction, date time and pollution concentrations to render. The detailed operation of the function is beyond scope here, but the output chart is useful to the non - expert in understanding the relationship between wind and pollution. In order to show the dynamic effect of wind on pollution, an animated GIF was developed and used in the MSOD page.
+
+This analysis is prescriptive in the sense that it provides valuable information as to the source of the pollution problem. In the making sense of data workshops, the polar plots are used to explain that the sources of pollution are largely regional, but that the plots do show some local sources of pollution which are amenable to local controls.
 
 Firstly a polar plot was created for each day at a specific site. This results in around 90 images. Then a function using the `magick` library for image manipulation "animates" the multiple PNG files to create a single GIF. The GIF is simply published as an asset on the portal and called using the `<img>` tag. A sample of the R code to create the animated GIF is shown below.
 
@@ -652,14 +669,7 @@ Public engagement was a key strand in this work and the MSOD page and sensor das
 
 ### Introduction
 
-The Slow the Smoke (StS) project is a Citizen Science project funded by Defra's Air Quality Grant. It aims to test engagement approaches based on citizen monitoring of air quality with a particular focus on emissions from domestic solid fuel burning (wood burning stoves etc.).
-
-Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities. I developed and agreed with the partners a data sharing agreement to cover the management of personal data under GDPR that was collected by the outreach activities. This ensures private data is safeguarded in accordance with GDPR.
-(K1, K2, K15, S1)
-
-The combination of citizen science, community engagement and behavioural surveys is intended to identify effective approaches to influencing behaviour in relation to domestic emissions to air.
-
-Ten citizen scientists have self selected in the study area which is a ward in the city centre called Ashley. This ward was selected because we have evidence that there is a higher level of solid fuel burning than average.
+The Slow the Smoke Project is introduced in Project 2. It includes a significant "citizen science" component.
 
 The citizen scientists have each been given a "low cost" air sensor that monitors particulate matter (PM). PM is fine dust in the air, including smoke. There are two fractions of PM that are important for health; PM~10~ (aerodynamic diameter \< 10 μ) and PM~2.5~ (aerodynamic diameter \< 2.5 μ). The devices deployed monitor both of these fractions using a light - scattering technique, where the diffusion of laser light is a function of the concentration of PM in the sampled air.
 
@@ -668,6 +678,12 @@ Because these devices do not directly measure concentration of PM, but use a pro
 >In addition to the community sensors, we will install a reference/equivalence method instrument in the study area to validate measurements through co – location with one or more Luftdaten devices.
 
 The installation of the reference method equipment is ongoing, but co - location was done with existing reference method sites.
+
+The characterisation of performance of the low cost sensors was extended through predictive analytics to develop a suitable model which can be used to predict concentrations of particulate matter to approaching reference method accuracy using signals from the low cost sensors.
+
+In the field of air quality, predictive and prescriptive modelling is usually carried out using dispersion models which are based on a gaussian distribution of pollution within a plume. They also often include algorithms for calculating the effects of atmospheric chemistry for pollutants such as ozone and oxides of nitrogen. Source terms in the model are meteorological data and activity data such as industrial processes or vehicle movements. I have used these [models](http://www.cerc.co.uk/environmental-software/ADMS-model.html) in the past to predict concentrations of regulated pollutants across the city, and to test interventions such as a low emissions zone. (K14, S11)
+
+The modelling in this project was not intended to predict concentrations from source terms such as activity and meteorology, but to predict more accurate concentrations of particulate matter than available from an untreated low - cost sensor.
 
 ### Co - location Study
 
@@ -697,7 +713,11 @@ pm_tbl %>%
 
 The co - location study used two of these sites; Parson Street School (site 215) and Temple Way (site 500). These sites are both operated by the council. Using the AURN St Pauls site would have required permissions from the Environment Agency which would have been a time consuming and uncertain process.
 
-The [airrohr SDS011 fine dust sensors](https://sensor.community/en/sensors/airrohr/) require a wifi signal in order to push data to a server. The Bristol City Council sites did not previously have wifi access available. The telemetry at our air monitoring sites was a combination of 3G modems and analogue land lines in 2021. In order to accommodate the co - location study and also for the purposes of virtualising our data collection machine, I procured, configured and installed Teltonika RUT950 or RUT955 4G LTE routers at all of our monitoring sites. This enabled 4G TCP/IP access to the data loggers or instruments at all of the sites, and also provided a wifi hotspot to enable the SDS011 sensors to send data. (B7)
+The [airrohr SDS011 fine dust sensors](https://sensor.community/en/sensors/airrohr/) require a wifi signal in order to push data to a server. The Bristol City Council sites did not previously have wifi access available. The telemetry at our air monitoring sites was a combination of 3G modems and analogue land lines in 2021. 
+
+In order to accommodate the co - location study and also for the purposes of virtualising our data collection machine, I procured, configured and installed Teltonika RUT950 or RUT955 4G LTE routers at all of our monitoring sites. This required me to learn about network protocols, network security and the configuration of windows updates. (B7)
+
+I liaised with our network team to configure white lists for the Envista ARM application to access the routers. This enabled 4G TCP/IP access to the data loggers or instruments at all of the sites, and also provided a wifi hotspot to enable the SDS011 sensors to send data. (B7)
 
 The physical installation of the SDS011 sensors at both sites was complete in early May 2022.
 
@@ -939,7 +959,7 @@ The models can be used to predict data in the test split. The fitted data are co
 
 ![Model predictions on test data: PM2.5](project-4-colocation-study/plots/Daily%20mean%20concentrations%20of%20PM2.5%20at%20site%20215_215.png) 
 
-It can be seen that the model predictions (.fitted) are quite close to the observed reference data at both sites. (K14, S11)
+It can be seen that the model predictions (.fitted) are quite close to the observed reference data at both sites. However the modelled concentrations are not acceptable in a regulatory application such as air quality management. (K14, S11)
 
 ### Project 3: Summary of Activities
 
@@ -959,9 +979,13 @@ The activities I undertook in Project 3 were as follows.
 
 ### Project 3: Learning and Reflection
 
-This project provided me with my first "real - world" exposure to predictive analytics. The growth of low - cost instruments for sensing air quality in recent years means that there is a significant need to understand their performance when compared to high quality instruments, and this project has enabled me to gain a strong understanding of this and to be able to speak with confidence on this issue when advising stakeholders.
+This project provided me with my first "real - world" exposure to predictive analytics using regression and machine learning models. The growth of low - cost instruments for sensing air quality in recent years means that there is a significant need to understand their performance when compared to high quality instruments, and this project has enabled me to gain a strong understanding of this and to be able to speak with confidence on this issue when advising stakeholders.
 
-The logistical challenges associated with implementing the monitoring campaign are significant. Data capture was an issue, both for the low cost sensors, and the reference instruments. The quality of the study could have been significantly improved if the monitoring had been done for at least a calendar year as the seasonal effect could have been modelled.
+
+
+The logistical challenges associated with implementing the monitoring campaign are significant. Data capture was an issue, both for the low cost sensors, and the reference instruments. The quality of the study could have been significantly improved if the monitoring had been done for at least a calendar year as the seasonal effect could have been modelled. In addition a greater range of regression models could have been tested to potentially improve the performance of the models. (K14, S11)
+
+If the project were extended I would like to develop the modelling approach into a web application to provide citizen scientists with a tool to adjust data from their sensors to show a "real" (reference) concentration. This would extend the work we have done in our team to explain the [performance of low cost sensors](https://www.bristol.gov.uk/files/documents/4765-bristol-city-council-low-cost-air-pollution-sensor-guide/file) and guide potential users of this technology.
 
 In this project I used a combination of the `tidymodels` and `easystats` metapackages in R. I feel that I did not fully explore or understand the optimal workflows for modelling in these packages and there is certainly potential for improving my understanding of predictive analytics processes. (S13)
 
