@@ -58,21 +58,21 @@ summative-portfolio.pdf
 easydashboard.html
 learning*.png
 renv/
-project-4-colocation-study/plots/*.png
-project-4-colocation-study/plots/*.html
-project-4-colocation-study/data/*.rds
+project-3-colocation-study/plots/*.png
+project-3-colocation-study/plots/*.html
+project-3-colocation-study/data/*.rds
 project-1-reporting-pipeline/plots/*.png
 project-1-reporting-pipeline/data/*.xlsx
 project-1-reporting-pipeline/data/*.xlsb
 project-1-reporting-pipeline/data/*.csv
-/project-3-dashboard/images
-project-3-dashboard/openair_map.html
-project-3-dashboard/openair_map_files/
-project-3-dashboard/season_period_pm10.html
-project-3-dashboard/plots/*.png
+/project-2-dashboard/images
+project-2-dashboard/openair_map.html
+project-2-dashboard/openair_map_files/
+project-2-dashboard/season_period_pm10.html
+project-2-dashboard/plots/*.png
 summative-portfolio_files/
 summative-portfolio.html
-project-2-diagnostics
+final-project
 
 #SP Word
 summative-portfolio.docx
