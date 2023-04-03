@@ -1,14 +1,15 @@
 ---
 title: "Summative Portfolio: L4"
 author: "Steve Crawshaw"
-format: pdf
+format: docx
     # html:
     #     embed-resources: true
     #     page-layout: article
 date: "`r Sys.Date()`"
 toc: true
 toc-title: "Table of Contents"
-# toc-location: left
+toc-location: left
+toc-depth: 3
 number-sections: true
 number-depth: 3
 execute:
@@ -88,12 +89,14 @@ A recently published ["Data, Insight and Information Strategy"](https://democrac
 -   Objective 2 - Establish the supply and use of data as a key enabler of a more connected, smarter city
 
 The strategy aims to deliver these objectives by developing a single analytics team to deliver insights across the organisation and by consolidating the disparate and distributed datasets across the council into a corporate data lake with analysis being done on one data analytics platform (Power BI). Several projects are under way to deliver this change. (K2)
-
+{{< pagebreak >}}
 ## Data Architecture
 
-No specific document exists about BCC's data architecture, however there is an information asset taxonomy, which is summarised in the diagram below. This was developed in 2017 by an officer who has now left BCC so the information may be somewhat outdated.
+No specific document exists about BCC's data architecture, however there is an information asset taxonomy, which is summarised in the diagram below. Only the "people" element is shown. This was developed in 2017 by an officer who has now left BCC so the information may be somewhat outdated.
 
-![Information Asset Taxonomy](images/Info_Asset_Taxonomy_2017.png)
+![Information Asset Taxonomy](images/Info_Asset_Taxonomy_2017_people.png)
+
+{{< pagebreak >}}
 
 Much of this data architecture is not of direct relevance to my work as it pertains to other departments and functions. In my own work area, the main data architecture which I design, maintain and operate is summarised as follows:
 
@@ -113,7 +116,7 @@ Much of this data architecture is not of direct relevance to my work as it perta
 
 The data used in this portfolio are all structured data due to the nature of the work. Examples of this structured data are tabular data extracted from corporate SQL server database or MS Access database and data processed as JSON arrays on the open data portal.
 
-Some data used in the dashboard project could be considered as unstructured, for example the collection of images used to create the animated GIF, however there is an inherent structure to the collection in that the series of images is labelled with a sequential time stamp and relates to a single monitor. Also these data are really an intermediate step in a process to create a visualisation rather than a source data set.
+Some data used in the dashboard project could be considered as unstructured, for example the collection of images used to create the animated GIF, however there is an inherent structure to the collection in that the series of images is labelled with a sequential time stamp and relates to a single monitor. These data are really an intermediate step in a process to create a visualisation rather than a source data set.
 
 In the conventional sense, and considering the definition of unstructured data when applied to source data for analysis, unstructured data such as collections of images, multimedia files or emails were not used in the project as they are not relevant in this domain. (K5)
 
@@ -144,7 +147,9 @@ There are a number of policies and procedures in the framework which deliver the
 7.  Information Security Incident Reporting Policy
 8.  Subject Access Request Policy
 
-All the policies and procedures are hosted on a "metacompliance" platform, which manages access and control of the policies and ensures that relevant staff have read and agreed to the policies.
+All the policies and procedures are hosted on a "metacompliance" platform, which manages access and control of the policies and ensures that relevant staff have read and agreed to the policies. 
+
+All my work is compliant with the IGF and I liaise with colleagues in IG where necessary. Becuase much of my work is with environmental data the risks of infringing the IGF with personal data issues are limited. (K2)
 
 # My Role: Air Quality Project Manager
 
@@ -161,7 +166,7 @@ The deliverables for which I am responsible are summarised as follows:
 5.  Developing or revising KPIs as necessary. (K11, K13)
 6.  Ad hoc analysis and summaries of air quality data to support other programmes.
 7.  Ensuring all relevant air quality data are published on the Open Data Portal. (K4, S12)
-8.  Ensuring all relevant technical guidance is followed in relation to air quality management. (S1)
+8.  Ensuring all relevant technical guidance is followed in relation to air quality management. (S1, K1)
 9.  Responding to relevant requests from stakeholders for air quality data and analysis. (S7)
 10. Delivery of specific projects such as "Slow the Smoke" (S12, S13, S14, S15)
 11. Responding to planning applications with an air quality dimension.
@@ -181,7 +186,7 @@ The key skills and knowledge for my role are as follows:
 ### Skills
 
 -   Processing and analysing medium sized (up to 10 million observations) data sets
--   SQL (SQL server, ODSSQL and MS Access)
+-   SQL (SQL server, ODSSQL and MS Access) (K6)
 -   Excel
 -   HTML, Javascript and CSS for web development of open data products
 -   R - packages `openair`, `openaq`, `sf`, `timetk`, `fastverse`, `deweather` and `tidyverse` are relevant to the air quality domain
@@ -218,7 +223,7 @@ The key skills and knowledge for my role are as follows:
 -   Power BI (corporate data analytics tool)
 -   Azure (corporate data platform)
 -   Python and PANDAS for comprehensive tooling of data science operations
-
+{{< pagebreak >}}
 # Portfolio Projects
 
 I have identified three projects which align with business and apprenticeship progress review objectives. They are focussed on creating data products which will enhance business processes and increase confidence in our data and analysis.
@@ -239,14 +244,14 @@ I am able to work on these projects concurrently and I believe they are all achi
 
 I have created a [GitHub repository](https://github.com/stevecrawshaw/L4) for all the projects, and other work as part of the apprenticeship. This enables code sharing, version control and backup of work. I have found this very useful in being able to work on projects flexibly.
 
-All the projects have been mainly implemented using R. I selected R as the overarching computing environment because I have greater experience in programming in R. Another key consideration is that R offers a powerful and comprehensive library for manipulation of air quality data, called `openair`, which is integral to the implementation of aspects of some of the projects.
+All the projects have been mainly implemented using R. I selected R as the overarching computing environment because I have greater experience in programming in R. Another key consideration is that R offers a powerful and comprehensive library for manipulation of air quality data, called `openair`, which is integral to the implementation of aspects of some of the projects and similar functionality is not available in other languages.
 
 ## Combining Data in Projects
 
-All the projects require data sets to be combined. The first project requires multiple sources of data to be joined with each other. This is usually achieved using `dplyr::left_join()` or `dplyr::inner_join()` functions, but the `purrr::map_dfr()` function is used extensively to iteratively stack multiple data sets when extracted from databases. The dashboard project requires meteorological data from the open data portal to be combined with air quality data to generate visualisations such as polar plots. Data are combined by joining on hourly time stamps with `dplyr` join functions.
+All the projects require data sets to be combined. The first project requires multiple sources of data to be joined with each other. This is usually achieved using `dplyr::left_join()` or `dplyr::inner_join()` functions, but the `purrr::map_dfr()` function is used extensively to iteratively stack multiple data sets when extracted from databases or combine list structures within tibbles. The dashboard project requires meteorological data from the open data portal to be combined with air quality data to generate visualisations such as polar plots. Data are combined by joining on hourly time stamps with `dplyr` join functions.
 
-Because the sources of data used in the project are mostly under my control, the risks of combining are minimal as I understand the data characteristics and processes for sourcing. Selecting the appropriate field to join on and type of join is important to ensure that the resulting data is as expected.
-
+Because the sources of data used in the project are mostly under my control, the risks of combining are minimal as I understand the data characteristics and processes for sourcing. Selecting the appropriate field to join on and type of join is important to ensure that the resulting data is as expected. (K10)
+{{< pagebreak >}}
 ## Project 1: A Data Processing Pipeline for the Statutory Reporting of Air Quality Data
 
 ### Introduction
@@ -255,7 +260,7 @@ Bristol City Council monitors air quality across the city and reports data to go
 
 In addition to this duty, there is also a requirement to provide monitoring and evaluation of the operation of a Clean Air Zone (CAZ) in Bristol. The CAZ is the main mechanism by which traffic pollution (nitrogen dioxide or NO~2~) will be reduced to comply with the legal limits.
 
-The two reporting regimes are similar, but different in some respects. For LAQM, the reporting is directly to the government and takes the form of an Annual Status Report (ASR) to be submitted by June 30th of each year. In this ASR are summary tables of air quality data from all our monitoring which are required in a format determined by a template document. For CAZ reporting BCC is required to submit a spreadsheet of summary data in a set format to the Institute for Transport Studies at Leeds, who are the body that is conducting research on all the CAZs in England on behalf of the government.
+The two reporting regimes are similar, but different in some respects. For LAQM, the reporting is directly to the government and takes the form of an Annual Status Report (ASR) to be submitted by June 30th of each year. In this ASR are summary tables of air quality data from all our monitoring which are required in a format determined by a template document. For CAZ reporting BCC is required to submit a spreadsheet of summary data in a set format to the Institute for Transport Studies at Leeds, who are the body that is conducting research on all the CAZs in England on behalf of the government. (K1, S1)
 
 The aim of this project is to develop a process for reporting for both of these purposes that limits the need for manual data entry.
 
@@ -265,11 +270,9 @@ Local authorities are required to review and assess air quality in their areas a
 
 Several urban local authorities experience breaches in the AQO for nitrogen dioxide, a traffic pollutant. The AQO is set at 40 $\mu$gm^-3^ measured as annual mean. In Bristol, this is the only pollutant for which exceedences are measured.
 
-The relevant guidance for LAQM, [LAQM.TG(22)](https://laqm.defra.gov.uk/wp-content/uploads/2022/08/LAQM-TG22-August-22-v1.0.pdf) prescribes the monitoring regime that must be followed for each pollutant, including how data is monitored, processed and reported. The process used in this project will adhere to the requirements of LAQM.TG(22).
+The relevant guidance for LAQM, [LAQM.TG(22)](https://laqm.defra.gov.uk/wp-content/uploads/2022/08/LAQM-TG22-August-22-v1.0.pdf) prescribes the monitoring regime that must be followed for each pollutant, including how data is monitored, processed and reported. The process used in this project will adhere to the requirements of LAQM.TG(22). (K1, S1)
 
-Further prescriptive guidance is provided by Defra for air quality reporting in the form of templates for the [report](https://laqm.defra.gov.uk/wp-content/uploads/2022/05/ASR_Template_England_2022_v1.0.docx) itself and for the [tables](https://laqm.defra.gov.uk/wp-content/uploads/2022/05/ASR_Table_Template_England_2022_v1.0.xlsb) that should be included in the report.
-
-(K2)
+Further prescriptive guidance is provided by Defra for air quality reporting in the form of templates for the [report](https://laqm.defra.gov.uk/wp-content/uploads/2022/05/ASR_Template_England_2022_v1.0.docx) itself and for the [tables](https://laqm.defra.gov.uk/wp-content/uploads/2022/05/ASR_Table_Template_England_2022_v1.0.xlsb) that should be included in the report. (K2)
 
 For this project, the data process will focus only on tables prefixed "A" in the spreadsheet referenced. These are the tables that contain monitoring data. Other tables in the report require manual data entry as they need data that is sourced from other officers and departments in the council so will not be addressed in this pipeline.
 
@@ -277,7 +280,7 @@ In addition to these tables, there is a requirement to include thematic maps in 
 
 ### CAZ Reporting
 
-The purpose of the CAZ is to reduce concentrations of one pollutant (NO~2~) to legal levels in the shortest time possible. Therefore the reporting is limited to NO~2~. However, the reporting on this single pollutant requires greater granularity than the LAQM reporting. This is partly because advanced techniques for analysing changes in time series air quality data will be used to assess the impact of a specific policy intervention (the CAZ) and therefore the hourly time series data need to be reported, not just the summary statistics. This analysis will be done by ITS using the [\`AQEval' R package](https://cran.r-project.org/web/packages/AQEval/index.html) and the data for Bristol will be supplied by providing access to the open data portal [dataset for continuous air quality data](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location).
+The purpose of the CAZ is to reduce concentrations of one pollutant (NO~2~) to legal levels in the shortest time possible. Therefore the reporting is limited to NO~2~. However, the reporting on this single pollutant requires greater granularity than the LAQM reporting. This is partly because advanced techniques for analysing changes in time series air quality data will be used to assess the impact of a specific policy intervention (the CAZ) and therefore the hourly time series data need to be reported, not just the summary statistics. This analysis will be done by ITS using the [\`AQEval' R package](https://cran.r-project.org/web/packages/AQEval/index.html) and the data for Bristol will be supplied by providing access to the open data portal [dataset for continuous air quality data](https://opendata.bristol.gov.uk/explore/dataset/air-quality-data-continuous/information/?disjunctive.location). (K11)
 
 The reporting for diffusion tube data consists of providing data in a pre - formatted template quarterly. The data is a combination of meta - data for the measurement site, e.g. location, height, distance from a road and the "raw" monthly concentrations from the diffusion tube. The measurement technique for diffusion tubes and continuous analysers is described later on.
 
@@ -299,9 +302,7 @@ The data needed for the analysis are in five separate repositories:
 4.  UK Government's [Air Information Resource](https://uk-air.defra.gov.uk/data/) which holds data for the air monitoring sites run by government as part of the Automated Urban and Rural Network (AURN). There are two of these sites in Bristol.
 5.  The LAQM Portal (holds data for the calendar for changing diffusion tubes)
 
-Four of these repositories were used in the analysis. The open data portal was not used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API.
-
-(K10, S9)
+Four of these repositories were used in the analysis. The open data portal was not used as it is planned to cease operation of the contract with the provider in 2023. This is somewhat sub optimal as the open data portal contains all the relevant data needed for the analysis and data is easily accessed using a powerful and well documented REST API. This project was reconfigured to avoid using the open data portal when I became aware that it was to be discontinued. (B7, B6, K10, S9)
 
 #### Data processing overview
 
@@ -329,25 +330,25 @@ Several utility functions are used throughout the pipeline in other functions. T
 
 #### Database Connections and Security
 
-Connections are made to corporate databases to retrieve data. To maintain security and comply with organisational data processing protocols, the connection details are not embedded in code. This would be a security risk, if for example code is shared on a public Github repo. The code below illustrates the use of the `config` packages to hold connection credentials in a `config.yml` file which is referenced by the function and added to a .gitignore file so that it is not published online. (K2, K6)
+Connections are made to corporate databases to retrieve data. To maintain security and comply with organisational data processing protocols, the connection details are not embedded in code. This would be a security risk, if for example code is shared on a public Github repo. The code below illustrates the use of the `config` packages to hold connection credentials in a `config.yml` file which is referenced by the function and added to a .gitignore file so that it is not published online. (K2, K6, S1)
 
 ![Database connection function](images/r-code-envista-creds.png)
 
 #### Retrieve Continuous Data
 
-Continuous hourly pollution concentration data from all current sites are retrieved from the envista database using the function below. The function takes the start and end dates supplied and a vector of the site id's, which are supplied in the targets pipeline. The time base of interest for this process is hourly, but the function can be used to select a different time base, for example 15 minutes. Another tibble `final_tbl` is also supplied. This holds metadata about the monitoring sites, for example which channel (column) relates to which pollutant. The function iterates over a list of monitoring sites, collecting the data for the relevant time period and cleaning and returning a long format tibble with the consolidated data.
+Continuous hourly pollution concentration data from all current sites are retrieved from the envista database using the function below. The function takes the start and end dates supplied and a vector of the site id's, which are supplied in the targets pipeline. The time base of interest for this process is hourly, but the function can be used to select a different time base, for example 15 minutes. Another tibble `final_tbl` is also supplied. This holds metadata about the monitoring sites, for example which channel (column) relates to which pollutant. The function iterates over a list of monitoring sites, collecting the data for the relevant time period and cleaning and returning a long format tibble with the consolidated data. (S4, S2)
 
-![Retrieve continuous data](images/r-code-get-aqdata.png)
+![Retrieve continuous data](images/r-code-get-aqdata.png)  
 
 #### Data from National Air Monitoring Network
 
 In addition to continuous data from sites operated by Bristol City Council, we also use data from monitoring sites operated by UK government. These are know as AURN (Automated Urban and Rural Network) sites. The `openair` package is used to retrieve data from these sites using the function shown below. The code first tests to see if the data is available via the `test.import.aurn()` function. If so, it retrieves using the `importAURN()` function. If not, it uses an alternative source, importing by csv in another function (omitted for brevity).
 
-![Retrieve AURN data](images/r-code-aurn.png)
+![Retrieve AURN data](images/r-code-aurn.png)  
 
-In addition to local monitoring data from government sites, it is also necessary to get background data from within 50 miles to use to annualise incomplete data from sites where data capture is less than 75%. The function below does that, using the `importMeta()` function to filter sites by latitude and longitude in proximity to Bristol and returning data from these sites as a consolidated tibble.
+In addition to local monitoring data from government sites, it is also necessary to get background data from within 50 miles to use to annualise incomplete data from sites where data capture is less than 75%. The function below does that, using the `importMeta()` function to filter sites by latitude and longitude in proximity to Bristol and returning data from these sites as a consolidated tibble. (S6)
 
-![Continuous nearby background data](images/r-code-background-contin.png)
+![Continuous nearby background data](images/r-code-background-contin.png)  
 
 #### Reshaping Diffusion Tube Data
 
@@ -355,39 +356,41 @@ After diffusion tube data are retrieved (code not shown for brevity) the data ar
 
 During development of this pipeline, a mistake was made in the dates on which diffusion tubes were placed, i.e. they were not placed in accordance with the calendar. I sought guidance from the LAQM Helpdesk (a resource to assist local authorities in managing air quality). They confirmed that we could publish the data but that the incorrectly exposed concentration periods could not be used in the calculations for annual mean values. (B7)
 
-This required adaptation of the code below and the MS access database, such that a new field was added in the table to flag if the data could be used in the analysis. The code below implements that  - as noted in the comment.
+This required adaptation of the code below and the MS access database, such that a new field was added in the table to flag if the data could be used in the analysis. The code below implements that  - as noted in the comment. (B5, B6)
 
-![Pivot and filter diffusion tube data](images/r-code-pivot-tubes.png)
+![Pivot and filter diffusion tube data](images/r-code-pivot-tubes.png)  
 
 I have instructed our member of staff to regularly review the diffusion tube calendar and plan their changeover dates accordingly as a result of this error.
 
 #### Annualising Incomplete Data
 
-When there is less than 75% data capture for a monitor, the data are adjusted using the background data collected above. To do this it is necessary to know the "background" concentration of NO~2~ at the site. This is given in terms of a 1km grid square identifier in the MS access database. The identifier can then be used to derive a concentration for NO~2~ in that 1km square for a given year. The function below receives the database connection, the start date and a vector of site ID's which need annualising. It gets the subset of site ID's which need to be and can be annualised and joins tables to return a table of background concentrations for the sites. The annualisation itself is carried out in the pre - formatted reporting spreadsheet.
+When there is less than 75% data capture for a monitor, the data are adjusted using the background data collected above. To do this it is necessary to know the "background" concentration of NO~2~ at the site. This is given in terms of a 1km grid square identifier in the MS access database. The identifier can then be used to derive a concentration for NO~2~ in that 1km square for a given year. The function below receives the database connection, the start date and a vector of site ID's which need annualising. It gets the subset of site ID's which need to be, and can be, annualised and joins tables to return a table of background concentrations for the sites. The annualisation itself is carried out in the pre - formatted reporting spreadsheet. (K10, S4)
 
-![Background concentrations by grid square](images/r-code-gridconcs.png)
+![Background concentrations by grid square](images/r-code-gridconcs.png)  
 
 #### Making Tables for the Reporting Spreadsheet
 
 The reporting spreadsheet for the ASR requires data to be entered in a prescriptive format. The tables are numbered e.g. "Table A1" to "Table A9". Not all the code to create the tables is shown, for brevity, but an example is given below. This is quite a simple example and populates a table of meta data for monitoring sites and includes a function to generate the required character string to describe the monitoring technology used.
 
+![Making a reporting table](images/r-code-make-a1.png)  
+
 Most of the output tables require a descriptive statistical summary in order to compare the measured concentrations with the relevant air quality objective. Examples of air quality objectives are shown below. They are usually an annual mean value or a number of exceedences of a threshold value per year, sometimes expressed as a percentile. These statistics are calculated in the R functions within the pipeline. (K13, S10, K14, S11)
 
-![Air quality objectives (extract)](images/aqo.png)
-
-![Making a reporting table](images/r-code-make-a1.png)
+![Air quality objectives (extract)](images/aqo.png)  
 
 #### List of Reporting Tables
 
 All the reporting tables are added to a list in the function below, which takes an unspecified number of tibbles, adds them to a list, and removes the "NA"s generated when the contents are turned into character data types. This is so that the reporting spreadsheet does not contain multiple "NA"s.
 
-![Make list of tables](images/r-code-make-tables-list.png)
+![Make list of tables](images/r-code-make-tables-list.png)  
 
 #### Write Spreadsheet
 
-The list of tables generated in the function above (and others) is written to the final reporting spreadsheet using the function below. This uses the `write_xlsx` function to write each item in the list supplied to a seprate worksheet in the spreadsheet.
+The list of tables generated in the function above (and others) is written to the final reporting spreadsheet using the function below. This uses the `write_xlsx` function to write each item in the list supplied to a separate worksheet in the spreadsheet.
+
 
 ![Write Spreadsheet](images/r-code-write-spreadsheet.png)
+
 
 #### Graphical Output
 
@@ -439,7 +442,7 @@ I started developing the processing in one R script. This soon became unmanageab
 
 Air quality reporting is unfortunately somewhat constrained by the prescriptive and closed requirements of the government department (Defra) which governs the activity in local government. Because of this it is quite difficult for local authorities to share their data in a coherent and consistent way such that a single view of air quality across the UK is possible. If open data approaches were enabled for local authorities by Defra it would enhance understanding of air quality for the public and increase access for researchers.
 
-There are undoubtedly improvements that I could make if I had more time. I would like to do more unit testing of the functions used and ideally build an R package to implement the functions I have developed. I would also like to improve the data management operations upstream of the reporting process, for example the database used to store diffusion tubes and monitoring site meta data is currently MS Access (2010). Moving this to the corporate data lake or a data warehouse would be more robust and enable integration with other data sets in the council. 
+There are undoubtedly improvements that I could make if I had more time. I would like to do more unit testing of the functions used and ideally build an R package to implement the functions I have developed. I would also like to improve the data management operations upstream of the reporting process, for example the database used to store diffusion tubes and monitoring site meta data is currently MS Access (2010). Moving this to the corporate data lake or a data warehouse would be more robust and enable integration with other data sets in the council. (B6)
 
 Even though I have designed the analysis to be reproducible and accessible, I acknowledge that running the analysis requires a working to intermediate level of expertise with R, and domain specific knowledge. This is potentially a problem in the organisation as I am one of the only people in the council with expertise in R. Hence there is a risk to business continuity with only one person able to run the analysis (safely).
 
@@ -454,7 +457,7 @@ Project 1 clearly benefits the council's air quality team by standardising and a
 
 ### Introduction
 
-The Slow the Smoke (StS) project is a Citizen Science project funded by Defra's Air Quality Grant. It aims to test engagement approaches based on citizen monitoring of air quality with a particular focus on emissions from domestic solid fuel burning (wood burning stoves etc.).
+The Slow the Smoke (StS) project is a Citizen Science project funded by Defra's Air Quality Grant. It aims to test engagement approaches based on citizen monitoring of air quality with a particular focus on emissions from domestic solid fuel burning (wood burning stoves etc).
 
 Bristol City Council leads the project and I am the project manager. We have two partners, the University of the West of England (UWE), and Knowle West Media Centre (KWMC). UWE lead on the technical aspects of air quality and writing the final report. KWMC lead on the outreach activities. I developed and agreed with the partners a data sharing agreement to cover the management of personal data under GDPR that was collected by the outreach activities. This ensures private data is safeguarded in accordance with GDPR.
 (K1, K2, K15, S1)
@@ -493,7 +496,7 @@ FME is a no - code platform for ETL which is primarily focused on spatial data. 
 ![Daily FME ETL Process](images/daily_ld_fme.png)
 
 
-It was decided to split into hourly and daily processes because the latency in the Sensor.Community API process made it impossible to reliably downsample data into hourly intervals in a real - time process. The FME hourly process subsets the measurement data using a bounding box to just get Bristol's data, unnests the PM~10~ and PM~2.5~ data from the json array and writes the data to a csv file.
+It was decided to split into hourly and daily processes because the latency in the Sensor.Community API process made it impossible to reliably downsample data into hourly intervals in a real - time process. The FME hourly process subsets the measurement data using a bounding box to just get Bristol's data, unnests the PM~10~ and PM~2.5~ data from the json array and writes the data to a csv file. (S9, K10, S10)
 
 The daily FME process then downsamples the data in the csv to hourly intervals, transforms it in various ways, and then writes the data to a json array and pushes to the open data portal and flushes data from the temporary csv file to prepare it for the next cycle. The daily process also automatically adds any new sites that might be established by a citizen scientist to the [open data datasets for the sensors](https://opendata.bristol.gov.uk/explore/?q=luftdaten&sort=modified)
 
@@ -535,7 +538,7 @@ The overall structure of the page was quite simple. It was designed to act as a 
 
 On the MSOD page, the concept of "polar plots" is introduced. These are two dimensional plots that indicate the strength and direction of wind that brings pollution to the sensor site. This is a specialised chart provided by `openair::polarPlot()` and requires a data frame with wind speed, wind direction, date time and pollution concentrations to render. The detailed operation of the function is beyond scope here, but the output chart is useful to the non - expert in understanding the relationship between wind and pollution. In order to show the dynamic effect of wind on pollution, an animated GIF was developed and used in the MSOD page.
 
-This analysis is prescriptive in the sense that it provides valuable information as to the source of the pollution problem. In the making sense of data workshops, the polar plots are used to explain that the sources of pollution are largely regional, but that the plots do show some local sources of pollution which are amenable to local controls.
+This analysis is descriptive in the sense that it provides valuable information as to the source of the pollution problem. In the making sense of data workshops, the polar plots are used to explain that the sources of pollution are largely regional, but that the plots do show some local sources of pollution which are amenable to local controls.
 
 Firstly a polar plot was created for each day at a specific site. This results in around 90 images. Then a function using the `magick` library for image manipulation "animates" the multiple PNG files to create a single GIF. The GIF is simply published as an asset on the portal and called using the `<img>` tag. A sample of the R code to create the animated GIF is shown below.
 
@@ -543,7 +546,7 @@ Firstly a polar plot was created for each day at a specific site. This results i
 
 #### Sensor Dashboard
 
-In addition to the "Making Sense of Data" workshop and learning resources, it was important to provide an ongoing resource for the citizen scientists to interrogate their data as non - experts in environmental science.
+In addition to the "Making Sense of Data" workshop and learning resources, it was important to provide an ongoing resource for the citizen scientists to interrogate their data as non - experts in environmental science. This was strongly endorsed by participants in the workshops. (S7)
 
 The open data portal provides strong capability for visualisation and transformation by default. For each dataset there is a tabular view, which can be ordered and filtered by facet or user entered search criteria. Interactive maps and charts are also provided which can be similarly filtered and the filtered data can be exported in a range of common formats. 
 
@@ -578,6 +581,7 @@ A [web dashboard](https://opendata.bristol.gov.uk/pages/luftdaten-sitepage/?q=se
 The sensor dashboard was also built on opendatasoft's platform. Some sample code is shown below. Firstly the gauges that compare the most recent readings from the sensors with the air quality index for the UK. These use the `ods-gauge` widget and colour the gauge bar using CSS (not shown).
 
 ![Sensor dashboard code: gauge](images/html-sensor-gauge.png)
+
 The code below uses some simple javascript string manipulation to extract latitude and logitude from the data set.
 
 ![Sensor dashboard code: location (lat \ lon)](images/html-sensor-latlong.png)
@@ -812,13 +816,9 @@ site_details(pm_meta %>% filter(siteid == 215))
 
 The low cost sensors were co - located inside the cages of the monitoring sites. Parson Street was installed on 29th March 2022 and Bristol Temple Way was installed on 1st May 2022. The photographs below show the detail of the colocated devices at each monitoring site.
 
-::: {layout-ncol="2" layout-valign="center"}
 ![Temple Way](images/btw_cage.jpg)
 
 ![Parson Street](images/ps_cage.jpg)
-
-Co - located instruments
-:::
 
 #### Data Sources
 
@@ -882,11 +882,9 @@ Further exploratory data analysis (EDA) with time series charts showed that the 
 
 The divergence does not appear to be uniform or consistent and seems to drift over the study period, so drift plots were developed to examine this artefact. Drift is significant, and different at each site and for each pollutant.
 
-::: {layout-ncol="2" layout-valign="center"}
 ![Drift plot: PM10](project-4-colocation-study/plots/drift_plot_500_gg.png)
 
 ![Drift plot: PM2.5](project-4-colocation-study/plots/drift_plot_215_gg.png)
-:::
 
 #### Scatter Plot and Linear Regression
 
