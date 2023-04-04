@@ -1,0 +1,129 @@
+---
+title: "Air Quality Data: QA Report"
+author: "Air Quality Team"
+format: html
+---
+
+
+```{r setup, include = FALSE}
+
+knitr::opts_chunk$set(echo = FALSE)
+options(tidyverse.quiet = TRUE)
+pacman::p_load(targets, tidyverse, gt)
+```
+
+Report for period: `r tar_read(datelabel)`
+
+## Missing Data
+
+This section summarises the quantum and percentage of missing hourly data from BCC's continuous analysers for the period.
+```{r 'missing_data'}
+tar_read(missing_data_tbl) %>% 
+    gt() %>% 
+    gt::cols_label(site_name = "Site", pollutant = "Pollutant", n_miss = "Number missing", pct_miss = "Percent missing")
+
+```
+
+## Calibration Factors
+
+Zero calibration factors should be close to zero. When levels approach 2 or greater, this could indicate a leak in the sample line to the bottle or another problem.
+
+Sensitivity calibration factors should be close to 1. Factors greater than 1.5 could indicate contamination of the gas bottle.
+
+```{r}
+tar_read(cal_factor_gt)
+
+```
+
+## Span Divergence
+
+Span readings should be similar for NOx and NO. The stated value for NOx and NO on the trace gas is usually within 1 - 2 ppb of each other. High variance in span calibration readings can indicate a contaminated cylinder.  
+If no line is plotted it is likely that only one calibration was done in the period selected.
+
+```{r 'span_divergence', message = FALSE}
+
+tar_read(span_diff_plot)
+
+```
+
+## Telemetry: Data Allowance Used
+
+The Teltonika routers use multi - network SIMs that are capped at 3GB per month. Allowances are shared over all SIMs and refresh on the first day of each month. Six sites operated by BCC have EnviDAS data loggers running Windows 10. Windows updates and other downloads related to the loggers consume the majority of the data. Updates are often run at the end of the month so high data use is normal to see here.
+
+```{r 'data_use_1'}
+
+tar_read(daily_use_plot)
+
+```
+### Cumulative Data Use
+
+```{r 'cumulative_data_use'}
+
+tar_read(cumulative_plot)
+
+```
+
+## Instrument Diagnostics
+
+The NOx analysers used by BCC log diagnostics data for the internal components of the instruments. These data can be useful to track performance of the devices and identify maintenance needs.
+
+
+::: {.panel-tabset}
+
+### `r tar_read(all_sites_plots_tbl)$site_name[1]`
+
+```{r 'diag_plot_1'}
+#| fig-height: 10
+#| message: false
+#| warning: false
+tar_read(all_sites_plots_tbl)$plot[[1]]
+
+```
+
+### `r tar_read(all_sites_plots_tbl)$site_name[2]`
+
+```{r 'diag_plot_2'}
+#| fig-height: 10
+#| message: false
+#| warning: false
+tar_read(all_sites_plots_tbl)$plot[[2]]
+
+```
+### `r tar_read(all_sites_plots_tbl)$site_name[3]`
+
+```{r 'diag_plot_3'}
+#| fig-height: 10
+#| message: false
+#| warning: false
+tar_read(all_sites_plots_tbl)$plot[[3]]
+
+```
+### `r tar_read(all_sites_plots_tbl)$site_name[4]`
+
+```{r 'diag_plot_4'}
+#| fig-height: 10
+#| message: false
+#| warning: false
+tar_read(all_sites_plots_tbl)$plot[[4]]
+
+```
+### `r tar_read(all_sites_plots_tbl)$site_name[5]`
+
+```{r 'diag_plot_5'}
+#| fig-height: 10
+#| message: false
+#| warning: false
+tar_read(all_sites_plots_tbl)$plot[[5]]
+
+```
+### `r tar_read(all_sites_plots_tbl)$site_name[6]`
+
+```{r 'diag_plot_6'}
+#| fig-height: 10
+#| message: false
+#| warning: false
+tar_read(all_sites_plots_tbl)$plot[[6]]
+```
+
+:::
+
