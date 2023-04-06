@@ -7,7 +7,7 @@ editor: source
 
 # Introduction
 
-The aim of this project is to collate, summarise and report the operating characteristics of the council's air quality monitoring system and provide assurance that the system is operating within desired parameters. The risk to data quality is thereby minimised because data problems are identified early and mitigating measures can be implemented, such as replacing calibration gas, invalidating faulty data, service engineer visits etc. 
+The aim of this project is to create a repreducible analytical pipeline (RAP) to collate, summarise and report the operating characteristics of the council's air quality monitoring system and provide assurance that the system is operating within desired parameters. This will minimise the risk to data quality because problems are identified early and mitigating measures can be implemented, such as replacing calibration gas, invalidating faulty data, service engineer visits etc. 
 
 The project draws on the relevant guidance from Defra who are the ultimate customer for this activity.
 
@@ -16,15 +16,36 @@ The project draws on the relevant guidance from Defra who are the ultimate custo
 
 The scope of this project is the operation and calibration of the continuous air monitors operated by Bristol City Council. There are other air pollution monitors which the council operates (diffusion tubes) but these will not be covered in this project as the quality review period is annual rather than monthly and different data collection and quality criteria apply. Diffusion tube data quality is largely captured in anther portfolio project on annual reporting of air quality.
 
-The diagnostics element of this project only applies to the NOx (Oxides of Nitrogen) instruments operated by the council. The council does operate PM~2.5~ BAM (Beta Attenuation) instruments, but diagnostics information is not recorded in a usable way on the data logging systems, so is not included in this analysis.
+The diagnostics element of this project only applies to the NOx (Oxides of Nitrogen) instruments operated by the council. The council operates PM~2.5~ BAM (Beta Attenuation) instruments, but diagnostics information is not recorded in a usable way on the system, so is not included in this analysis.
 
-In addition to diagnostics, summary analysis will be presented of data loss. This is important as there are minimum data capture requirements to meet according to the technical guidance.
+Summary analysis of data loss will also be included as there are minimum data capture requirements to meet according to the technical guidance. This process also captures performance and quality data for telemetry equipment associated with the continuous analysers.
 
-This project also captures performance and quality data for telemetry equipment associated with the continuous analysers.
+Summaries of calibration data quality are included in scope. These relate to the responses of the instruments to traceable zero and span gases and are important to scale the measurement data.
 
-Summaries of calibration data quality are also included in scope. These relate to the responses of the instruments to traceable zero and span gases and are important to scale the measurement data.
+# Project Plan
 
-# Overview of the LAQM regime and Monitoring Network
+- Review relevant guidance and consult with colleagues to identify appropriate report outputs
+- Identify and confirm data sources as inputs to the project
+- Confirm optimal approach to building a robust and reproducible analytical pipeline
+- Develop code for pipeline
+- Conduct testing of code to verify accurate reporting
+- Liaise with colleagues to confirm acceptability
+- Adjust pipeline as necessary
+- Move to production
+
+# Key Performance Indicators
+
+This project is about reporting KPI’s which relate to the operation of the QA process for air quality data. The KPI’s of interest are:
+
+- Data collection better than 85% for hourly data reported annually
+- 4G data use below 3GB per site across router fleet per month
+- Identification of gas contamination within 3 weeks of last calibration
+- Identification of analyser system faults on a monthly basis
+
+In terms of the project itself, the KPI is that colleagues must be able to run the monthly report and review results, taking appropriate action where needed.
+
+
+# Overview of Regulatory Regime and Business Context
 
 ## Regulatory Regime
 
@@ -45,7 +66,7 @@ The continuous monitoring sites deployed in Bristol are shown in the map below.
 
 The technical and data quality requirements for air monitoring of NOX with continuous analysers is contained in pages [127 to 131 of LAQM.TG(22)](https://laqm.defra.gov.uk/wp-content/uploads/2022/08/LAQM-TG22-August-22-v1.0.pdf). In brief, each site is visited fortnightly and the NOx instruments are calibrated.
 
-Calibration is required because the instruments operate on a chemiluminescence principle. The concentration of the gas is determined by an optical measurement. The optical sensor's response can diminish with time and contamination and hence the response of the instrument needs to be periodically determined. Calibration entails applying a known zero and span signal to the instrument. This is delivered by plumbing in first a "clean" (zero) air supply via a scrubber which filters out any contaminant gas. Secondly a traceable gas sourced from a specialist supplier is connected and the instrument's span response recorded. A sample calibration procedure is reproduced below for a single site.
+Calibration is required because the instruments operate on a chemiluminescence principle. The concentration of the gas is determined by an optical measurement. The optical sensor's response can diminish with time and contamination and hence the response of the instrument needs to be periodically determined. Calibration entails applying a known zero and span signal to the instrument fortnightly. This is attained by connecting a "clean" (zero) air supply via a scrubber which filters out any contaminant gas. Secondly a traceable gas is connected and the instrument's span response recorded. A sample calibration procedure is reproduced below for a single site.
 
 ![LSO Calibration procedure](images/lso_proc.jpeg)
 
@@ -82,7 +103,7 @@ The consolidated long_aq_data_tbl is split into a list of tibbles, completely em
 
 ## Extract and Process Diagnostics Data
 
-Diagnostics data from the NOx analysers are captured in a database on an on - site data logger. The  loggers are polled hourly and both measurement and diagnostics data are stored in a corporate database "envista". The diagnostics data are extracted for the reporting.
+Diagnostics data from the NOx analysers are captured in a database on data logger. The  loggers are polled hourly and both measurement and diagnostics data are stored in a corporate database "envista". The diagnostics data are extracted for the reporting.
 
 The code below sets up a database connection by retrieving the connection parameters from a config.yml file. This ensures the credentials are safely stored and not embedded in the code. The config file can be added to .gitignore to ensure that the credentials are not published on GitHub.
 
@@ -119,7 +140,7 @@ The `gt` package in R was used to create a high quality table showing how calibr
 
 ## Retrieving Airtime Data from Routers
 
-Teltonika's Remote Management System (RMS) is a platform that enables secure remote management of a fleet of Teltonika routers. RMS also supports remote access to devices connected to the routers, such as the windows data loggers that we use to collect and store data from the analysers. This means that we can remotely check the operation of the instruments, the data loggers and the routers using RMS. In addition to the web platform, there is a REST API which is used to retrieve router meta - data including airtime data use. 
+Teltonika's Remote Management System (RMS) is a platform that enables secure remote management of a fleet of Teltonika routers. RMS also supports remote access to devices connected to the routers, such as the windows data loggers that we use to collect and store data from the analysers. We can thereby remotely check the operation of the instruments, loggers and routers using RMS. In addition to the web platform, there is a REST API which is used to retrieve router meta - data including airtime data use. 
 
 Airtime data is limited by contract to 3GB per device spread over all SIMS. Exceeding this limit results in excess charges or potentially loss of telemetry, hence it is important to regularly review usage. The screenshot below shows the device overview for the routers used in the air quality telemetry.
 
@@ -137,7 +158,7 @@ The function shown below takes a data frame and uses the `ggplot` package to plo
 
 # Targets Pipeline
 
-All the functions used in the pipeline are implemented through the `targets` package. This creates a reproducible workflow by learning the dependencies in the pipeline and skipping redundant targets. This can save time when designing and testing the pipeline as computationally expensive targets are not re - run unnecessarily. Objects (targets) created by the targets pipeline are hashed to track changes to the data file. The hashes determine whether the target needs to be re - run.
+All the functions used in the pipeline are implemented through the `targets` package. This creates a reproducible workflow by learning the dependencies in the pipeline and skipping redundant targets. This saves time when designing and testing the pipeline as computationally expensive targets are not re - run unnecessarily. Objects (targets) created by the targets pipeline are hashed to track changes to the data file. The hashes determine whether the target needs to be re - run.
 
 The targets pipeline is built by coding a list of targets, where each target's name is the object resulting from the command (function) of that target. A truncated example of the target's list in this project is shown below.
 
@@ -147,7 +168,7 @@ The dependencies created by the targets pipeline can be viewed using the `tar_vi
 
 ![Extract of targets pipeline visual network graph](images/tar-visnetwork.png)
 
-# Reporting
+# Project Outcome: Reporting Product
 
 The final reporting product needs to be easily readable and to highlight the key parameters which govern measurement quality and system reliability. I decided that an html output from a Quarto document would be the ideal option. The file is portable across systems and can be easily published for sharing with e.g. service contractors on a website such as Quarto pubs.
 
@@ -181,13 +202,13 @@ The chart or document can easily be sent to the equipment support unit (ESU - a 
 The instruments contain components that should be maintained within certain parameters, for example Internal Box Temperature: the temperature inside the instrument should not go above 40C. Similarly a sample flow rate that deviates from the upper and lower limits could indicate a leak or pump failure.
 
 
-![Diagnostics plot: Brislington](project-2-diagnostics/qa_report_files/figure-html/diag_plot_1-1.png)
+![Diagnostics plot: Brislington](fp/qa_report_files/figure-html/diag_plot_1-1.png)
 
 The bar chart shown below indicates the daily receive and transmit data use for each router. Allowances refresh on the first day of each month. Six sites operated by BCC have loggers running Windows 10. Windows updates and other downloads related to the loggers consume the majority of the data. Updates are often run at the end of the month so high data use is normal to see here.
 
-![Daily 4G data use](project-2-diagnostics/qa_report_files/figure-html/data_use_1-1.png)
+![Daily 4G data use](fp/qa_report_files/figure-html/data_use_1-1.png)
 
-![Cumulative data use for period](project-2-diagnostics/qa_report_files/figure-html/cumulative_data_use-1.png)
+![Cumulative data use for period](fp/qa_report_files/figure-html/cumulative_data_use-1.png)
 
 The calibration factors chart shown below gives a visual check for the zero and span calibration factors for each pollutant at each calibration. 
 
@@ -201,7 +222,7 @@ Span readings should be similar for NOx and NO. The stated value for NOx and NO 
 
 In the example shown below, the Parson Street site is showing a significant change in the divergence between NOx and NO span values. This should trigger a call out to the engineers. In this case the cause is likely to be a contaminated gas cylinder, where air has entered the cylinder and changed the concentration of the gas through oxidation.
 
-![Span divergence](project-2-diagnostics/qa_report_files/figure-html/span_divergence-1.png) 
+![Span divergence](images/span_diff_plot.png) 
 
 # Summary of Project Activities 
 

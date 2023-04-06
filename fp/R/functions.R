@@ -17,10 +17,10 @@ pacman::p_load(odbc,
 
 # 1.0 Global Variables ----
 
-dateon <-  "2023-02-01"
-dateoff <-  "2023-02-28"
+dateon <-  "2022-12-01"
+dateoff <-  "2022-12-31"
 testing <- FALSE
-google_config <- config::get(file = here::here("config.yml"),
+google_config <- config::get(file = "../config.yml",
                              config = "google_cal")
 
 device_url <- "https://rms.teltonika-networks.com/api/devices/"
@@ -446,6 +446,9 @@ get.devices.details.tbl <- function(device_url, pat){
 # Data usage per device
 get.data.use <- function(dateon, dateoff, device_url, pat, device_id_tbl) {
     
+        stopifnot("Data only available for past three months: adjust dateon" =
+                  difftime(as.Date(dateon), Sys.Date()) > -90)
+    
     single.site.data <- function(dateon, dateoff, device_url, id, pat){
     req <- request(device_url)
     start_date <- paste0(dateon, " 00:00:00")
@@ -459,14 +462,14 @@ get.data.use <- function(dateon, dateoff, device_url, pat, device_id_tbl) {
         req_url_query(start_date = start_date,
                       end_date = end_date) %>%
         req_perform()
-    # req_dry_run() - for testing
+    # req_dry_run() #- for testing
     
         response_data_usage %>%
         resp_body_json() %>%
         pluck("data") %>%
         list.rbind() %>%
         as.data.frame() %>%
-        mutate(id = id) %>% 
+        mutate(id = id) %>%
             return()
     }
     # create a partial function for implementing the data retrieval
@@ -478,8 +481,11 @@ get.data.use <- function(dateon, dateoff, device_url, pat, device_id_tbl) {
                                 pat = pat)
     # map the partial function over the site id's
     # returning a data frame by row
+    
+    # get.data.use.partial(413202)
     all_sites_data_tbl <- map_dfr(device_id_tbl$id,
-                        .f = ~get.data.use.partial(.x))
+                        .f = ~get.data.use.partial(.x)) %>% 
+    mutate(across(where(is.list), unlist))
     
             return(all_sites_data_tbl)
 }
@@ -488,17 +494,16 @@ get.data.use <- function(dateon, dateoff, device_url, pat, device_id_tbl) {
 
 make.daily.data.tbl <- function(data_use_tbl, device_id_tbl){
     daily_data_tbl <- data_use_tbl %>% 
-        mutate(across(.cols = everything(), .fns = ~as.character(.x))) %>% 
         select(- starts_with("sim2")) %>% 
         pivot_longer(cols = starts_with("sim1"),
                      names_to = "r_t",
                      values_to = "bytes") %>% 
         mutate(r_t = str_sub(r_t, start = 6, end = 7),
-               MB = as.integer(bytes) / 1000000L,
+               MB = bytes %/% 1e6,
                bytes = NULL,
                date = lubridate::ymd(date),
                id = as_factor(id)) %>% 
-        inner_join(device_id_tbl, by = "id")
+        inner_join(device_id_tbl, by = "id", relationship = "many-to-many")
     
     return(daily_data_tbl)
 }
@@ -697,7 +702,7 @@ make.missing.data.tbl <- function(aq_data_tbl, station_site_tbl){
     map_dfr(~remove_empty(.x, which = "cols") %>% 
             miss_var_summary()) %>% 
     filter(str_detect(variable, "no2|pm10|pm2\\.5|rh|temp")) %>% 
-    inner_join(station_site_tbl, by = "siteid", multiple = "all") %>%
+    inner_join(station_site_tbl, by = "siteid", multiple = "all", relationship = "many-to-many") %>%
     ungroup() %>%
     transmute(site_name,
               pollutant = toupper(variable),
@@ -748,8 +753,9 @@ span_diff_plot <- plot.span.diff(cal_plot_tbl, date_list)
 
 cal_factor_gt <- make.cal.factor.gt(cal_plot_tbl, date_list)
 
-cal_factor_gt
+# cal_factor_gt
 
+# ggsave("../images/span_diff_plot.png", plot = span_diff_plot, bg = "white")
 
 #------------------Routers -------------------
 
@@ -788,3 +794,5 @@ aq_data_tbl <- get.aq_data.tbl(final_tbl = final_tbl,
 missing_data_tbl <- make.missing.data.tbl(aq_data_tbl, station_site_tbl)
 
 }
+
+
