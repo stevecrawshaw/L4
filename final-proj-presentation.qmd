@@ -1,0 +1,83 @@
+---
+title: "Data Analyst L4"
+subtitle: "Diagnostics and Quality Reporting Analytics Pipeline for Air Quality Monitoring"
+author: "Steve Crawshaw"
+format: revealjs
+---
+
+## Business Context
+
+Measuring and Managing Air Quality
+
+:::: {.columns}
+
+::: {.column width="40%"}
+![](images/contin_sites_sml.png)
+:::
+
+::: {.column width="60%"}
+![](images/2000.jpg)
+:::
+
+::::
+
+
+
+## Business Problem
+
+- Clean Air Zone
+    - A £44m project
+    - Highly politically sensitive
+    - Relies on air quality data measurements
+    - Prescriptive QA regime
+    - But human and system error..
+- Solution
+    - Reproducible pipeline for data quality risk analysis
+
+## Data Quality Requirements
+
+- Data collection better than 85% for hourly data
+- 4G data use below 3GB per site 
+- Identification of gas contamination within 3 weeks of last calibration
+- Identification of analyser system faults
+
+
+## Data Sources
+
+- Teledyne API T200 NOx analysers
+- EnviDAS FW data loggers (SQL Server)
+- Teltonika 4G routers
+- Azure SQL Server (all sites)
+- Google sheets (calibration data)
+
+
+## Data Analysis - Diagnostics
+
+- Air quality data
+    - Missingness
+- Instrument diagnostics
+    - operating parameters
+    - visualisation
+    
+## Data Analysis - Calibration
+
+- Zero and Span
+- Span Divergence (NO and NOx)
+
+## Data Analysis - Telemetry
+
+- Daily data use
+
+
+
+## Reproducible Analytical Pipelines
+
+
+## Reporting
+
+
+
+## Business Recommendations
+
+
+
