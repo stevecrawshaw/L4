@@ -16,14 +16,49 @@ Report for period: `r tar_read(datelabel)`
 
 ## Missing Data
 
-This section summarises the quantum and percentage of missing hourly data from BCC's continuous analysers for the period.
+### Period
+
+This section shows the number and percentage of missing hourly data from BCC's continuous analysers for the period.
 ```{r 'missing_data'}
 tar_read(missing_data_tbl) %>% 
+    select(-pct_dc) %>% 
     gt() %>% 
-    gt::cols_label(site_name = "Site", pollutant = "Pollutant", n_miss = "Number missing", pct_miss = "Percent missing")
+    gt::cols_label(site_name = "Site", 
+                   pollutant = "Pollutant", 
+                   n_miss = "Number missing", 
+                   pct_miss = "Percent missing") %>% 
+     gt::fmt_percent(columns = starts_with("pct"),
+                    decimals = 0,
+                    scale_values = FALSE)
 
 ```
 
+### Cumulative 
+
+The table below indicates the trajectory towards compliance with the >=85% data capture KPI for continuous data. The start date is 1st January for the year of the period selected. Data capture cannot be known with certainty until after the end of the calendar year.
+
+```{r 'missing_data_cumulative'}
+tar_read(aq_missing_cumu_tbl) %>% 
+    gt() %>% 
+    gt::cols_label(site_name = "Site",
+                   pollutant = "Pollutant", 
+                   n_miss = "Number missing",
+                   pct_miss = "Percent missing",
+                   pct_dc = "Data Capture") %>% 
+    gt::fmt_percent(columns = starts_with("pct"),
+                    decimals = 0,
+                    scale_values = FALSE) %>% 
+    gt::tab_style(
+        style = list(
+            cell_text(color = "red")
+        ),
+        locations = cells_body(
+            columns = pct_dc,
+            rows = pct_dc <= 85
+        )
+    )
+
+```
 ## Calibration Factors
 
 Zero calibration factors should be close to zero. When levels approach 2 or greater, this could indicate a leak in the sample line to the bottle or another problem.
@@ -31,8 +66,13 @@ Zero calibration factors should be close to zero. When levels approach 2 or grea
 Sensitivity calibration factors should be close to 1. Factors greater than 1.5 could indicate contamination of the gas bottle.
 
 ```{r}
-tar_read(cal_factor_gt)
 
+if (nrow(tar_read(cal_plot_tbl)) == 0){
+    print("There were no calibrations in this period.")
+} else {
+
+tar_read(cal_factor_gt)
+}
 ```
 
 ## Span Divergence

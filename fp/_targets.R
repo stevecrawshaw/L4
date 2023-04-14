@@ -25,7 +25,11 @@ options(clustermq.scheduler = "multiprocess")
 tar_source()
 # source("other_functions.R") # Source other scripts as needed. # nolint
 
-list( 
+list(
+    tar_target(
+        name = check_dates_lgl,
+        check.dates(dateon = dateon, dateoff = dateoff)
+    ),
   tar_target(
     name = final_tbl,
     command = get.final.tbl()
@@ -140,16 +144,22 @@ list(
                                           device_id_tbl,
                                           datelabel)
   ),
-  tar_target(
-      name = aq_data_tbl,
-      command = get.aq_data.tbl(final_tbl = final_tbl,
-                dateon = dateon,
+  tar_target(name = aq_data_cumu_tbl,
+             command = get.aq_data.tbl(final_tbl = final_tbl,
+                dateon = lubridate::floor_date(as.Date(dateon), unit = "year"),
                 dateoff = dateoff,
                 siteid =  c(215, 270, 463, 203, 501, 672),
-                timebase = 60)
-  ),
-  tar_target(
+                timebase = 60)),
+  tar_target(name = aq_data_tbl,
+             command = filter.aq.data.tbl(aq_data_cumu_tbl,
+                                          dateon,
+                                          dateoff)),
+  tar_target(name = aq_missing_cumu_tbl,
+             command = make.missing.data.tbl(aq_data_cumu_tbl,
+                                             station_site_tbl)),
+    tar_target(
       name = missing_data_tbl,
-      command =  make.missing.data.tbl(aq_data_tbl, station_site_tbl)
+      command =  make.missing.data.tbl(aq_data_tbl,
+                                       station_site_tbl)
   )
 )

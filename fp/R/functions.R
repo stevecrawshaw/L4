@@ -17,13 +17,31 @@ pacman::p_load(odbc,
 
 # 1.0 Global Variables ----
 
-dateon <-  "2022-12-01"
-dateoff <-  "2022-12-31"
+dateon <-  "2023-03-01"
+dateoff <-  "2023-03-31"
 testing <- FALSE
 google_config <- config::get(file = "../config.yml",
                              config = "google_cal")
 
 device_url <- "https://rms.teltonika-networks.com/api/devices/"
+
+check.dates <- function(dateon, dateoff) {
+    date_on <- as.Date(dateon)
+    
+    date_off <- as.Date(dateoff)
+    
+    stopifnot(
+        "dateon is invalid" = is.Date(date_on),
+        "dateoff is invalid" = is.Date(date_off),
+        "dateoff is before dateon" = date_off > date_on,
+        "Selected period exceeds one year" = as.integer(date_off - date_on) < 367,
+        "Selected period is less than one month" = as.integer(date_off - date_on) > 27
+        
+    )
+    return(TRUE)
+    
+}
+
 
 get.final.tbl <- function(){
     read_delim(file = "S:/SUSTAIN/Sustain-Common/SCCCS/write_gis_r/R Projects/air_quality_data_management/data/finalContinTablerhtemp.csv", delim = ",", col_types = "ciiciccc") %>% 
@@ -663,7 +681,6 @@ output <- map_dfr(site_list,
                             .f = getData),
                   .id = "table_site")
 
-
 # output
 
 long <- output %>% 
@@ -696,6 +713,14 @@ long %>% return()
 
 }
 
+filter.aq.data.tbl <- function(aq_data_cumu_tbl, dateon, dateoff){
+     aq_data_cumu_tbl %>% 
+    filter(date >= as.Date(dateon),
+           date <= as.Date(dateoff) + days(1)) %>% 
+        return()
+    
+}
+
 make.missing.data.tbl <- function(aq_data_tbl, station_site_tbl){
     aq_data_tbl %>% 
     split(.$siteid) %>% 
@@ -707,8 +732,10 @@ make.missing.data.tbl <- function(aq_data_tbl, station_site_tbl){
     transmute(site_name,
               pollutant = toupper(variable),
               n_miss,
-              pct_miss = round(pct_miss, 1)) %>% 
-    distinct() %>%     
+              pct_miss = round(pct_miss, 1),
+              pct_dc = 100 - pct_miss) %>% 
+    distinct() %>% 
+        arrange(pollutant, pct_dc) %>% 
         return()
 }
 
@@ -784,13 +811,21 @@ data_summary_tbl <- make.data.summary.tbl(daily_data_tbl = daily_data_tbl,
                                           datelabel = datelabel)
 
 #--------------Missingness--------------------
-
-aq_data_tbl <- get.aq_data.tbl(final_tbl = final_tbl,
-                dateon = dateon,
+# get all data from start of year
+aq_data_cumu_tbl <- get.aq_data.tbl(final_tbl = final_tbl,
+                dateon = lubridate::floor_date(as.Date(dateon), unit = "year"),
                 dateoff = dateoff,
                 siteid =  c(215, 270, 463, 203, 501, 672),
                 timebase = 60)
 
+# get missing for cumulative data
+aq_missing_cumu_tbl <- make.missing.data.tbl(aq_data_cumu_tbl, station_site_tbl = station_site_tbl)
+
+# get aq data just for stated period
+aq_data_tbl <- aq_data_cumu_tbl %>% 
+    filter(date >= as.Date(dateon),
+           date <= as.Date(dateoff) + days(1))
+# get missing summary just for stated period
 missing_data_tbl <- make.missing.data.tbl(aq_data_tbl, station_site_tbl)
 
 }

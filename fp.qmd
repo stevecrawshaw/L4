@@ -3,16 +3,25 @@ title: "Diagnostics and Quality Reporting Analytics Pipeline for Air Quality Mon
 author: "Steve Crawshaw"
 format: docx
 editor: source
+date: "`r Sys.Date()`"
+toc: true
+toc-title: "Table of Contents"
+toc-location: left
+toc-depth: 3
+number-sections: true
+number-depth: 3
+execute:
+  echo: false
+  warning: false
 ---
 
 # Introduction
 
-The aim of this project is to create a reproducible analytical pipeline (RAP) to collate, summarise and report the operating characteristics of the council's air quality monitoring system and provide assurance that the system is operating within desired parameters. This minimises data quality risks by identifying problems and mitigations in a timely, structured and evidenced way. 
+The aim of this project is to create a Reproducible Analytical Pipeline (RAP) to collate, summarise and report the operating characteristics of the council's air quality monitoring network and provide assurance that the system is operating within desired parameters. This minimises data quality risks by identifying problems and mitigations in a timely, structured and evidenced way. 
 
 The project complies with relevant guidance from Defra who are the ultimate customer for this activity.
 
 Apprenticeship KSBs are logged in the text in square parentheses in bold e.g. **[S1, K11]**
-
 
 # Project Scope
 
@@ -46,14 +55,13 @@ This project is about reporting KPI’s which relate to the operation of the QA 
 
 In terms of the project itself, the KPI is that colleagues must be able to run the monthly report and review results, taking appropriate action where needed. This was established through dialogue with colleagues. **[S12, B3]**
 
-
 # Overview of Regulatory Regime and Business Context
 
 ## Regulatory Regime
 
 It is important to set the context of air quality monitoring in order to understand the regulatory framework, monitoring requirements and implications of low quality data and hence analysis presented in the project.
 
-Under The Environment Act (1995) local authorities have a duty to monitor air quality. If regulated pollutants exceed legal limits, an Air Quality Management Area (AQMA) must be declared and an air quality action plan (AQAP) implemented. This is called the Local Air Quality Management (LAQM) regime. In addition to this system, the UK government published its [Air Quality Plan for nitrogen dioxide in 2017](https://www.gov.uk/government/publications/air-quality-plan-for-nitrogen-dioxide-no2-in-uk-2017). 
+Under The Environment Act (1995) local authorities must monitor air quality. If regulated pollutant concentrations exceed legal limits, an Air Quality Management Area must be declared and an air quality action plan implemented. This is called the Local Air Quality Management regime. In addition to this system, the UK government published its [Air Quality Plan for nitrogen dioxide in 2017](https://www.gov.uk/government/publications/air-quality-plan-for-nitrogen-dioxide-no2-in-uk-2017). 
 
 This has resulted in certain local authorities (including Bristol) being required to introduce specific "[local plans](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/911404/air-quality-direction-bristol-city-council-no2.pdf)" to deliver compliance with legal limits for nitrogen dioxide (NO~2~) in the shortest time possible. In Bristol the key measure in the local plan is a Clean Air Zone (CAZ), which charges older, polluting vehicles to enter a central zone in order to encourage faster turnover in the fleet.
 
@@ -72,7 +80,7 @@ Calibration is required because the instruments operate on a chemiluminescence p
 {{< pagebreak >}}
 ![LSO Calibration procedure](images/lso_proc.jpeg)
 
-Zero and span calibration factors are calculated from the form data. Instead of adjusting the response of the machine to these calibrations, the data themselves are changed manually applying a linear correction. Spurious or anomalous data are also removed. Every six months, the instruments are fully serviced and their responses are corrected to the calibration standards. **[K8, S6]**
+Zero and span calibration factors are calculated from the form data. Instead of adjusting the response of the machine to these calibrations, the data themselves are changed manually by applying a linear correction in the database. Spurious or anomalous data are also removed. Every six months, the instruments are fully serviced and their responses are corrected to the calibration standards. **[K8, S6]**
 
 # Data Sources
 
@@ -100,7 +108,7 @@ A key requirement within the air quality guidance is that data capture should ma
 
 In order to calculate this statistic, the hourly continuous data for each instrument is retrieved from the envista database and a function is iterated over the complete dataset to derive the number and percentage of missing observations. The function to retrieve data is not shown for brevity. The missing data calculation is shown below.
 
-The consolidated `long_aq_data_tbl` is split into a list of tibbles, completely empty columns removed, and the `miss_var_summary()` function from the `naniar` package is mapped over each tibble in the list. The relevant pollutants are filtered from the resulting tibble and the columns are selected and renamed with `transmute()` function. The resulting tibble is piped into a `gt()` table. **[K3, S2, S7]**
+The consolidated `long_aq_data_tbl` is split into a list of tibbles (data frames), completely empty columns removed, and the `miss_var_summary()` function from the `naniar` package is mapped over each tibble in the list. The relevant pollutants are filtered from the resulting tibble and the columns are selected and renamed with `transmute()` function. The resulting tibble is piped into a `gt()` table. **[K3, S2, S7]**
 
 ![Missing data calculation function](images/r-code-calc-missing.png)
 
@@ -109,33 +117,33 @@ The consolidated `long_aq_data_tbl` is split into a list of tibbles, completely 
 
 Diagnostics data from the NOx analysers are captured in a database on a data logger. The  loggers are polled hourly and both measurement and diagnostics data are stored in a corporate database. The diagnostics data are extracted for the reporting. **[S8]**
 
-The code below sets up a database connection by retrieving the connection parameters from a config.yml file. The config file can be added to .gitignore to ensure that the credentials are not published on GitHub. **[S1]**
+The code below sets up a database connection by retrieving the connection parameters from a config.yml file. The config file is added to .gitignore to ensure that the credentials are not published on GitHub. **[S1]**
 
 The connection object is used to retrieve the diagnostics table in the `get.diag.tbl()` function. This function also takes date parameters and filters the diagnostics table so that the temporal subset of data needed is retrieved. This function uses the `dbplyr` backend to generate SQL in R. **[K11, S15]**
 
 ![Extract and process diagnostics table from database](images/r-code-diag-retrieve.png)
 
-The function below takes a long version of the diagnostics table, a data frame holding upper and lower limits for the diagnostics parameters, and a data frame relating the site ID's in the diagnostics table to meaningful site names. It filters for missing, cleans column data by trimming white space and joins the three data sets to return a cleaned table in long format used in plotting and tabulation. The upper and lower limit are used to define the normal operating characteristics of the instrument. **[S8]**
+The function below takes a long version of the diagnostics tibble, a tibble holding upper and lower limits for the diagnostics parameters, and a tibble relating the site ID's in the diagnostics table to meaningful site names. It filters for missing, cleans column data by trimming white space and joins the three data sets to return a cleaned tibble in long format used in plotting and tabulation. The upper and lower limit are used to define the normal operating characteristics of the instrument. **[S8]**
 
 ![Cleaning and joining diagnostics data](images/r-code-join-filter-mutate-diag-table.png)
 
 ## Extract and Process Calibration Data
 
-The calibration data are entered on a mobile device using Google forms and are held on a Google spreadsheet which calculates the zero and span factors from the data entered. Google sheets was used as it runs on any android device and data are not personal or private. An exemption to a corporate ban on google forms was secured for this use case. **[S1, K12]**
+The calibration data are entered on a mobile device using Google forms and are held on a Google spreadsheet which calculates the zero and span factors from the data entered. Google sheets was used as it runs on any mobile device and data are not personal or private. An exemption to a corporate ban on google forms was secured for this use case. **[S1, K12]**
 The screenshot below shows a portion of the calibration form used on a mobile device.
 
 {{< pagebreak >}}
 ![Calibration data capture form](images/form_cals.png)
 
 
-The `googlesheets4` package is used to access the spreadsheet using the google credentials object. The two functions shown below retrieve calibration and gas metadata from the spreadsheet and range specified in the `read_sheet()` functions and perform minimal data cleaning before returning a data frame. **[S8, S4]**
+The `googlesheets4` package is used to access the spreadsheet using the google credentials object. The two functions shown below retrieve calibration and gas metadata from the spreadsheet and range specified in the `read_sheet()` functions and perform minimal data cleaning before returning a tibble. **[S8, S4]**
 
 
 ![Retrieve calibration and gas data](images/r-code-get-cal-gas-tbl.png)
 
 ## Create Output Table for Calibration Factors and Targets
 
-The `gt` package was used to create a table showing how calibrations compare against optimal values. The data retrieved is pre - processed and passed to the function below. This function filters the data, sets targets for the calibration factors - zero for zero calibration and one for span calibration and groups the resulting data frame by site and date. This data frame is then piped into the `gt()` function which creates the output table as html. Formatting functions render the table in a way which conveys the summary quickly and clearly to the reader. **[S12]**
+The `gt` package was used to create a table showing how calibrations compare against optimal values. The data retrieved is pre - processed and passed to the function below. This function filters the data, sets targets for the calibration factors - zero for zero calibration and one for span calibration and groups the resulting data frame by site and date. This tibble is then piped into the `gt()` function which creates the output table as html. Formatting functions render the table in a way which conveys the summary quickly and clearly to the reader. **[S12]**
 
 ![Calibration factors table](images/r-code-cal-factors-gt.png)
 
@@ -154,7 +162,7 @@ The function shown below takes the date span of interest, the device_url endpoin
 
 ## Plot Daily Data use of Routers
 
-The function shown below takes a data frame and uses the `ggplot2` package to plot a faceted column chart showing daily receive and transmit data totals for each router. Appropriate theme adjustments are made to make a visually appealing chart. **[S12]**
+The function shown below takes a tibble and uses the `ggplot2` package to plot a faceted column chart showing daily receive and transmit data totals for each router. Appropriate theme adjustments are made to make a visually appealing chart. **[S12]**
 
 ![Daily data use](images/r-code-daily-data-plot-routers.png)
 
@@ -253,7 +261,7 @@ Ensuring the long term viability of this approach means that the end user needs 
 
 There is more that could be done to add to this report. For example, because the calibration factors are manually applied to the data in the database client application, there is potential for human error. This could be checked by running routines to verify correct calibration factors are applied. Alternatively the calibration factors could be automatically applied with update queries on the database. However there is still a manual element to data ratification in terms of removing anomalies so some potential human error would remain. **[K8, S6, K11]**
 
-The analytics pipeline could be further developed by creating an R package. This would be the optimal way to create a coherent set of processing and analytical functions related to this activity. This is something I am researching will not be able to implement in this project. **[K11]**
+The analytics pipeline could be further developed by creating an R package. This would be the optimal way to create a coherent set of processing and analytical functions related to this activity. This is something I am researching but will not be able to implement in this project. **[K11]**
 
 ## Business Benefits
 
