@@ -477,9 +477,6 @@ back_sites <- contin_back_sites$code
     # c("BRS8", "BORN", "NPT3", "SWHO") # MANUAL
 
 back_site_names <- contin_back_sites$site
-    # contin_back_sites %>% 
-    # filter(code %in% back_sites) %>% 
-    # select(site)
 
 annual_back_data <- importAURN(site = back_sites,
                                pollutant = "no2",
@@ -554,7 +551,7 @@ get.contin_data <- function(con, no2_data, final_tbl){
                    endDate = maxdate, timebase = 60)
 }
 
-get.gridconcs.da.tubes <- function(con, startDate, siteids){
+get.gridconcs.da.tubes <- function(con, startDate, siteids, aqms_tbl){
     year <- year(as.Date(startDate))
     # tbl of sites that need adjusting with grid id's
     distance_adjust_sites_tbl <- aqms_tbl %>% 
@@ -585,7 +582,8 @@ get.gridconcs.da.tubes <- function(con, startDate, siteids){
     sites_gridconcs_tbl <- grid_joined_tbl %>% 
         inner_join(distance_adjust_sites_tbl,
                    by = c("grid_id" = "grid_id")) %>% 
-        select(siteid, back_conc) 
+        select(siteid, back_conc) %>% 
+        arrange(siteid)
     
     return(sites_gridconcs_tbl)
 }
@@ -732,8 +730,6 @@ joined_bias_tbl %>%
     return()
     
 }
-
-
 
 make.contin.no2.nested <- function(contin_data, aqms_tbl){
 
@@ -937,13 +933,13 @@ make.table.a7 <- function(contin_4yrs_tbl,
                           startDate,
                           aqms_tbl,
                           pm10_data_cap_tbl){
-
+    
 pm10_exc_tbl <- contin_4yrs_tbl %>% 
     select(siteid, date, pm10) %>% 
     filter(year(date) <= year(startDate)) %>%
     mutate(siteid = as_factor(siteid)) %>% 
     timeAverage(avg.time = "day",
-                data.thresh = 0.75,
+                data.thresh = 75, # not 0.75!!!
                 type = "siteid") %>% 
     mutate(siteid = as.integer(as.character(siteid))) %>% 
     group_by(siteid, year = year(date)) %>% 
@@ -1187,24 +1183,30 @@ write.pm25.trend.chart <- function(pm25_trend_chart){
     return(glue("chart image file saved to {filename}"))
 }
 
-write.spreadsheets <- function(table_list,
-                               bias_site_list,
-                               startDate){
+write.bias.spreadsheet <- function(bias_site_list,
+                                   startDate){
     year <- year(startDate)
-    asr_dtpt_file = glue("data/asr_tables_{year}.xlsx")
+    
     bias_tube_file = glue("data/bias_input_tables_{year}.xlsx")
 
     
-    write_xlsx(table_list, file = asr_dtpt_file)
     write_xlsx(bias_site_list, file = bias_tube_file)
     
     
     print(glue("files are saved 
                {bias_tube_file} 
-               {asr_dtpt_file} ")) %>% 
+                ")) %>% 
         return()
     
 }
+
+write.table.list <- function(startDate, table_list){
+    year = year(startDate)
+    table_list %>% 
+    iwalk(.f = ~write_csv(.x, glue("data/{.y}_{year}.csv")))
+
+}
+
 
 make.annual.tubes.tbl <- function(aqms_tbl,
                                   annual_tube_data_append_tbl){

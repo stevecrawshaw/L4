@@ -206,10 +206,13 @@ list(
                            table_a8)
   ),
   tar_target(
-      name = write_spreadsheets,
-      command = write.spreadsheets(table_list,
-                                   bias_site_list,
-                                   startDate)
+      name = write_bias_spreadsheet,
+      command = write.bias.spreadsheet(bias_site_list,
+                                       startDate)
+  ),
+  tar_target(
+      name = write_table_list,
+      command = write.table.list(startDate, table_list)
   )
     
 )
