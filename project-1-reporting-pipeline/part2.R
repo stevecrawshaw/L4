@@ -10,7 +10,7 @@ p_load(char = p)
 
 sites <- importMeta(all = TRUE)
 
-
+# get the path to the DTDES excel file exported by the DTPT spreadsheet
 dtdes_path <-
     choose.files(
         default = here("data", "dtdes_test.xlsx"),
@@ -19,7 +19,7 @@ dtdes_path <-
         filters = "xlsx"
     )
 
-
+# initiate connection for access
 if (exists("con")) {
     con %>% dbDisconnect()
 } else {
@@ -57,7 +57,7 @@ annual_tube_data_append_tbl %>%
 
 # don't write the new data into the table in MS Access no2_data with R
 # Export and run append query
-ods_tubes_upload_tbl_file = glue("data/ods_tubes_upload_{year}.csv")
+ods_tubes_upload_tbl_file = glue("data/ods_tubes_upload_{year(startDate)}.csv")
 write.csv2(ods_tubes_upload_tbl, ods_tubes_upload_tbl_file)
 
 
