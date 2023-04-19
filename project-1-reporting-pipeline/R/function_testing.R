@@ -1,12 +1,12 @@
 # Testing ----
 
-# dt_cal_content <- get.dt.cal.content()
 html_tables_list <- make.html.tables.list()
 
 step1_dt_calendar_dates_tbl <- make.step1.dt.calendar.dates.tbl(html_tables_list, startDate)
 
 step1_dt_first_last_dates_tbl <- make.step1.dt.first.last.dates.tbl(step1_dt_calendar_dates_tbl = step1_dt_calendar_dates_tbl)
 
+# 2022 tubes that need distancxe adjusting
 siteids <- c("175", "239", "242", "261", "405", "487", "502", "512", "567", "586", "593", "602", "608", "624", "652", "665", "667", "670") %>% as.integer()
 
 
@@ -79,15 +79,5 @@ write.bias.spreadsheet(bias_site_list, startDate)
 
 write.table.list(startDate, table_list = table_list)
 
-# to do
-# add to targets
-# write out shapefiles of >36, >40 etc
-# maps?
-
-
-
-siteids <- c(175L, 239L, 405L, 502L, 567L)
-
 dbDisconnect(con)
 
-# write data ----

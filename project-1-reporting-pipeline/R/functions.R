@@ -841,24 +841,31 @@ return(table_a1)
 make.datacap.tbl <-  function(contin_4yrs_tbl, startDate, pollutant){
     pollutant <- enquo(pollutant)
     year <- year(startDate)
-    # pollutant <- "no2"
+    # data capture is calculated on the hourly data for pm10 and no2
     data_cap_tbl <- contin_4yrs_tbl %>% 
     select(siteid, date, !!pollutant) %>% 
-    filter(year(date) == {{year}}) %>% 
     group_by(siteid, year = year(date)) %>% 
-    summarise(dcp = ((sum(!is.na(!!pollutant))) / hrs.in.year({{startDate}}) * 100) %>% round(1),
-              dcy = ((sum(!is.na(!!pollutant)) / difftime(max(date), min(date), units = "hours") %>% as.integer()) * 100) %>% round(1),
+    summarise(
+        dcp = ((sum(!is.na(!!pollutant)) / difftime(max(date),
+                                                    min(date),
+                                                    units = "hours") %>%
+                    as.integer()) * 100) %>%
+            round(1), # data capture for the period
+        dcy = ((sum(!is.na(!!pollutant))) / hrs.in.year({{startDate}}) * 100) %>%
+            round(1), # data capture for the year - criteria to add percentiles
               .groups = "drop") %>% 
-    select(-year)
+        filter(dcp != 0 & dcy != 0) %>% 
+        return()
 }
 
 make.table.a3 <- function(contin_4yrs_tbl, startDate, aqms_tbl, no2_data_cap_tbl){
-    
+    year = year(startDate)
     contin_annual_no2_wide_tbl <- contin_4yrs_tbl %>% 
         select(siteid, date, no2) %>% 
         filter(year(date) <= year(startDate)) %>% 
         group_by(siteid, year = year(date)) %>% 
-        summarise(ann_mean_no2 = mean(no2, na.rm = TRUE),
+        summarise(ann_mean_no2 = mean(no2, na.rm = TRUE) %>% 
+                      round(1),
                   .groups = "drop") %>% 
         pivot_wider(id_cols = siteid,
                     names_from = year,
@@ -866,8 +873,11 @@ make.table.a3 <- function(contin_4yrs_tbl, startDate, aqms_tbl, no2_data_cap_tbl
     
     table_a3_tbl <- aqms_tbl %>% 
         select(siteid, easting, northing, laqm_locationclass) %>% 
-        inner_join(no2_data_cap_tbl, by = "siteid") %>% 
-        inner_join(contin_annual_no2_wide_tbl, by = "siteid")
+        left_join(no2_data_cap_tbl %>% 
+                       filter(year == {{year}}),
+                  by = "siteid") %>% 
+        inner_join(contin_annual_no2_wide_tbl, by = "siteid") %>% 
+        select(-year)
     
     return(table_a3_tbl)
     
@@ -877,7 +887,7 @@ make.table.a5 <- function(contin_4yrs_tbl,
                           startDate,
                           aqms_tbl,
                           no2_data_cap_tbl){
-    
+    year <-  year(startDate)
     perc_exc_no2_tbl <- contin_4yrs_tbl %>% 
         select(siteid, date, no2) %>% 
         filter(year(date) <= year(startDate)) %>% 
@@ -888,9 +898,11 @@ make.table.a5 <- function(contin_4yrs_tbl,
                                       na.rm = TRUE) %>%
                       round(1),
                   .groups = "drop") %>% 
-        left_join(no2_data_cap_tbl, by = "siteid") %>%
+        inner_join(no2_data_cap_tbl,
+                   by = join_by(siteid == siteid,
+                                year == year)) %>%
         rowwise() %>% 
-        mutate(cell = if_else(dcp < 85,
+        mutate(cell = if_else(dcy < 85,
                               glue("{exc_no2}({perc_no2})"),
                               glue("{exc_no2}"))) %>% 
         pivot_wider(id_cols = siteid,
@@ -899,8 +911,11 @@ make.table.a5 <- function(contin_4yrs_tbl,
     
     a5_table_tbl <- aqms_tbl %>% 
         select(siteid, easting, northing, laqm_locationclass) %>% 
-        inner_join(no2_data_cap_tbl, by = "siteid") %>% 
-        inner_join(perc_exc_no2_tbl, by = "siteid")
+        inner_join(no2_data_cap_tbl %>%
+                       filter(year == {{year}}),
+                   by = join_by(siteid == siteid)) %>% 
+        inner_join(perc_exc_no2_tbl, by = "siteid") %>% 
+        select(-year)
     
     return(a5_table_tbl)
 }
@@ -909,13 +924,15 @@ make.table.a6 <- function(contin_4yrs_tbl,
                           startDate,
                           aqms_tbl,
                           pm10_data_cap_tbl){
+    year = year(startDate)
     pm10_mean_tbl <- contin_4yrs_tbl %>% 
         select(siteid, date, pm10) %>% 
         filter(year(date) <= year(startDate)) %>% 
         group_by(siteid, year = year(date)) %>% 
         summarise(mean_pm10 = mean(pm10, na.rm = TRUE) %>% round(1),
                   .groups = "drop") %>% 
-        left_join(pm10_data_cap_tbl, by = "siteid") %>% 
+        inner_join(pm10_data_cap_tbl, by = join_by(siteid == siteid,
+                                                   year == year)) %>% 
         na.omit() %>% 
         pivot_wider(id_cols = siteid,
                     names_from = year,
@@ -923,8 +940,12 @@ make.table.a6 <- function(contin_4yrs_tbl,
     
     table_a6_tbl <- aqms_tbl %>% 
         select(siteid, easting, northing, laqm_locationclass) %>% 
-        inner_join(pm10_data_cap_tbl, by = "siteid") %>% 
-        inner_join(pm10_mean_tbl, by = "siteid")
+        left_join(pm10_data_cap_tbl %>% 
+                       filter(year == {{year}}),
+                   by = "siteid") %>% 
+        inner_join(pm10_mean_tbl, by = "siteid") %>% 
+        select(-year)
+    
 return(table_a6_tbl)    
     
 }
@@ -933,7 +954,7 @@ make.table.a7 <- function(contin_4yrs_tbl,
                           startDate,
                           aqms_tbl,
                           pm10_data_cap_tbl){
-    
+    year <- year(startDate)
 pm10_exc_tbl <- contin_4yrs_tbl %>% 
     select(siteid, date, pm10) %>% 
     filter(year(date) <= year(startDate)) %>%
@@ -949,9 +970,11 @@ pm10_exc_tbl <- contin_4yrs_tbl %>%
                                   na.rm = TRUE) %>% 
                   round(1),
               .groups = "drop") %>% 
-    left_join(pm10_data_cap_tbl, by = "siteid") %>%
+    inner_join(pm10_data_cap_tbl,
+              by = join_by(siteid == siteid,
+                           year == year)) %>%
     rowwise() %>% 
-    mutate(cell = if_else(dcp < 85,
+    mutate(cell = if_else(dcy < 85,
                           glue("{exc_pm10}({perc_pm10})"),
                           glue("{exc_pm10}"))) %>% 
     na.omit(perc_pm10) %>% 
@@ -961,8 +984,11 @@ pm10_exc_tbl <- contin_4yrs_tbl %>%
 
 table_a7_tbl <- aqms_tbl %>% 
     select(siteid, easting, northing, laqm_locationclass) %>% 
-    inner_join(pm10_data_cap_tbl, by = "siteid") %>% 
-    inner_join(pm10_exc_tbl, by = "siteid")
+    left_join(pm10_data_cap_tbl %>% 
+                   filter(year == {{year}}),
+               by = "siteid") %>% 
+    inner_join(pm10_exc_tbl, by = "siteid") %>% 
+    select(-year)
 return(table_a7_tbl)    
 
 }
@@ -971,23 +997,30 @@ make.table.a8 <- function(contin_4yrs_tbl,
          startDate,
          aqms_tbl,
          pm2.5_data_cap_tbl){
+    year = year(startDate)
     pm2.5_mean_tbl <- contin_4yrs_tbl %>% 
         select(siteid, date, pm2.5) %>% 
         filter(year(date) <= year(startDate)) %>% 
         group_by(siteid, year = year(date)) %>% 
-        summarise(mean_pm2.5 = mean(pm2.5, na.rm = TRUE) %>% round(1),
+        summarise(mean_pm2.5 = mean(pm2.5, na.rm = TRUE) %>%
+                      round(1),
                   .groups = "drop") %>% 
-        left_join(pm2.5_data_cap_tbl, by = "siteid") %>% 
+        inner_join(pm2.5_data_cap_tbl, by = join_by(siteid == siteid,
+                                                    year == year)) %>% 
         na.omit() %>% 
         arrange(year) %>% 
         pivot_wider(id_cols = siteid,
                     names_from = year,
-                    values_from = mean_pm2.5) 
+                    values_from = mean_pm2.5) %>% 
+        arrange(siteid)
     
     table_a8_tbl <- aqms_tbl %>% 
         select(siteid, easting, northing, laqm_locationclass) %>% 
-        inner_join(pm2.5_data_cap_tbl, by = "siteid") %>% 
-        inner_join(pm2.5_mean_tbl, by = "siteid")
+        left_join(pm2.5_data_cap_tbl %>% 
+                      filter(year == {{year}}),
+                  by = "siteid") %>% 
+        inner_join(pm2.5_mean_tbl, by = "siteid") %>% 
+        select(-year)
     
     return(table_a8_tbl)    
 }
