@@ -1,8 +1,13 @@
 ---
 title: "Data Analyst L4"
-subtitle: "Diagnostics and Quality Reporting Analytics Pipeline for Air Quality Monitoring"
+subtitle: "Diagnostics and Data Quality Analytics for Air Quality Monitoring"
 author: "Steve Crawshaw"
-format: revealjs
+date: "`r Sys.Date()`"
+format: 
+    revealjs:
+        theme: simple
+        preview-links: true
+embed-resources: true
 ---
 
 ## Business Context
@@ -12,6 +17,7 @@ Measuring and Managing Air Quality
 :::: {.columns}
 
 ::: {.column width="40%"}
+
 ![](images/contin_sites_sml.png)
 :::
 
@@ -21,18 +27,29 @@ Measuring and Managing Air Quality
 
 ::::
 
-
-
 ## Business Problem
 
-- Clean Air Zone
+:::: {.columns}
+
+::: {.column width="60%"}
+
+- [Clean Air Zone](https://www.cleanairforbristol.org/)
     - A £44m project
     - Highly politically sensitive
-    - Relies on air quality data measurements
+    - **Relies on air quality data**
     - Prescriptive QA regime
     - But human and system error..
 - Solution
-    - Reproducible pipeline for data quality risk analysis
+    - **Reproducible pipeline for data quality analysis**
+    
+:::
+
+::: {.column width="40%"}
+
+![](images/cazbig.png)
+:::
+
+::::
 
 ## Data Quality Requirements
 
@@ -44,40 +61,169 @@ Measuring and Managing Air Quality
 
 ## Data Sources
 
+:::: {.columns}
+
+::: {.column width="60%"}
+
 - Teledyne API T200 NOx analysers
 - EnviDAS FW data loggers (SQL Server)
 - Teltonika 4G routers
+    - RMS platform
 - Azure SQL Server (all sites)
 - Google sheets (calibration data)
 
+:::
+
+::: {.column width="40%"}
+
+![](images/rut950-840xAuto.webp)
+:::
+
+::::
+
+## Data Analysis - R packages
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- DBI (database access)
+- config (secure parameters)
+- tidyverse (wrangling)
+- openair (air quality)
+- gt (tables)
+
+    
+:::
+
+::: {.column width="50%"}
+
+- targets (pipeline)
+- Quarto (reporting)
+- googlesheets4
+- rlist (list processing)
+- httr2 (REST API)
+
+:::
+
+::::
 
 ## Data Analysis - Diagnostics
+
+:::: {.columns}
+
+::: {.column width="60%"}
 
 - Air quality data
     - Missingness
 - Instrument diagnostics
-    - operating parameters
-    - visualisation
+    - Operating parameters
     
+:::
+
+::: {.column width="40%"}
+
+![](fp/qa_report_files/figure-html/diag_plot_1-1.png)
+
+:::
+
+::::
+
 ## Data Analysis - Calibration
 
+:::: {.columns}
+
+::: {.column width="40%"}
+
 - Zero and Span
-- Span Divergence (NO and NOx)
 
-## Data Analysis - Telemetry
+:::
 
-- Daily data use
+::: {.column width="60%"}
 
+![](images/cal_factors.png)
+:::
 
+::::
+
+## Data Analysis - Calibration
+
+:::: {.columns}
+
+::: {.column width="40%"}
+
+- Span divergence
+    - NO and NOx
+    
+:::
+
+::: {.column width="60%"}
+
+![](images/span_diff_plot.png)
+
+:::
+
+::::
+
+## Data Analysis - Telemetry Data
+
+:::: {.columns}
+
+::: {.column width="50%"}
+
+![](fp/qa_report_files/figure-html/data_use_1-1.png)
+
+:::
+
+::: {.column width="50%"}
+
+![](fp/qa_report_files/figure-html/cumulative_data_use-1.png)
+:::
+
+::::
 
 ## Reproducible Analytical Pipelines
 
+:::: {.columns}
+
+::: {.column width="50%"}
+
+- [`targets` package](https://books.ropensci.org/targets/)
+- RAP automates function execution
+- Skips redundant steps
+- Encourages functional style
+- Could add:
+    - Environment manager (`renv`)
+    - Create local R package
+
+:::
+
+::: {.column width="50%"}
+
+![](images/tar-visnetwork.png)
+
+:::
+
+::::
 
 ## Reporting
 
-
+- Monthly report
+- Select start and end dates
+- Rendered in html by Quarto
+- Quarto reads the objects in the `targets` store
+- Some minimal formatting with `gt` package
+- HTML output can be shared with engineers
 
 ## Business Recommendations
 
+- Extend analytics with dashboard
+- Investigate:
+    - BAM diagnostics (PM~10~, PM~2.5~)
+    - Data logger diagnostics
+- Consolidate with data ratification
+- Add public reporting
+- Include alerts for key parameters
+- Write R package & containerise
 
-
+##
