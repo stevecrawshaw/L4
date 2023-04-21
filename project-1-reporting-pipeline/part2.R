@@ -8,8 +8,6 @@
 source("R/functions.R")
 p_load(char = p)
 
-sites <- importMeta(all = TRUE)
-
 # get the path to the DTDES excel file exported by the DTPT spreadsheet
 dtdes_path <-
     choose.files(

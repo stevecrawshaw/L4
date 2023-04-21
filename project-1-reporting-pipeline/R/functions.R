@@ -1223,7 +1223,7 @@ write.bias.spreadsheet <- function(bias_site_list,
     bias_tube_file = glue("data/bias_input_tables_{year}.xlsx")
 
     
-    write_xlsx(bias_site_list, file = bias_tube_file)
+    openxlsx2::write_xlsx(bias_site_list, file = bias_tube_file)
     
     
     print(glue("files are saved 
