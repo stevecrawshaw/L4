@@ -5,16 +5,19 @@
 
 # Load packages required to define the pipeline:
 library(targets)
+library(tarchetypes)
+# library(tidyverse)
 # library(tarchetypes) # Load other packages as needed. # nolint
 
 # Set target options:
 tar_option_set(
-  packages = c("tibble"), # packages that your targets need to run
-  format = "rds",
-  workspace_on_error = TRUE# https://books.ropensci.org/targets/debugging.html
-  # Set other options as needed.
+  # packages = c("odbc", "DBI", "config", "tidyverse", "openair", "glue", "timetk", "lubridate", "gt", "gtExtras", "googlesheets4", "janitor", "rlist", "plotly", "httr2", "naniar"), # packages that your targets need to run
+   format = "rds",
+  workspace_on_error = TRUE
 )
 
+
+tar_option_get("packages")
 # tar_make_clustermq() configuration (okay to leave alone):
 options(clustermq.scheduler = "multiprocess")
 
@@ -161,5 +164,7 @@ list(
       name = missing_data_tbl,
       command =  make.missing.data.tbl(aq_data_tbl,
                                        station_site_tbl)
-  )
+  ),
+  tar_render(name = qa_report, 
+             path = "qa_report.qmd")
 )

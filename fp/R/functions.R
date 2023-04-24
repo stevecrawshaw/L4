@@ -1,3 +1,4 @@
+
 pacman::p_load(odbc,
                DBI, 
                config,
@@ -14,7 +15,6 @@ pacman::p_load(odbc,
                plotly,
                httr2,
                naniar)
-
 # 1.0 Global Variables ----
 
 dateon <-  "2023-03-01"
@@ -47,6 +47,7 @@ get.final.tbl <- function(){
     read_delim(file = "S:/SUSTAIN/Sustain-Common/SCCCS/write_gis_r/R Projects/air_quality_data_management/data/finalContinTablerhtemp.csv", delim = ",", col_types = "ciiciccc") %>% 
         return()
 }
+
 make.limits.tbl <- function(){
     limits_tbl <- tribble(
         ~parameter, ~warning_low, ~warning_high, ~normal_low, ~normal_high,
@@ -79,7 +80,7 @@ make.sites.tbl <- function(){
 
 #   Database Connection
 connect.envista <- function(){
-    con_params <- get(config = "envista") # credentials
+    con_params <- config::get(config = "envista") # credentials
     con_params$driver
     #make connection to Envista using details in the config file
     dbConnect(odbc(),
