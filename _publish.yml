@@ -2,3 +2,13 @@
   quarto-pub:
     - id: e89de375-eb16-401d-9163-8209192f05cc
       url: 'https://quartopub.org/sites/stevecrawshaw/summative-portfolio-l4-fe76'
+    - id: 634543b8-6b28-4ed6-ad23-003b461ff58b
+      url: 'https://quartopub.com/sites/stevecrawshaw/summative-portfolio-l4'
+- source: final-proj-presentation.qmd
+  quarto-pub:
+    - id: 7ea539a4-821b-4999-becd-45ff33a9f884
+      url: 'https://quartopub.com/sites/stevecrawshaw/data-analyst-l4'
+- source: fp.qmd
+  quarto-pub:
+    - id: 0492530c-da68-4894-8c32-32ab4ecc6ad0
+      url: 'https://quartopub.com/sites/stevecrawshaw/diagnostics-and-quality-reporting-analytics-pipeline-for-air-quality-monitoring'

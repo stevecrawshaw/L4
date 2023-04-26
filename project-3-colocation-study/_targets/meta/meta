@@ -1,11 +1,11 @@
 name|type|data|command|depend|seed|path|time|size|bytes|format|repository|iteration|parent|children|seconds|warnings|error
 .Random.seed|object|6a5fe8fe876a412a|||||||||||||||
-combined_long_tbl|stem|5f43e8976b3bdac3|e5573dba59abd4a9|3639fda7b814b121|1619989325||t19436.6169347448s|58eeb347d79b20a5|218041|rds|local|vector|||0.04||
-daily_csv_urls|stem|15d7f6b08f6e9a66|f1806390221f764c|9bbdc508e0337ec9|7468504||t19436.6166384872s|a1c456b03adbfbf8|44|rds|local|vector|||0.02||
-daily_files_tbl|stem|15d7f6b08f6e9a66|b0985a283c27babc|5cf48f0ecb0760ee|104738191||t19436.6169303812s|a1c456b03adbfbf8|44|rds|local|vector|||0||
+combined_long_tbl|stem|1e383388a07a6629|e5573dba59abd4a9|6f4dc606d2443092|1619989325||t19473.5363009254s|c3c7b9a650b2eb4f|211550|rds|local|vector|||0.03||
+daily_csv_urls|stem|c1c3c7b065e2a288|f1806390221f764c|9bbdc508e0337ec9|7468504||t19473.5359015352s|a1c456b03adbfbf8|44|rds|local|vector|||12.75||
+daily_files_tbl|stem|c1c3c7b065e2a288|b0985a283c27babc|f6359d2e900306f1|104738191||t19473.536007923s|a1c456b03adbfbf8|44|rds|local|vector|||0||
 datehelper_fnc|function|64d36b2251e19e38|||||||||||||||
-drift_plot_215_gg|stem|04113cfd03aef881|cce87906ff207606|cebb0d511610bc18|-1985441761||t19436.6169488587s|e71d4c7b2572c4c9|848754|rds|local|vector|||0.08||
-drift_plot_500_gg|stem|67f2a8e0bd9db063|61e2f158888ac51a|cebb0d511610bc18|196033960||t19436.6169541772s|981a523ddc13ef68|879966|rds|local|vector|||0.06||
+drift_plot_215_gg|stem|b2124d40eb718a73|cce87906ff207606|418a249d66862eb9|-1985441761||t19473.5363153575s|d8afeeacf233ec8f|866390|rds|local|vector|||0.07||
+drift_plot_500_gg|stem|79ed69cc355650a9|61e2f158888ac51a|418a249d66862eb9|196033960||t19473.5363197878s|07b23bf9570e36cc|891023|rds|local|vector|||0.05||
 end_date|object|dfbb00451e519604|||||||||||||||
 get.daily.csv.urls|function|a802cf62a85648b6|||||||||||||||
 get.daily.files.tbl|function|8041d5f503caf611|||||||||||||||
@@ -30,19 +30,19 @@ make.temp.rh.tbl|function|247e7f5bd21a01d6|||||||||||||||
 make.temple.way.sds.hr.tbl|function|76b6af850af5fd32|||||||||||||||
 make.tidied.gt|function|3975038fab4e64f3|||||||||||||||
 model.parameter.test|function|2eae1b8e40ec2347|||||||||||||||
-model_data_tbl|stem|46b6c15ec5d9e061|6c074ff6818890a8|6079cb2f2309277b|-430755439||t19436.6169400851s|3ffd751675047503|602958|rds|local|vector|||0.23||
-model_select_gt|stem|101696abd03d542f|725c355b25de917f|68733d51df61adae|-11697135||t19436.6238871102s|b9232bc415d95dcc|29556|rds|local|vector|||0.24||
-model_select_tbl|stem|e4e5db40a4edfaac|476be85963c0630e|96526c3b70910945|862350860||t19436.6214147309s|a6f6bd933f8d3cf0|11123|rds|local|vector|||3.02||
-monthly_files_tbl|stem|85c6df59bd5405c0|217c211019507121|b1cb1765c50a585b|1262767376||t19436.6169299761s|a1c3326c2bbb5cc9|1908932|rds|local|vector|||22.49|1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat|
+model_data_tbl|stem|68e4f9f658f5409a|6c074ff6818890a8|f625b98794fa9f49|-430755439||t19473.536306319s|585e651f6ee62ec1|586891|rds|local|vector|||0.25||
+model_select_gt|stem|a304dcd789b58bff|725c355b25de917f|bbb5a3a70766357b|-11697135||t19473.5364516557s|a03be557465dc0ae|30661|rds|local|vector|||0.17||
+model_select_tbl|stem|bcb08b8d91cc896d|476be85963c0630e|7f6bda8fb481d68e|862350860||t19473.5363818618s|5e85d1419b8444c5|10880|rds|local|vector|||3.68||
+monthly_files_tbl|stem|648315da397fc3dc|217c211019507121|68c20aaacfb912f3|1262767376||t19473.5362968745s|5ff30d02180e489c|1723243|rds|local|vector|||24.25|URL httpsapirrd.madavi.dedata_csv202205dataesp82666496445202205.zip cannot open destfile datazipstemp.zip, reason No such file or directory. download had nonzero exit status. error 1 in extracting from zip file. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat. 1m22mOne or more parsing issues, call problems on your data frame for details,e.g.  dat  vroom...  problemsdat|
 packages|object|fb009fcd7f9b3bc3|||||||||||||||
-parson_st_sds_hr_tbl|stem|361e95a1a479c0e3|08d49c39dc943d89|5bebc13fb2166629|-1942118816||t19436.616660431s|af416e2900c9c0de|42662|rds|local|vector|||1.86||
+parson_st_sds_hr_tbl|stem|763a280b3691eac4|08d49c39dc943d89|5bebc13fb2166629|-1942118816||t19473.5359304089s|af416e2900c9c0de|42662|rds|local|vector|||2.42||
 plot.drift.site.gg|function|291322d5965f5cd0|||||||||||||||
 plot.scatter.site.gg|function|f8ec68b95a4f05df|||||||||||||||
 plot.testing.predictions|function|5ff9d3e2754df7ed|||||||||||||||
 plot.time.series.gg|function|6a894ccf42c64634|||||||||||||||
 prep.sp.plot.tbl|function|46f9bc1a121646dc|||||||||||||||
 prep.timeplot.tbl|function|7bece499c6ec9ab7|||||||||||||||
-ref_tbl|stem|549aec34536f0e4b|f555c14961a7bda5|76e90da902bc70c9|-2130245924||t19436.6165947664s|fbc288e53e457dc8|64332|rds|local|vector|||9.17||
+ref_tbl|stem|72ecef1330088b45|f555c14961a7bda5|76e90da902bc70c9|-2130245924||t19473.5359697307s|fbc288e53e457dc8|64332|rds|local|vector|||3.35||
 save.check.model.full|function|2881ec1e8802f3db|||||||||||||||
 save.check.model.train|function|7286f7faadbd6e5f|||||||||||||||
 save.ggplot|function|f931f8f2a7b43cdd|||||||||||||||
@@ -54,38 +54,38 @@ save.perf.gt.train|function|82b230eb2965aad3|||||||||||||||
 save.plot|function|ae042d052e1ea173|||||||||||||||
 save.png.summaryplot|function|8804bdc994646567|||||||||||||||
 save.prediction.plots|function|1f66c2de8b5897df|||||||||||||||
-save_check_model_full|stem|8fa893c5a170dc74|028f924327f3ef64|f8c7d2af2dee1d9b|581667140||t19437.464563854s|03f45736bd8f8218|303377|rds|local|vector|||3.67||
-save_check_model_train|stem|3d4f4cb7643f3eaf|cb974371d3055b83|c09dc755971ce481|763642223||t19437.4644189953s|9ff286cb0a8d4e7d|240071|rds|local|vector|||4.17||
-save_drift_plot_215_gg|stem|2252781d0d930be6|f151d0e366fe1564|abdd301c10e608b4|-1897135981||t19436.6217715197s|758d7d51407f572d|117|rds|local|vector|||1.16||
-save_drift_plot_500_gg|stem|8713be40e5079f82|5a60d32d651c6fb6|322f0ae2b77ce845|-1115365591||t19436.6222512639s|758d7d51407f572d|117|rds|local|vector|||1.06||
-save_gg_time_series_day_gg|stem|6f16f8503b6b0fb6|ad22de3fe6f82e48|4c7f918d9280ebe4|-325668443||t19437.4643701225s|045b07e719c4cc68|120|rds|local|vector|||0.57||
-save_gg_time_series_hour_gg|stem|05eee7093a0377b4|6af75f046aabd427|19da8cefb2d13864|1821442045||t19437.464363262s|b0efa4f1e05eee68|121|rds|local|vector|||2.76|1m22mRemoved 1 row containing missing values geom_line.|
-save_glanced_tidied_gt|stem|32af597cbdb2a163|3fd9009f91f1e81a|17ebfe7164a5efd9|-756276419||t19437.464695241s|ac45463db19e2cbe|48|rds|local|vector|||4.84||
+save_check_model_full|stem|ab64dc20af53a8a1|028f924327f3ef64|35a425c97f7bc276|581667140||t19473.5367838394s|bb4e2b637487d515|298717|rds|local|vector|||4.59||
+save_check_model_train|stem|5e347a8faf27c30b|cb974371d3055b83|c10ee93f4a9ee486|763642223||t19473.5366793638s|8c64e618c4ba1d80|236566|rds|local|vector|||4.84||
+save_drift_plot_215_gg|stem|1d7f931cab417bfc|f151d0e366fe1564|cee7ef4b27270952|-1897135981||t19473.5364151275s|758d7d51407f572d|117|rds|local|vector|||1.56||
+save_drift_plot_500_gg|stem|36b10ba1d2508aa1|5a60d32d651c6fb6|960413bea4b06c3b|-1115365591||t19473.536424914s|758d7d51407f572d|117|rds|local|vector|||0.83||
+save_gg_time_series_day_gg|stem|ce547747ae07e872|ad22de3fe6f82e48|c1476e628b134e32|-325668443||t19473.536622637s|045b07e719c4cc68|120|rds|local|vector|||0.68||
+save_gg_time_series_hour_gg|stem|8ebed538e7fd99b2|6af75f046aabd427|8cd1f2b84251108e|1821442045||t19473.5366145753s|b0efa4f1e05eee68|121|rds|local|vector|||1.01|1m22mRemoved 1 row containing missing values geom_line.|
+save_glanced_tidied_gt|stem|2bc9c7bff62c5c1f|3fd9009f91f1e81a|5769f3fbeaea702a|-756276419||t19473.5368858039s|ac45463db19e2cbe|48|rds|local|vector|||5.19||
 save_image|function|e042a47efb754089|||||||||||||||
-save_model_select_gt|stem|32af597cbdb2a163|4e1539861b566f24|46fb5a58df9468a9|-790441993||t19436.636804832s|ac45463db19e2cbe|48|rds|local|vector|||2.62||
-save_perf_gt_full|stem|76973e1682aa709e|3c784f49334d9ebb|8da42fd5a5c12043|-1221098836||t19437.4646386932s|045b07e719c4cc68|120|rds|local|vector|||6.44||
-save_perf_gt_train|stem|2ff64678627bb023|ae88f6b640acc47f|0114c387661371fb|-1734455999||t19437.4645084392s|b0efa4f1e05eee68|121|rds|local|vector|||7.69||
-save_png_pm10|stem|3092e43c572bada0|13e13e71015d911e|8329286ff062f0d5|-835137275|plots/summary_plot_pm10.png|t19436.6170298136s|41750021aad5fd2d|14938|file|local|vector|||1.83|More than one site detected, using pm10|
-save_png_pm25|stem|77f41807fa7e7fa4|0d915a0e2d8beb74|8329286ff062f0d5|1434329897|plots/summary_plot_pm2_5.png|t19436.6170417872s|720a447f18066eb5|14914|file|local|vector|||1.01|More than one site detected, using pm2.5|
-save_prediction_plots|stem|528a080961da8e78|6e5ac908bd103083|c6bcb135842d689a|1181030672||t19437.4645207173s|cd341b5f7430783e|63535|rds|local|vector|||1||
-save_scatter_plot_215_gg|stem|766b12e2e7162bd9|5d261d300e80e6c1|069c58d5f8689950|1350960898||t19436.659320703s|f21b4888ae8bdafc|118|rds|local|vector|||0.89|1m22mRemoved 8 rows containing nonfinite values stat_smooth.. 1m22mRemoved 7 rows containing nonfinite values stat_density.. 1m22mRemoved 1 rows containing nonfinite values stat_density.. 1m22mRemoved 8 rows containing nonfinite values stat_cor.. 1m22mRemoved 8 rows containing nonfinite values stat_regline_equation.. 1m22mRemoved 8 rows containing missing values geom_point.|
-save_scatter_plot_500_gg|stem|980c65d1b5cb3f74|3fd834c0d8c74ed9|931d562af8b8d7dd|-1529477450||t19436.6593102463s|f21b4888ae8bdafc|118|rds|local|vector|||1.08|1m22mRemoved 79 rows containing nonfinite values stat_smooth.. 1m22mRemoved 79 rows containing nonfinite values stat_density.. 1m22mRemoved 79 rows containing nonfinite values stat_cor.. 1m22mRemoved 79 rows containing nonfinite values stat_regline_equation.. 1m22mRemoved 79 rows containing missing values geom_point.|
-scatter_plot_215_gg|stem|272b2438577db80e|5a6df980874cb75c|c2de39ac4c8f1c1a|1036966888||t19436.6592967815s|3d109723308fe312|833422|rds|local|vector|||0.2||
-scatter_plot_500_gg|stem|47c5860ccd907cc0|a24686e4cc21ab4f|c2de39ac4c8f1c1a|-1696058695||t19436.6592904106s|421f496a9a2aa6c9|846683|rds|local|vector|||0.42|1m22mUsing size aesthetic for lines was deprecated in ggplot2 3.4.0.36mℹ39m Please use linewidth instead.|
-selected_model_output_tbl|stem|5f1fdc286499ef4b|dc508cd30e02410c|60539c0ab66f0850|-784331535||t19437.464330611s|a56bec7c29762ce8|5510978|rds|local|vector|||10.98||
-sp_plot_tbl|stem|ca23c6ab7705131b|d9e55d09644540c2|fe1276231a8b7dfb|2027666610||t19436.6169626985s|aca21ff69dd5cfd3|170235|rds|local|vector|||0.05||
+save_model_select_gt|stem|2bc9c7bff62c5c1f|4e1539861b566f24|c9e26872fd810c60|-790441993||t19473.536571869s|ac45463db19e2cbe|48|rds|local|vector|||2.77||
+save_perf_gt_full|stem|eb8acc42b2c25e61|3c784f49334d9ebb|45ac05ab0cfee99f|-1221098836||t19473.5368253475s|045b07e719c4cc68|120|rds|local|vector|||3.56||
+save_perf_gt_train|stem|84460e94d35ca826|ae88f6b640acc47f|9628a8b3dabf4938|-1734455999||t19473.5367160536s|b0efa4f1e05eee68|121|rds|local|vector|||3.14||
+save_png_pm10|stem|13c1fd9a794c6a34|13e13e71015d911e|6b1b1d6d8c3b6443|-835137275|plots/summary_plot_pm10.png|t19473.5365906777s|448084923ac22a31|14949|file|local|vector|||1.59|More than one site detected, using pm10|
+save_png_pm25|stem|77f41807fa7e7fa4|0d915a0e2d8beb74|6b1b1d6d8c3b6443|1434329897|plots/summary_plot_pm2_5.png|t19473.5366025426s|720a447f18066eb5|14914|file|local|vector|||1|More than one site detected, using pm2.5|
+save_prediction_plots|stem|05313c730640daf8|6e5ac908bd103083|6a45137aa938cfb7|1181030672||t19473.5367301725s|3761d41a17875917|63209|rds|local|vector|||1.16||
+save_scatter_plot_215_gg|stem|cd364139700ffc5e|5d261d300e80e6c1|1088ecedeced9d24|1350960898||t19473.5364491904s|f21b4888ae8bdafc|118|rds|local|vector|||0.9|1m22mRemoved 8 rows containing nonfinite values stat_smooth.. 1m22mRemoved 7 rows containing nonfinite values stat_density.. 1m22mRemoved 1 rows containing nonfinite values stat_density.. 1m22mRemoved 8 rows containing nonfinite values stat_cor.. 1m22mRemoved 8 rows containing nonfinite values stat_regline_equation.. 1m22mRemoved 8 rows containing missing values geom_point.|
+save_scatter_plot_500_gg|stem|81e23a647b87f2f2|3fd834c0d8c74ed9|b67185bf1f26ff4c|-1529477450||t19473.5364384126s|f21b4888ae8bdafc|118|rds|local|vector|||1.14|1m22mRemoved 89 rows containing nonfinite values stat_smooth.. 1m22mRemoved 31 rows containing nonfinite values stat_density.. 1m22mRemoved 79 rows containing nonfinite values stat_density.. 1m22mRemoved 89 rows containing nonfinite values stat_cor.. 1m22mRemoved 89 rows containing nonfinite values stat_regline_equation.. 1m22mRemoved 89 rows containing missing values geom_point.|
+scatter_plot_215_gg|stem|9f8ad7b9854959bf|5a6df980874cb75c|4fbaef0a779992bb|1036966888||t19473.53633866s|601ab46c1c1a3d96|851590|rds|local|vector|||0.25||
+scatter_plot_500_gg|stem|0a04175076fa165b|a24686e4cc21ab4f|4fbaef0a779992bb|-1696058695||t19473.5363310209s|008954f1df33d1ee|862208|rds|local|vector|||0.57|1m22mUsing size aesthetic for lines was deprecated in ggplot2 3.4.0.36mℹ39m Please use linewidth instead.|
+selected_model_output_tbl|stem|a67c7ee282f39893|dc508cd30e02410c|c962710ee7d5e525|-784331535||t19473.5365393422s|95ee746b84957603|5454219|rds|local|vector|||6.27||
+sp_plot_tbl|stem|fd8d50f26b4f95a4|d9e55d09644540c2|882f50d4b68fa617|2027666610||t19473.5363840708s|496e858084bd2be8|167048|rds|local|vector|||0.04||
 start_date|object|790899fadde4c8a8|||||||||||||||
-temp_rh_tbl|stem|a8fa2b219d353084|66cf7f7b23e959ef|a65d0a63150905d8|1919796951||t19436.6166378043s|3249a7a40b498df5|39431|rds|local|vector|||3.66||
-temple_way_sds_hr_tbl|stem|5dedba5ae8205609|94b63879e5e9c766|eb646a22d6a5621f|-47938212||t19436.6169330318s|9c85b14cd15179d6|57158|rds|local|vector|||0.21||
+temp_rh_tbl|stem|9ea49af4159cb597|66cf7f7b23e959ef|a65d0a63150905d8|1919796951||t19473.5360075178s|3249a7a40b498df5|39431|rds|local|vector|||3.22||
+temple_way_sds_hr_tbl|stem|c446316fe1fc4ee4|94b63879e5e9c766|83df2e238f94e463|-47938212||t19473.5362993513s|d9551031e5ecd020|51891|rds|local|vector|||0.17||
 theme_ppt_single|function|b1c8953fe377d591|||||||||||||||
 theme_report_facet|function|a7d19ef517935dbb|||||||||||||||
 theme_web_bw|function|2967215ebd52193b|||||||||||||||
 theme_web_classic|function|99025b9e4b078dcc|||||||||||||||
 theme_web_void|function|cf385f698691e69e|||||||||||||||
-time_series_day_gg|stem|f35ac7d5b64e20c0|6446ce8ca77beb21|243f9fac0a15de3d|-2853685||t19437.4641881421s|1eef6b4abfc74afb|334672|rds|local|vector|||0.44||
-time_series_hour_gg|stem|5e68a259c475b9d1|f94087a8ea821275|243f9fac0a15de3d|662578143||t19437.4641809663s|894a985dfd352944|984673|rds|local|vector|||0.03||
-timeplot_tbl|stem|97df5e7fc33452c4|61bd83449c42e1c7|3ebcf3102e9cf567|-1511535049||t19436.6169441131s|a307b220181ea16a|224914|rds|local|vector|||0.22||
+time_series_day_gg|stem|48f5d870d9486558|6446ce8ca77beb21|23a8b57491dcd5e2|-2853685||t19473.536396504s|e7fdcd4303f6c26d|345531|rds|local|vector|||0.32||
+time_series_hour_gg|stem|36eb1b64be7e6137|f94087a8ea821275|23a8b57491dcd5e2|662578143||t19473.5363903696s|2bb901a99739cfcc|987337|rds|local|vector|||0.08||
+timeplot_tbl|stem|7ce8d12cd48e367e|61bd83449c42e1c7|a93b547d946d212e|-1511535049||t19473.5363102996s|ed0f3ae73317f8b2|221816|rds|local|vector|||0.22||
 wants|object|4b19678db23ebc60|||||||||||||||
 write.model.data.tbl|function|1ee55b783fdb5491|||||||||||||||
-write_model_data_tbl|stem|66150edc4daa8856|2edd6895394981e7|7f42513a43282733|1396338786|data/model_data_tbl.rds|t19436.6169495946s|c033e5977fbe7e99|3624113|file|local|vector|||0.03||
-zip_file_urls|stem|2596f3d513e603c5|f53e2d500f43fc27|7ef1c64f6ef752a9|1253774699||t19436.61663814s|3b7c77e89f1a6100|221|rds|local|vector|||0.02||
+write_model_data_tbl|stem|b671b95308d9f68f|2edd6895394981e7|8010787f1acb4db7|1396338786|data/model_data_tbl.rds|t19473.536382381s|ffd94944262373f4|3547126|file|local|vector|||0.03||
+zip_file_urls|stem|22d4174cbcf6cd1f|f53e2d500f43fc27|7ef1c64f6ef752a9|1253774699||t19473.5359020791s|3b7c77e89f1a6100|221|rds|local|vector|||0.02||

@@ -1,7 +1,7 @@
 ---
 title: "Diagnostics and Quality Reporting Analytics Pipeline for Air Quality Monitoring"
 author: "Steve Crawshaw"
-format: docx
+format: html
 editor: source
 date: "`r Sys.Date()`"
 toc: true
