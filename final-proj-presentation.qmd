@@ -3,16 +3,14 @@ title: "Data Analyst L4"
 subtitle: "Diagnostics and Data Quality Analytics for Air Quality Monitoring"
 author: "Steve Crawshaw"
 date: "`r Sys.Date()`"
-format: 
+format:
     revealjs:
         theme: simple
         preview-links: true
 embed-resources: true
 ---
 
-## Business Context
-
-Measuring and Managing Air Quality
+## Business Context: Air Quality Management
 
 :::: {.columns}
 
@@ -22,6 +20,7 @@ Measuring and Managing Air Quality
 :::
 
 ::: {.column width="60%"}
+
 ![](images/2000.jpg)
 :::
 

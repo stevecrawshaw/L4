@@ -25,7 +25,7 @@ Apprenticeship KSBs are logged in the text in square parentheses in bold e.g. **
 
 # Project Scope
 
-The scope of this project is the operation and calibration of the continuous air monitors operated by Bristol City Council. The council operates other monitors (diffusion tubes) but these will not be covered in this project as the quality review period is annual rather than monthly and different data collection and quality criteria apply. Diffusion tube data quality is largely captured in another portfolio project.
+The scope of this project is the operation and calibration of the continuous air monitors operated by Bristol City Council. The council operates other monitors (diffusion tubes), but these will not be covered in this project as the quality review period is annual rather than monthly and different data collection and quality criteria apply. Diffusion tube data quality is largely captured in another portfolio project.
 
 The diagnostics element of this project only applies to the NOx (Oxides of Nitrogen) instruments. The council operates PM~2.5~ instruments, but diagnostics data are not recorded in a usable way.
 
@@ -59,13 +59,13 @@ In terms of the project itself, the KPI is that colleagues must be able to run t
 
 ## Regulatory Regime
 
-It is important to set the context of air quality monitoring in order to understand the regulatory framework, monitoring requirements and implications of low quality data and hence analysis presented in the project.
+It is important to set the context of air quality monitoring in order to understand the regulatory framework, monitoring requirements and implications of low - quality data and hence analysis presented in the project.
 
-Under The Environment Act (1995) local authorities must monitor air quality. If  pollutant concentrations exceed limits, an Air Quality Management Area must be declared and an air quality action plan implemented. This is called the Local Air Quality Management regime. In addition to this system, the UK government published its [Air Quality Plan for nitrogen dioxide in 2017](https://www.gov.uk/government/publications/air-quality-plan-for-nitrogen-dioxide-no2-in-uk-2017). 
+Under The Environment Act (1995) local authorities must monitor air quality. If  pollutant concentrations exceed limits, an Air Quality Management Area must be declared, and an air quality action plan implemented. This is called the Local Air Quality Management regime. In addition to this system, the UK government published its [Air Quality Plan for nitrogen dioxide](https://www.gov.uk/government/publications/air-quality-plan-for-nitrogen-dioxide-no2-in-uk-2017) in 2017. 
 
 This has resulted in certain local authorities (including Bristol) being required to introduce specific "[local plans](https://assets.publishing.service.gov.uk/government/uploads/system/uploads/attachment_data/file/911404/air-quality-direction-bristol-city-council-no2.pdf)" to deliver compliance with legal limits for nitrogen dioxide (NO~2~). In Bristol the key measure in the local plan is a Clean Air Zone (CAZ), which charges polluting vehicles to enter a central zone in order to encourage faster turnover in the fleet.
 
-The CAZ was approved after submission of a Final Business Case (FBC). The [FBC estimated](https://democracy.bristol.gov.uk/documents/s57350/FBC-07%20BCC%20CAZ%20FBC%20Financial%20Case%2017%20Feb%202021.pdf) a total capital cost of £44.3 million for the CAZ.
+The CAZ was approved after submission of a Final Business Case (FBC). The [FBC](https://democracy.bristol.gov.uk/documents/s57350/FBC-07%20BCC%20CAZ%20FBC%20Financial%20Case%2017%20Feb%202021.pdf) estimated a total capital cost of £44.3 million for the CAZ.
 
 The FBC included dispersion modelling of air quality to include the predicted compliance date for meeting the NO~2~ limit values. The modelling is validated by measurements from our monitoring network. Hence the business case for the CAZ relies on the quality of the data captured by the continuous air monitoring network. This project aims to mitigate the risks of poor data quality and protect the council's reputation and financial base. **[K1, B1, K8, S6]**
 
@@ -74,7 +74,7 @@ The FBC included dispersion modelling of air quality to include the predicted co
 The continuous monitoring sites deployed in Bristol are shown in the map below.
 ![Map of continuous monitoring sites](images/contin_sites_sml.png)
 
-The technical and data quality requirements for air monitoring of NOx with continuous analysers is contained in pages [127 to 131 of LAQM.TG(22)](https://laqm.defra.gov.uk/wp-content/uploads/2022/08/LAQM-TG22-August-22-v1.0.pdf). In brief, each site is visited fortnightly and the NOx instruments are calibrated. **[K1, B1]**
+The technical and data quality requirements for air monitoring of NOx with continuous analysers is contained in pages 127 to 131 of [LAQM.TG(22)](https://laqm.defra.gov.uk/wp-content/uploads/2022/08/LAQM-TG22-August-22-v1.0.pdf). In brief, each site is visited fortnightly, and the NOx instruments are calibrated. **[K1, B1]**
 
 Calibration is required because the instruments operate on a chemiluminescence principle where the concentration of the gas is determined by an optical measurement. The optical sensor's response can diminish with time and contamination and hence the response of the instrument needs to be periodically determined. Calibration entails applying a known zero and span signal to the instrument fortnightly. This is attained by connecting a "clean" (zero) air supply via a scrubber which filters out any contaminant gas. Secondly a traceable gas is connected and the instrument's span response recorded. A sample calibration procedure is reproduced below for a single site. **[K8, S6]**
 {{< pagebreak >}}
@@ -201,6 +201,7 @@ The overall process for running the pipeline and rendering the report is in two 
 2. Run _targets.R using the `tar_make()` command
 
 ![Extract of Quarto QA report](images/r-code-quarto-qa-report.png)
+
 # Research and Findings
 
 Some examples of visualisations are shown below.
@@ -211,7 +212,7 @@ The chart or document can easily be sent to the contractors to help them diagnos
 The instruments contain components that should be maintained within certain parameters, for example Internal Box Temperature which should not go above 40˚C. Similarly a sample flow rate that deviates from the limits could indicate a leak or pump failure. **[S12]**
 
 {{< pagebreak >}}
-![Diagnostics plot: Brislington](fp/qa_report_files/figure-html/diag_plot_1-1.png)
+![Diagnostics plot: Brislington](images/diag_plot_1-1.png)
 
 The bar chart shown below indicates the daily receive and transmit data use for each router. Six sites operated by BCC have loggers running Windows 10. Windows updates and other downloads related to the loggers consume the majority of the data. Updates are often run at the end of the month so high data use is normal to see here.
 
@@ -252,11 +253,11 @@ In the example shown below, the Parson Street site is showing a significant chan
 
 This project implements an important set of data quality controls related to continuous air monitoring and contributes towards greater confidence in the air quality monitoring. I have gained a greater understanding of the operation of the entire system through undertaking this work and feel able to fully explain its operation to stakeholders.
 
-Implementing the project through `targets` and a `Quarto` report is helpful to end users as it automates the process. However there is a risk that code may break, because of updates to libraries or unanticipated data. This could be mitigated by introducing a reproducible environment management component like `renv` or `anaconda`. Alternatively a docker image could be built to control both libraries and the version of R used. Support for these options within the organisation is limited and relies on personal accounts and access to Virtual Machines. Further unit testing of the code would improve reliability. **[K8, B11, B4]**
+Implementing the project through `targets` and a `Quarto` report is helpful to end users as it automates the process. However there is a risk that code may break, because of updates to libraries or unanticipated data. This could be mitigated by introducing a reproducible environment management component like `renv` or `anaconda`. Alternatively, a docker image could be built to control both libraries and the version of R used. Support for these options within the organisation is limited and relies on personal accounts and access to virtual machines. Further unit testing of the code would improve reliability. **[K8, B11, B4]**
 
-Ensuring the long term viability of this approach means that the end user needs to have an understanding of R and be able to parse the code written. This relies on in house expertise in R, and although colleagues are learning R, they may not be able to resolve issues in the short term if I am absent. Nonetheless the code base will be there as a resource for colleagues when capability has been built.
+Ensuring the long term viability of this approach means that the end user needs to have an understanding of R and be able to parse the code written. This relies on in house expertise in R, and although colleagues are learning R, they may not be able to resolve issues in the short term if I am absent. Nonetheless, the code base will be there as a resource for colleagues when capability has been built.
 
-There is more that could be done to add to this report. For example, because the calibration factors are manually applied to the data in the database client application, there is potential for human error. This could be checked by running routines to verify correct calibration factors are applied. Alternatively the factors could be automatically applied with update queries on the database. However there is still a manual element to data ratification in terms of removing anomalies so some potential human error would remain. **[K8, S6, K11]**
+There is more that could be done to add to this report. For example, because the calibration factors are manually applied to the data in the database client application, there is potential for human error. This could be checked by running routines to verify correct calibration factors are applied. Alternatively the factors could be automatically applied with update queries on the database. However, there is still a manual element to data ratification in terms of removing anomalies so some potential human error would remain. **[K8, S6, K11]**
 
 The analytics pipeline could be further developed by creating an R package. This would be the optimal way to create a coherent set of processing and analytic functions. This is something I am researching but will not be able to implement in this project. **[K11]**
 

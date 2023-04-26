@@ -1098,13 +1098,13 @@ make.ods.upload.tube.tbl <- function(con,
     
 
     to_append_tbl <- annual_tube_data_append_tbl %>%
-        select(year = dYear,
-               siteid = LocID,
+        select(siteid = LocID,
+               year = dYear,
                conc_ugm3 = final_adjusted_conc) 
     
     ods_tube_upload_tbl <- to_append_tbl %>%
         mutate(year = !!year %>% as.integer()) %>% 
-                relocate(year, siteid, conc_ugm3) %>% 
+                relocate(siteid, year, conc_ugm3) %>% 
         bind_rows(annual_tube_data_all_tbl) %>%
                       inner_join(count_tubes_tbl,
                                  by = c("siteid" = "siteid",

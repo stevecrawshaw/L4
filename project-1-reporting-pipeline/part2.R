@@ -56,7 +56,7 @@ annual_tube_data_append_tbl %>%
 # don't write the new data into the table in MS Access no2_data with R
 # Export and run append query
 ods_tubes_upload_tbl_file = glue("data/ods_tubes_upload_{year(startDate)}.csv")
-write.csv2(ods_tubes_upload_tbl, ods_tubes_upload_tbl_file)
+write.csv(ods_tubes_upload_tbl, ods_tubes_upload_tbl_file, row.names = FALSE)
 
 
 write.no2.trend.charts(no2_trend_chart_tbl)

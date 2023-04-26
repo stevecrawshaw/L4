@@ -17,8 +17,8 @@ pacman::p_load(odbc,
                naniar)
 # 1.0 Global Variables ----
 
-dateon <-  "2023-03-01"
-dateoff <-  "2023-03-31"
+dateon <-  "2022-12-01"
+dateoff <-  "2022-12-31"
 testing <- FALSE
 google_config <- config::get(file = "../config.yml",
                              config = "google_cal")
