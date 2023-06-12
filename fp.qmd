@@ -39,7 +39,7 @@ The FBC included dispersion modelling of air quality to include the predicted co
 
 # Project Scope
 
-The scope of this project is the operation and calibration of the continuous air monitors operated by Bristol City Council. I built a data pipeline to ingest and process data from the monitors and associated equipment. The outcome is a report which provides insight on data quality and operating parameters to provide quality assurance. I developed the project to respond to operational problems identified in 2022 where gas was contaminated and calibrations of instruments were incorrect and discounted.
+The scope of this project is the operation and calibration of the continuous air monitors operated by Bristol City Council. I built a data pipeline to ingest and process data from the monitors and associated equipment. The outcome is a report which provides insight on data quality and operating parameters to provide quality assurance. I developed the project to respond to operational problems identified in 2022 where gas was contaminated and calibrations of instruments were incorrect and discounted, leading to lost data.
 
 Summary analysis of data loss is included as there are minimum data capture requirements set by Defra of 85%. Performance and quality metrics for telemetry equipment associated with the continuous analysers are reported. **[K8, S6]**
 
@@ -111,7 +111,7 @@ The consolidated `long_aq_data_tbl` is split into a list of tibbles (data frames
 
 ## Extract and Process Diagnostics Data
 
-Diagnostics data from the NOx analysers are captured in a database on a data logger. Loggers are polled hourly and both measurement and diagnostics data are stored in a corporate database. The diagnostics data are extracted for the reporting. **[S8]**
+Diagnostics data from the analysers are captured in a database on a data logger. Loggers are polled hourly. Measurement and diagnostics data are stored in a corporate database. The diagnostics data are extracted for the reporting. **[S8]**
 
 The code below sets a database connection by retrieving the connection parameters from a config.yml file. The config file is added to .gitignore to ensure that credentials are not published on GitHub. **[S1]**
 
@@ -125,7 +125,7 @@ The function below takes a long version of the diagnostics tibble, a tibble hold
 
 ## Extract and Process Calibration Data
 
-The calibration data are entered on a mobile device using a Google form, which I created. Data are are held on a Google spreadsheet which calculates the zero and span factors from the form data. Google sheets was used as it runs on any mobile device and data are not personal or private. An exemption to a corporate ban on Google forms was secured for this use case. **[S1, K12]**
+The calibration data are entered on a mobile device using a Google form, which I created. Data are held on a Google spreadsheet which calculates the zero and span factors from the form data. Google sheets was used as it runs on any mobile device and data are not personal or private. An exemption to a corporate ban on Google forms was secured for this use case. **[S1, K12]**
 The screenshot below shows a portion of the calibration form used on a mobile device.
 
 {{< pagebreak >}}
@@ -143,7 +143,7 @@ The `gt` package was used to create a table showing how calibrations compare aga
 
 ## Retrieving Airtime Data from Routers
 
-I specified the Teltonika routers and RMS because RMS enables secure remote management of the fleet of routers. RMS also supports remote access to devices connected to the routers, such as the windows data loggers which collect and store data from the analysers. The operation of the instruments, loggers and routers can be checked with RMS. This means site visits (and cost) can be minimised. **[K12, K11, S15]**
+I specified the Teltonika routers and RMS because RMS enables secure remote management of the fleet of routers and supports remote access to devices connected to the routers, such as the data loggers which collect and store data from the analysers. The operation of the instruments, loggers and routers can be checked with RMS. This means site visits (and cost) can be minimised. **[K12, K11, S15]**
 In addition to the web platform, there is a REST API which is used to retrieve router meta - data including airtime data use. 
 
 Airtime data is limited by contract to 3GB per device spread over all SIMs. Exceeding this limit results in excess charges or telemetry loss, hence it is important to regularly review usage. The screenshot below shows the device overview for the routers.
@@ -283,15 +283,15 @@ getksb <- function(ksb, ID){
 
 **`r getksb(ksb, 'K3')`**
 
-The reporting pipeline takes data stored in databases, online spreadsheets and remote monitoring platform and conducts data analysis steps to assess data quality and provide summaries and visualisations for end users.
+The reporting pipeline takes data stored in databases, online spreadsheets and remote monitoring platform and conducts data analysis steps to assess data quality and provide summaries and visualisations for end users. The data generated by the process are held indefinitely as there may be requirements for analysis of decades of data to examine policy decisions.
 
 **`r getksb(ksb, 'K4')`**
 
-The data used are not personal data. They relate to the operation of the monitoring network and are only of interest to the team managing the operation of the network, or a third party auditor of air quality data. The data are not published but could be made available on request. 
+The data used are not personal data. They relate to the operation of the monitoring network and are only of interest to the team managing the operation of the network, or a third party auditor of air quality data. The data are not published but could be made available on request. The calibrated and ratified air quality data are published as open data. 
 
 **`r getksb(ksb, 'K8')`**
 
-This project is about mitigating data quality risks for air monitoring data. It seeks to minimise risks arising from the calibration of the instruments and the operation of the system by tracking and reporting key parameters.
+This project is about mitigating data quality risks for air monitoring data. It seeks to minimise risks arising from the calibration of the instruments and the operation of the system by tracking and reporting key parameters. Data quality risks arise from incorrect calibration, faulty equipment, contaminated gas and user error. This project addresses the data quality risks by implementing a data quality pipeline and producing data products to explain data quality issues.
 
 **`r getksb(ksb, 'K9')`**
 
@@ -299,23 +299,23 @@ I have consulted with colleagues about the format of the report and the metrics 
 
 **`r getksb(ksb, 'K11')`**
 
-I have used the R software to process and analyse the data, developing secure and robust analyses in line with corporate requirements.
+I have used the R software to process and analyse the data, developing secure and robust analyses in line with corporate requirements. I considered other tools such as python but R offered the possibility of rapid deployment and implementation without the need for internal support. I used libraries in R (dbplyr) to generate SQL on the corporate database.
 
 **`r getksb(ksb, 'K12')`**
 
-I have used the relevant data sources such as the SQL Server database "Envista" to source air quality and diagnostics data. This is an Azure database maintained corporately. I have used other approved data sources such as Google spreadsheet and RMS to source data.
+I have used the relevant data sources such as the SQL Server database "Envista" to source air quality and diagnostics data. This is an Azure database maintained corporately. I investigated the architecture of the database to understand the structure and purpose of the tables and developed my code accordingly. I have used other approved data sources such as Google spreadsheet and RMS to source data.
 
 **`r getksb(ksb, 'S1')`**
 
-In accessing and processing the data I have followed best practice to obscure credentials, by using the `config` package. None of the data used are personal. There are no privacy implications in the analysis conducted and the activities are not covered by GDPR or privacy legislation.
+In accessing and processing the data I have followed best practice to obscure credentials, by using the `config` package to store API keys and database credentials in a yaml file which is not published to the github repo. None of the data used are personal. There are no privacy implications in the analysis conducted and the activities are not covered by GDPR or privacy legislation.
 
 **`r getksb(ksb, 'S2')`**
 
-The project report clearly documents the data analysis life cycle. For this work, the reporting is conducted monthly to analyse the previous month's data and report on quality aspects. Analysis includes extracting, cleaning, combining (joining), summarising, visualising and reporting. No modelling or machine learning is done in this process. Diagnostics and air quality data are retained indefinitely. Telemetry parameters are retained for approximately three months.
+The project report clearly documents the data analysis life cycle. For this work, the reporting is conducted monthly to analyse the previous month's data and report on quality aspects. Steps in the lifecycle include generating data from calibrations and measurement, extracting from instruments and API's, cleaning, combining (joining), summarising, visualising and reporting. No modelling or machine learning is done in this process. Diagnostics and air quality data are retained indefinitely. Telemetry parameters are retained for approximately three months.
 
 **`r getksb(ksb, 'S3')`**
 
-The data are structured, tabular or converted to such from a REST API source. Unstructured data such as images, video or text corpuses are not used in this work.
+The data are structured, tabular or converted to such from a REST API source. Unstructured data such as images, video or text corpuses are not used in this work. None of the data are sensitive except for credentials which are safely and securely managed. The data can be classified as internal data for GDPR but could be published as open data if requested.
 
 **`r getksb(ksb, 'S4')`**
 
@@ -339,7 +339,7 @@ I presented example reports to my colleagues in April 2023 to help improve the a
 
 **`r getksb(ksb, 'S15')`**
 
-When considering the the most appropriate tools, the key choice for me was the programming language. The main database was already determined, as was the telemetry platform and field calibration data collection system. My choices about the language were limited to R and python as these are the only two languages I have any knowledge of. I have beginners level knowledge in Python, but intermediate level knowledge in R and I had already developed some functions in R for this type of data analysis that I could adapt to the pipeline. I also felt that developing a reproducible analytic pipeline in R was more achievable because good resources were available to guide me in this process such as the book: [Building reproducible analytical pipelines with R](https://raps-with-r.dev/). Once I had decided to use R, I identified the `targets` package to develop the pipeline and the `quarto` package to publish the report. I believe these are appropriate tools and I have satisfied myself that they are fit for this purpose.
+When considering the the most appropriate tools, the key choice for me was the programming language. The main database was already determined, as was the telemetry platform and field calibration data collection system. My choices about the language were limited to R and Python as these are the only two languages I have any knowledge of. I have beginners level knowledge in Python, but intermediate level knowledge in R and I had already developed some functions in R for this type of data analysis that I could adapt to the pipeline. I also felt that developing a reproducible analytic pipeline in R was more achievable because good resources were available to guide me in this process such as the book: [Building reproducible analytical pipelines with R](https://raps-with-r.dev/). Once I had decided to use R, I identified the `targets` package to develop the pipeline and the `quarto` package to publish the report. I believe these are appropriate tools and I have satisfied myself that they are fit for this purpose.
 
 **`r getksb(ksb, 'B3')`**
 
