@@ -1,5 +1,7 @@
 ---
 title: "Data Analyst L4"
+logo: images/bcclogo.png
+css: logo.css
 subtitle: "Diagnostics and Data Quality Analytics for Air Quality Monitoring"
 author: "Steve Crawshaw"
 date: "`r Sys.Date()`"

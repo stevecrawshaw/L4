@@ -17,43 +17,11 @@ execute:
 
 # Introduction
 
-The aim of this project is to create a Reproducible Analytic Pipeline (RAP) to collate, summarise and report the operating characteristics of the council's air quality monitoring network and provide assurance that the system is operating within desired parameters. This minimises data quality risks by identifying problems and mitigations in a timely, structured and evidenced way. 
+The aim of this project is to create a Reproducible Analytic Pipeline (RAP) to collate, summarise and report the operating characteristics of the council's air quality monitoring network and provide assurance that the system is operating within desired parameters. This minimises data quality risks by identifying problems and mitigations in a timely, structured and evidenced way. The pipeline will be used by air quality officers in the council who operate the monitoring network and report data to Defra and internal stakeholders.
 
 The project complies with relevant guidance from Defra who are the ultimate customer for this activity.
 
-Apprenticeship KSBs are logged in the text in square parentheses in bold e.g. **[S1, K11]**
-
-# Project Scope
-
-The scope of this project is the operation and calibration of the continuous air monitors operated by Bristol City Council. The council operates other monitors (diffusion tubes), but these will not be covered in this project as the quality review period is annual rather than monthly and different data collection and quality criteria apply. Diffusion tube data quality is largely captured in another portfolio project.
-
-The diagnostics element of this project only applies to the NOx (Oxides of Nitrogen) instruments. The council operates PM~2.5~ instruments, but diagnostics data are not recorded in a usable way.
-
-Summary analysis of data loss is included as there are minimum data capture requirements to meet according to the technical guidance. Performance and quality metrics for telemetry equipment associated with the continuous analysers are reported. **[K8, S6]**
-
-Summaries of calibration data quality are included in scope.
-
-# Project Plan
-
-- Review relevant guidance and consult with colleagues to identify appropriate report outputs **[K9, S7]**
-- Identify and confirm data sources as inputs to the project
-- Confirm optimal approach to building a robust RAP **[B4]**
-- Develop code for pipeline
-- Test code to verify accurate reporting
-- Liaise with colleagues to confirm acceptability **[K9, S7]**
-- Adjust pipeline as necessary
-- Move to production
-
-# Key Performance Indicators
-
-This project is about reporting KPIs which relate to the operation of the QA process for air quality data. The KPIs of interest are:
-
-- Data collection better than 85% for hourly data reported annually
-- 4G data use below 3GB per site across router fleet per month
-- Identification of gas contamination within 3 weeks of last calibration
-- Identification of analyser system faults
-
-In terms of the project itself, the KPI is that colleagues must be able to run the monthly report and review results, taking appropriate action where needed. This was established through dialogue with colleagues. **[S12, B3]**
+Apprenticeship KSBs are logged in the text in square parentheses in bold e.g. **[S1, K11]** and full detail on how the KSBs were satisfied is given in the appendices.
 
 # Overview of Regulatory Regime and Business Context
 
@@ -68,6 +36,41 @@ This has resulted in certain local authorities (including Bristol) being require
 The CAZ was approved after submission of a Final Business Case (FBC). The [FBC](https://democracy.bristol.gov.uk/documents/s57350/FBC-07%20BCC%20CAZ%20FBC%20Financial%20Case%2017%20Feb%202021.pdf) estimated a total capital cost of £44.3 million for the CAZ.
 
 The FBC included dispersion modelling of air quality to include the predicted compliance date for meeting the NO~2~ limit values. The modelling is validated by measurements from our monitoring network. Hence the business case for the CAZ relies on the quality of the data captured by the continuous air monitoring network. This project aims to mitigate the risks of poor data quality and protect the council's reputation and financial base. **[K1, B1, K8, S6]**
+
+# Project Scope
+
+The scope of this project is the operation and calibration of the continuous air monitors operated by Bristol City Council. I built a data pipeline to ingest and process data from the monitors and associated equipment. The outcome is a report which provides insight on data quality and operating parameters to provide quality assurance. I developed the project to respond to operational problems identified in 2022 where gas was contaminated and calibrations of instruments were incorrect and discounted.
+
+Summary analysis of data loss is included as there are minimum data capture requirements set by Defra of 85%. Performance and quality metrics for telemetry equipment associated with the continuous analysers are reported. **[K8, S6]**
+
+Summaries of calibration data quality are included in scope.
+
+# Project Plan
+
+I delivered the following actions in the project.
+
+- Review relevant guidance and consult with colleagues to identify appropriate report outputs **[K9, S7]**
+- Identify and confirm data sources as inputs to the project
+- Confirm optimal approach to building a robust RAP **[B4]**
+- Develop code for pipeline
+- Test code to verify accurate reporting
+- Liaise with colleagues to confirm acceptability **[K9, S7]**
+- Adjust pipeline as necessary
+- Move to production
+
+# Key Performance Indicators
+
+A key deliverable for this project is KPIs which relate to the operation of the QA process for air quality data. The KPIs for data quality assurance are:
+
+- Data collection better than 85% for hourly data reported annually
+- Identification of gas contamination within 3 weeks of last calibration
+- Identification of analyser system faults
+
+In addition a telemetry KPI is reported to give assurance that data flow is being maintained. The KPI for this is:
+
+- 4G data use below 3GB per site across router fleet per month
+
+In terms of the project itself, the KPI is that colleagues must be able to run the monthly report and review results, taking appropriate action where needed. This was established through meeting with colleagues to agree the KPI's. **[S12, B3]**
 
 ## Monitoring Network and Calibrations
 
@@ -90,13 +93,7 @@ The sources of data are summarised as follows: **[S4]**
 2.  Google Drive. Calibration data is collected in the field with Google forms and stored in Google sheets.
 3.  Teltonika Remote Management System (RMS). 4G router parameters through a REST API.
 
-# Data Classification
-
-The data used are not classified as personal data. They relate to the operation of the monitoring network and are only of interest to the team managing the operation of the network, or a third party auditor of air quality data. The data are not published but could be made available on request. The data are structured, tabular or converted to such from a REST API source. **[K4, S3]**
-
-# Data Processing Pipeline
-
-The pipeline for this project was built in R, using the `targets` package to ensure reproducibility and organise the functions. Data are extracted using database connections, the `googlesheets4` package and the RMS API. Various data cleaning and processing functions are implemented in the pipeline to prepare the data for output in a [Quarto](https://quarto.org/) document. **[K3, S2]**
+The data used are not classified as personal data so application of policies like Privacy by Design or GDPR are irrelevant. Data relate to the operation of the monitoring network and are only of interest to the team managing the operation of the network, or a third party auditor of air quality data. The data are held on closed systems (SQL Server, or authenticated API), not published but could be made available on request. The data are structured, tabular or converted to such from a REST API source. **[K4, S3]**
 
 # Data Processing and Analysis Examples
 
@@ -104,9 +101,9 @@ Key elements of the analysis code are reproduced in this section. All the code i
 
 ## Derive Summary Statistics for Missing Data
 
-A key requirement within the air quality guidance is that data capture should match or exceed 85% for hourly continuous measurements. If significant data are missing it indicates a machine or telemetry fault. This would result in a service engineer call out. **[K8 S6]**
+Low data capture rates indicate a machine or telemetry fault which entails engineer call out. **[K8 S6]**
 
-To calculate this statistic, the hourly continuous data for each instrument are retrieved from the database and a function is iterated over the complete dataset to derive the number and percentage of missing observations. The function to retrieve data is not shown for brevity.
+The hourly continuous data for each instrument are retrieved from the database and a function is iterated over the complete dataset to derive the number and percentage of missing observations. The function to retrieve data is not shown for brevity.
 
 The consolidated `long_aq_data_tbl` is split into a list of tibbles (data frames), completely empty columns removed, and the `miss_var_summary()` function from the `naniar` package is mapped over each tibble in the list. The relevant pollutants are filtered from the resulting tibble and the columns are selected and renamed with `transmute()` function. The resulting tibble is piped into a `gt()` table. **[K3, S2, S7]**
 
@@ -128,7 +125,7 @@ The function below takes a long version of the diagnostics tibble, a tibble hold
 
 ## Extract and Process Calibration Data
 
-The calibration data are entered on a mobile device using Google forms and are held on a Google spreadsheet which calculates the zero and span factors from the data entered. Google sheets was used as it runs on any mobile device and data are not personal or private. An exemption to a corporate ban on Google forms was secured for this use case. **[S1, K12]**
+The calibration data are entered on a mobile device using a Google form, which I created. Data are are held on a Google spreadsheet which calculates the zero and span factors from the form data. Google sheets was used as it runs on any mobile device and data are not personal or private. An exemption to a corporate ban on Google forms was secured for this use case. **[S1, K12]**
 The screenshot below shows a portion of the calibration form used on a mobile device.
 
 {{< pagebreak >}}
@@ -146,14 +143,14 @@ The `gt` package was used to create a table showing how calibrations compare aga
 
 ## Retrieving Airtime Data from Routers
 
-I specified the Teltonika routers and RMS because RMS enables secure remote management of the fleet of routers. RMS also supports remote access to devices connected to the routers, such as the windows data loggers which collect and store data from the analysers. The operation of the instruments, loggers and routers can be checked with RMS. This means site visits can be minimised. **[K12, K11, S15]**
+I specified the Teltonika routers and RMS because RMS enables secure remote management of the fleet of routers. RMS also supports remote access to devices connected to the routers, such as the windows data loggers which collect and store data from the analysers. The operation of the instruments, loggers and routers can be checked with RMS. This means site visits (and cost) can be minimised. **[K12, K11, S15]**
 In addition to the web platform, there is a REST API which is used to retrieve router meta - data including airtime data use. 
 
 Airtime data is limited by contract to 3GB per device spread over all SIMs. Exceeding this limit results in excess charges or telemetry loss, hence it is important to regularly review usage. The screenshot below shows the device overview for the routers.
 
 ![RMS screenshot](images/rms_screen.png)
 
-The function shown below takes the date span of interest, the device_url endpoint, the API Personal Access Token, and a data frame holding the device ID's. The `single.site.data()` function gets data for a single device. This function is then partialised and mapped over the ID's of the routers to return a data frame with the daily data use for each device in a single table. This is subsequently used for plotting. **[S8, S4]**
+The function shown below takes the date span of interest, the device_url endpoint, the API Personal Access Token, and a data frame holding the device IDs. The `single.site.data()` function gets data for a single device. This function is then partialised and mapped over the ID's of the routers to return a data frame with the daily data use for each device in a single table. This is subsequently used for plotting. **[S8, S4]**
 
 ![Retrieve airtime data from routers](images/r-code-data-use-routers.png)
 
@@ -236,7 +233,9 @@ In the example shown below, the Parson Street site is showing a significant chan
 
 ![Span divergence](images/span_diff_plot.png) 
 
-# Summary of Project Activities 
+# Summary of Project Activities
+
+I carried out the following activities for the project.
 
 1. Review of technical guidance and liaison with colleagues to confirm general approach and desired output **[S7, K9]**
 2. Identify and configure data sources to be used in the project **[S1]**
