@@ -12,6 +12,17 @@ format:
 embed-resources: true
 ---
 
+## Contents
+
+ - Business Context and Problem
+ - Data Quality Requirements
+ - Data Sources
+ - Data Analysis (Tools, Diagnostics, Calibration, Telemetry)
+ - Reproducible Pipelines
+ - Reporting
+ - Recommendations and Conclusions
+
+
 ## Business Context: Air Quality Management
 
 :::: {.columns}
@@ -28,18 +39,29 @@ embed-resources: true
 
 ::::
 
+:::{.notes}
+
+Long term air quality monitors
+Representative locations
+Road pollution
+Reference method instruments 
+
+KSB's 
+K8 - data quality reference method
+
+:::
+
 ## Business Problem
 
 :::: {.columns}
 
 ::: {.column width="60%"}
 
-- [Clean Air Zone](https://www.cleanairforbristol.org/)
-    - A £44m project
+- [Clean Air Zone](https://www.cleanairforbristol.org/) (£44m)
     - Highly politically sensitive
     - **Relies on air quality data**
     - Prescriptive QA regime
-    - But human and system error..
+    - But human and system error creates **data quality risk**
 - Solution
     - **Reproducible pipeline for data quality analysis**
     
@@ -47,17 +69,30 @@ embed-resources: true
 
 ::: {.column width="40%"}
 
+
 ![](images/cazbig.png)
 :::
 
 ::::
 
+:::{.notes}
+Analysis Plan
+Consultation with colleagues
+Reference LAQM.TG(22)
+:::
+
 ## Data Quality Requirements
 
 - Data collection better than 85% for hourly data
 - 4G data use below 3GB per site 
-- Identification of gas contamination within 3 weeks of last calibration
 - Identification of analyser system faults
+- Instrument calibration
+- Data scaled to span gas
+    - Identify gas issues asap
+
+:::{.notes}
+
+:::
 
 
 ## Data Sources
@@ -81,6 +116,10 @@ embed-resources: true
 :::
 
 ::::
+
+:::{.notes}
+
+:::
 
 ## Data Analysis - R packages
 
@@ -109,6 +148,11 @@ embed-resources: true
 
 ::::
 
+
+:::{.notes}
+
+:::
+
 ## Data Analysis - Diagnostics
 
 :::: {.columns}
@@ -130,6 +174,10 @@ embed-resources: true
 
 ::::
 
+:::{.notes}
+
+:::
+
 ## Data Analysis - Calibration
 
 :::: {.columns}
@@ -146,6 +194,10 @@ embed-resources: true
 :::
 
 ::::
+
+:::{.notes}
+
+:::
 
 ## Data Analysis - Calibration
 
@@ -166,6 +218,11 @@ embed-resources: true
 
 ::::
 
+
+:::{.notes}
+
+:::
+
 ## Data Analysis - Telemetry Data
 
 :::: {.columns}
@@ -182,6 +239,10 @@ embed-resources: true
 :::
 
 ::::
+
+:::{.notes}
+
+:::
 
 ## Reproducible Analytical Pipelines
 
@@ -207,6 +268,11 @@ embed-resources: true
 
 ::::
 
+:::{.notes}
+
+:::
+
+
 ## Reporting
 
 - Monthly report
@@ -215,6 +281,10 @@ embed-resources: true
 - Quarto reads the objects in the `targets` store
 - Some minimal formatting with `gt` package
 - HTML output can be shared with engineers
+
+:::{.notes}
+
+:::
 
 ## Business Recommendations
 
@@ -227,4 +297,9 @@ embed-resources: true
 - Include alerts for key parameters
 - Write R package & containerise
 
-##
+:::{.notes}
+
+:::
+
+
+## Questions?

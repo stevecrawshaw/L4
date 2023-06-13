@@ -237,16 +237,17 @@ In the example shown below, the Parson Street site is showing a significant chan
 
 I carried out the following activities for the project.
 
-1. Review of technical guidance and liaison with colleagues to confirm general approach and desired output **[S7, K9]**
-2. Identify and configure data sources to be used in the project **[S1]**
+1. Review of technical guidance to confirm data quality requirements.
+2. Met with colleagues to confirm general approach and create analysis plan (see appendix) **[S7, K9]**
+3. Identify and configure data sources to be used in the project **[S1]**
     a. Procure and configure Teltonika RMS and access via API with PAT **[K12]**
     b. Design and configure field data collection system with tablet and Google forms (before project) **[K12]**
     c. Configure analysers and data loggers to support automatic collection of diagnostics data (before project) **[B3]**
-3. Research and test pipeline tools for analysis **[K3, S2]**
-4. Write and test code in R to deliver pipeline in `targets` **[K3, S2]**
-5. Write Quarto reporting document
-6. Present to colleagues to confirm acceptability of concept **[S7, S12]**
-7. Move to production **[K3, S2]**
+4. Research and test pipeline tools for analysis **[K3, S2]**
+5. Write and test code in R to deliver pipeline in `targets` **[K3, S2]**
+6. Write Quarto reporting document
+7. Present to colleagues to confirm acceptability of concept **[S7, S12]**
+8. Move to production **[K3, S2]**
 
 # Recommendations and Conclusions
 
@@ -291,7 +292,15 @@ The data used are not personal data. They relate to the operation of the monitor
 
 **`r getksb(ksb, 'K8')`**
 
-This project is about mitigating data quality risks for air monitoring data. It seeks to minimise risks arising from the calibration of the instruments and the operation of the system by tracking and reporting key parameters. Data quality risks arise from incorrect calibration, faulty equipment, contaminated gas and user error. This project addresses the data quality risks by implementing a data quality pipeline and producing data products to explain data quality issues.
+This project is about mitigating data quality risks for air monitoring data. It seeks to minimise risks arising from the calibration of the instruments and the operation of the system by tracking and reporting key parameters. Data quality risks arise from incorrect calibration, faulty equipment, contaminated gas and user error. This project addresses the data quality risks around calibration by implementing a data quality pipeline and producing data products to explain data quality issues.
+
+There are significant other uncertainties in air quality measurement arising from:
+
+ - The performance of the instrument
+ - The representativeness of the monitoring site
+ - The frequency of measurements
+
+These are not covered by the project but are governed by guidance within the technical guidance. As long as the technical guidance is followed there should be high confidence in the data and the decisions based on the data.
 
 **`r getksb(ksb, 'K9')`**
 
@@ -348,4 +357,54 @@ I have worked on this project mostly on my own, but have consulted colleagues wh
 **`r getksb(ksb, 'B4')`**
 
 I believe I have shown a logical and analytic approach to problem solving in this project. I have had to think and plan the steps in developing analysis for three separate components of the pipeline and test and integrate them into a functioning and robust analysis. This has helped me develop a workflow for this type of analysis which has advanced my ability in data analytics and added valuable new skills.
+
+## Appendix 2 Analysis Plan
+
+This analysis plan was agreed with colleagues in the air quality team in December 2022.
+
+The aim of this analysis plan is to outline steps to develop a pipeline in R using the targets package. The pipeline will fetch air quality data from a SQL Server database, Google spreadsheets and Teltonika's API to develop Quality Assurance (QA) metrics, and create visualizations for KPI's which describe the calibration of air quality monitors and data use metrics for routers.
+
+1. **Project Setup:**
+   Set up a new R project workspace with version control using Git. This will help to keep track of changes and collaborate with others.
+
+2. **SQL Server Connection:**
+   Use the RODBC or DBI packages in R to establish a connection with the SQL server database. Ensure that the connection parameters (server name, database name, username, password) are stored securely. This can be done using the `config` package.
+
+3. **Data Extraction SQL:**
+   Write SQL queries to extract the necessary air quality data from the database. The extracted data should contain information about the air pollutants being monitored, monitor calibration details, and other relevant information. 
+   
+4. **Data Extraction: Google sheets**
+   Use R package `googlesheets4` to extract spreadsheet data and load in to R as a data frame.
+
+5. **Data Extraction: Router API**
+   Use R package `httr` or `httr2` to extract data from the Teltonika API. Ensure credentials are protected from exposure on github by using a secure storage method like `config` package.
+
+6. **Data Cleaning and Preprocessing:**
+   Clean and preprocess the data. This might involve dealing with missing values, handling outliers, or converting data types as necessary.
+
+7. **Target Definition:**
+   Define the targets in the `targets` package. Each target corresponds to a step in the pipeline: data extraction, data cleaning, calculation of QA metrics, and visualization creation. The `targets` package will automatically manage the dependencies between these steps.
+
+8. **Develop QA Metrics:**
+   Develop QA metrics for the calibration data. These might include measures of accuracy, drift or deviation from limits for the zero and span responses. Define these as targets in the `targets` package.
+
+9. **Visualization:**
+   Use ggplot2 or any other preferred package to create visualizations that describe the calibration of air pollution monitors. These could be scatter plots, box plots, or trend lines. Also, define these visualizations as targets in the `targets` package.
+
+10. **Script Execution:**
+   Execute the script using the `tar_make()` function in the `targets` package. This will run the steps in the correct order, skipping any steps whose results are already up-to-date.
+
+11. **Verification:**
+   Check the output to ensure the data is correctly processed and the visualizations are as expected. Use the `tar_visnetwork()` function to visualize the pipeline's dependency graph and check for any issues.
+
+12. **Deployment:**
+    Upon verification, prepare the project for deployment. This may involve setting up a recurring job to run the script at regular intervals, if necessary. The analysis output could be a html document derived from a parameterised Rmarkdown document implemented using the `tarchetypes` package.
+
+13. **Documentation:**
+    Document the entire process clearly. Include information about each target in the pipeline, what it does, what its dependencies are, and what output it produces.
+
+14. **Testing and Iteration:**
+    Conduct unit testing on individual functions and integration testing on the entire pipeline to ensure all components are working together seamlessly. Iterate on the pipeline based on testing feedback and any new requirements or insights that arise during the process.
+
+By using the `targets` package for this pipeline, we ensure the reproducibility of the project and save computational resources by only re-running the parts of the pipeline that have changed since the last run.
 
