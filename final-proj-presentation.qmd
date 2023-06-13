@@ -23,6 +23,12 @@ embed-resources: true
  - Recommendations and Conclusions
 
 
+## Summary
+
+The aim of this project is to create a Reproducible Analytic Pipeline (RAP) to collate, summarise and report the operating characteristics of the council’s air quality monitoring network and provide assurance that the system is operating within desired parameters. 
+
+This minimises data quality risks by identifying problems and mitigations in a timely, structured and evidenced way
+
 ## Business Context: Air Quality Management
 
 :::: {.columns}
@@ -91,7 +97,8 @@ Reference LAQM.TG(22)
     - Identify gas issues asap
 
 :::{.notes}
-
+K8 Data quality
+This pipeline flags DQ risks for action and mitigation
 :::
 
 
@@ -118,7 +125,10 @@ Reference LAQM.TG(22)
 ::::
 
 :::{.notes}
-
+raw data from instruments
+scaled by calibration
+removed if invalid
+Data not personal no GDPR
 :::
 
 ## Data Analysis - R packages
@@ -150,7 +160,9 @@ Reference LAQM.TG(22)
 
 
 :::{.notes}
-
+S15 tools - best R packages available
+openair is specific AQ tool
+Wanted to use Quarto as new
 :::
 
 ## Data Analysis - Diagnostics
@@ -163,6 +175,10 @@ Reference LAQM.TG(22)
     - Missingness
 - Instrument diagnostics
     - Operating parameters
+        - Temperature
+        - Flowrates
+        - Pressure
+    - Indicate optimal range
     
 :::
 
@@ -175,7 +191,8 @@ Reference LAQM.TG(22)
 ::::
 
 :::{.notes}
-
+S15 ggplot faceted plot to give lots of info in one chart
+show lines for optimal ranges
 :::
 
 ## Data Analysis - Calibration
@@ -185,6 +202,7 @@ Reference LAQM.TG(22)
 ::: {.column width="40%"}
 
 - Zero and Span
+    - red line indicates optima
 
 :::
 
@@ -196,7 +214,7 @@ Reference LAQM.TG(22)
 ::::
 
 :::{.notes}
-
+S15 used gt to produce attractive table
 :::
 
 ## Data Analysis - Calibration
@@ -207,6 +225,9 @@ Reference LAQM.TG(22)
 
 - Span divergence
     - NO and NOx
+    - Gas contamination
+    - NO is oxidised to NO~2~
+    - Affects span and accuracy
     
 :::
 
@@ -220,7 +241,8 @@ Reference LAQM.TG(22)
 
 
 :::{.notes}
-
+This issue happened in Dec 2022 and was a driver for the RAP
+Changed operating procedure as a result
 :::
 
 ## Data Analysis - Telemetry Data
@@ -241,7 +263,7 @@ Reference LAQM.TG(22)
 ::::
 
 :::{.notes}
-
+can see wells road data use out of tolerance
 :::
 
 ## Reproducible Analytical Pipelines
@@ -269,7 +291,7 @@ Reference LAQM.TG(22)
 ::::
 
 :::{.notes}
-
+Targets - similar to make in python bash
 :::
 
 
