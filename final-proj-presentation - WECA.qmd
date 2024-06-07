@@ -1,0 +1,264 @@
+---
+title: "Performance Analytics"
+logo: images/logo.svg
+css: logo.css
+subtitle: "Diagnostics and Data Quality Analytics for Air Quality Monitoring"
+author: "Steve Crawshaw"
+date: "2024-06-11"
+format:
+    revealjs:
+        theme: simple
+        preview-links: true
+embed-resources: true
+editor: 
+  markdown: 
+    wrap: 72
+---
+
+## Contents
+
+-   Business Context and Problem
+-   Data Quality Requirements
+-   Data Sources
+-   Data Transformation and Analysis
+-   Reproducible Pipelines
+-   Reporting and Impact
+-   Recommendations and Conclusions
+
+## Summary
+
+- A Reproducible Analytic Pipeline (RAP) to collate, summarise and report
+the key parameters of an air quality monitoring network to provide
+timely and evidenced data quality assurance and predictive risk
+mitigation.\
+
+- The audience is a small team of air quality specialists in a council supporting a
+network of air quality monitors.
+
+## Business Context: Air Quality Management
+
+::: columns
+::: {.column width="40%"}
+![](images/contin_sites_sml.png)
+:::
+
+::: {.column width="60%"}
+![](images/2000.jpg)
+:::
+:::
+
+::: notes
+Long term air quality monitors Representative locations Road pollution
+Reference method instruments
+:::
+
+## Business Problem
+
+::: columns
+::: {.column width="60%"}
+-   [Clean Air Zone](https://www.cleanairforbristol.org/) (£44m)
+    -   Highly politically sensitive
+    -   **Relies on air quality data**
+    -   Prescriptive QA regime
+    -   But human and system error creates **data quality risk**
+-   Solution
+    -   **Reproducible pipeline for data quality analysis**
+:::
+
+::: {.column width="40%"}
+![](images/cazbig.png)
+:::
+:::
+
+::: notes
+Analysis Plan Consultation with colleagues Reference LAQM.TG(22)
+:::
+
+## Data Quality Requirements
+
+-   Data collection better than 85% for hourly data
+-   4G data use below 3GB per site
+-   Identification of analyser system faults
+-   Instrument calibration
+-   Data scaled to span gas
+    -   Identify gas issues asap
+
+::: notes
+K8 Data quality This pipeline flags DQ risks for action and mitigation
+:::
+
+## Data Sources
+
+::: columns
+::: {.column width="60%"}
+-   Teledyne API T200 NOx analysers
+-   EnviDAS FW data loggers (SQL Server)
+-   Teltonika 4G routers
+    -   RMS platform
+-   Azure SQL Server (all sites)
+-   Google sheets (calibration data)
+:::
+
+::: {.column width="40%"}
+![](images/rut950-840xAuto.webp)
+:::
+:::
+
+::: notes
+raw data from instruments scaled by calibration removed if invalid Data
+not personal no GDPR
+:::
+
+## Data Analysis - R packages
+
+::: columns
+::: {.column width="50%"}
+-   DBI (database access)
+-   config (secure parameters)
+-   tidyverse (wrangling)
+-   openair (air quality)
+-   gt (tables)
+:::
+
+::: {.column width="50%"}
+-   targets (pipeline)
+-   Quarto (reporting)
+-   googlesheets4
+-   rlist (list processing)
+-   httr2 (REST API)
+:::
+:::
+
+::: notes
+:::
+
+## Data Analysis - Diagnostics
+
+::: columns
+::: {.column width="60%"}
+-   Air quality data
+    -   Missingness
+-   Instrument diagnostics
+    -   Operating parameters
+        -   Temperature
+        -   Flowrates
+        -   Pressure
+
+:::
+
+::: {.column width="40%"}
+![](fp/qa_report_files/figure-html/diag_plot_1-1.png)
+:::
+:::
+
+::: notes
+S15 ggplot faceted plot to give lots of info in one chart show lines for
+optimal ranges
+:::
+
+## Data Analysis - Calibration
+
+::: columns
+::: {.column width="40%"}
+-   Zero and Span
+    -   red lines indicates optimal values
+:::
+
+::: {.column width="60%"}
+![](images/cal_factors.png)
+:::
+:::
+
+::: notes
+S15 used gt to produce attractive table
+:::
+
+## Data Analysis - Calibration
+
+::: columns
+::: {.column width="40%"}
+-   Span divergence
+    -   NO and NOx
+    -   Gas contamination
+    -   NO is oxidised to NO~2~
+    -   Affects span and accuracy
+:::
+
+::: {.column width="60%"}
+![](images/span_diff_plot.png)
+:::
+:::
+
+::: notes
+This issue happened in Dec 2022 and was a driver for the RAP Changed
+operating procedure as a result
+:::
+
+## Data Analysis - Telemetry Data
+
+::: columns
+::: {.column width="50%"}
+![](fp/qa_report_files/figure-html/data_use_1-1.png)
+:::
+
+::: {.column width="50%"}
+![](fp/qa_report_files/figure-html/cumulative_data_use-1.png)
+:::
+:::
+
+::: notes
+can see wells road data use out of tolerance
+:::
+
+## Reproducible Analytical Pipelines
+
+::: columns
+::: {.column width="50%"}
+-   [`targets` package](https://books.ropensci.org/targets/)
+-   RAP automates function execution
+-   Skips redundant steps
+-   Encourages functional style
+:::
+
+::: {.column width="50%"}
+![](images/tar-visnetwork.png)
+:::
+:::
+
+::: notes
+Targets - similar to make in python bash
+:::
+
+## Reporting
+
+-   Monthly report
+-   Select start and end dates
+-   Rendered in html by Quarto
+-   Quarto reads the objects in the `targets` store
+-   Some minimal formatting with `gt` package
+-   HTML output can be shared with engineers
+
+::: notes
+:::
+
+## Impact
+
+-   Data quality risks identified and mitigated
+-   Diagnostics report to engineers produced automatically
+-   Predictive response to gas contamination issues
+
+## Business Recommendations
+
+-   Extend analytics with dashboard
+-   Investigate:
+    -   BAM diagnostics (PM~10~, PM~2.5~)
+    -   Data logger diagnostics
+-   Consolidate with data ratification
+-   Add public reporting
+-   Include alerts for key parameters
+-   Write R package & containerise
+
+::: notes
+:::
+
+## Questions?
