@@ -23,17 +23,13 @@ editor:
 -   Data Transformation and Analysis
 -   Reproducible Pipelines
 -   Reporting and Impact
--   Recommendations and Conclusions
+-   Recommendations
 
 ## Summary
 
-- A Reproducible Analytic Pipeline (RAP) to collate, summarise and report
-the key parameters of an air quality monitoring network to provide
-timely and evidenced data quality assurance and predictive risk
-mitigation.\
+- A Reproducible Analytic Pipeline (RAP) to collate, summarise and report the key parameters of an air quality monitoring network to provide timely and evidenced data quality assurance and predictive risk mitigation.\
 
-- The audience is a small team of air quality specialists in a council supporting a
-network of air quality monitors.
+- The audience is a small team of air quality specialists in a council supporting a network of air quality monitors.
 
 ## Business Context: Air Quality Management
 
